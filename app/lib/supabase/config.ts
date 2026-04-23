@@ -7,6 +7,15 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, ENABLE_SUPABASE } from '../env';
 const supabaseUrl = SUPABASE_URL;
 const supabaseAnonKey = SUPABASE_ANON_KEY;
 const enableSupabase = ENABLE_SUPABASE;
+const hasSupabaseCredentials = !!supabaseUrl && !!supabaseAnonKey;
+export const isSupabaseEnabled = enableSupabase && hasSupabaseCredentials;
+
+const clientUrl = isSupabaseEnabled
+  ? supabaseUrl
+  : 'https://placeholder.supabase.co';
+const clientAnonKey = isSupabaseEnabled
+  ? supabaseAnonKey
+  : 'placeholder-anon-key';
 
 /**
  * Platform-specific storage adapter for Supabase Auth
@@ -50,7 +59,7 @@ const platformStorage = Platform.OS === 'web'
  * - Auto refresh tokens
  * - Persistent sessions
  */
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+export const supabase = createClient(clientUrl, clientAnonKey, {
   auth: {
     storage: platformStorage,
     autoRefreshToken: true,
@@ -60,14 +69,13 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
 });
 
 /**
- * Feature flag to check if Supabase is enabled
- */
-export const isSupabaseEnabled = enableSupabase && !!supabaseUrl && !!supabaseAnonKey;
-
-/**
  * Get current authenticated user
  */
 export async function getCurrentUser() {
+  if (!isSupabaseEnabled) {
+    return null;
+  }
+
   const { data: { user }, error } = await supabase.auth.getUser();
 
   if (error) {
@@ -82,6 +90,10 @@ export async function getCurrentUser() {
  * Get current session
  */
 export async function getCurrentSession() {
+  if (!isSupabaseEnabled) {
+    return null;
+  }
+
   const { data: { session }, error } = await supabase.auth.getSession();
 
   if (error) {
@@ -104,6 +116,10 @@ export async function isAuthenticated(): Promise<boolean> {
  * Sign out current user
  */
 export async function signOut() {
+  if (!isSupabaseEnabled) {
+    return;
+  }
+
   const { error } = await supabase.auth.signOut();
 
   if (error) {

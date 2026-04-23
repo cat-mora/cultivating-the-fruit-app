@@ -1,17 +1,44 @@
-/**
- * Environment Variable Access Module
- *
- * Provides cross-platform access to environment variables
- * Metro bundler automatically injects EXPO_PUBLIC_* variables at build time
- * for both native and web platforms.
- */
+import Constants from 'expo-constants';
 
-// Helper to safely access environment variables
+type EnvValue = string | number | boolean | null | undefined;
+type ExpoExtra = Record<string, EnvValue>;
+
+function getExpoExtra(): ExpoExtra {
+  const expoConfigExtra = Constants.expoConfig?.extra;
+  if (expoConfigExtra && typeof expoConfigExtra === 'object') {
+    return expoConfigExtra as ExpoExtra;
+  }
+
+  const manifestExtra = (Constants.manifest as { extra?: ExpoExtra } | null)?.extra;
+  if (manifestExtra && typeof manifestExtra === 'object') {
+    return manifestExtra;
+  }
+
+  const updatesExtra = (
+    Constants.manifest2 as { extra?: { expoClient?: { extra?: ExpoExtra } } } | null
+  )?.extra?.expoClient?.extra;
+  if (updatesExtra && typeof updatesExtra === 'object') {
+    return updatesExtra;
+  }
+
+  return {};
+}
+
+const expoExtra = getExpoExtra();
+
+// Read EXPO_PUBLIC_* variables from either Metro-injected env or Expo runtime config.
 function getEnvVar(key: string, defaultValue: string = ''): string {
-  // Metro injects process.env at build time for both web and native
-  // TypeScript doesn't know about the injected vars, so we need to cast
-  const value = (process.env as any)[key];
-  return value !== undefined ? String(value) : defaultValue;
+  const processValue = (process.env as Record<string, string | undefined>)[key];
+  if (processValue !== undefined && processValue !== '') {
+    return processValue;
+  }
+
+  const expoValue = expoExtra[key];
+  if (expoValue !== undefined && expoValue !== null && String(expoValue) !== '') {
+    return String(expoValue);
+  }
+
+  return defaultValue;
 }
 
 // Supabase Configuration
