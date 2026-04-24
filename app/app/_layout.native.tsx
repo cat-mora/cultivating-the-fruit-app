@@ -4,7 +4,7 @@ import { useFonts } from 'expo-font';
 import { Stack, Redirect } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useState } from 'react';
-import { Platform } from 'react-native';
+import { Image, Platform } from 'react-native';
 import 'react-native-reanimated';
 
 // Load platform-specific styles using the actual Expo platform, not window presence.
@@ -51,6 +51,8 @@ const LogoTheme: Theme = {
     notification: '#D99BA6',   // Rose
   },
 };
+
+const logoImage = Image.resolveAssetSource(require('../assets/images/logo-full.png'));
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -109,7 +111,7 @@ export default function RootLayout() {
       <>
         <div className="logo-banner">
           <img
-            src={require('../assets/images/logo-full.png')}
+            src={logoImage?.uri}
             alt="Cultivating the Fruits - Love Renewed Through Daily Action"
           />
         </div>

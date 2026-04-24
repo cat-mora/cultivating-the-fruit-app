@@ -1,5 +1,5 @@
 {
-  "buildCommand": "cd app && npm install && npx expo export -p web",
+  "buildCommand": "cd app && npm install && npx tailwindcss -i ./web-tailwind.input.css -o ./global.web.generated.css --minify && npx expo export -p web && node -e \"require('fs').copyFileSync('dist/index.html','dist/404.html')\"",
   "outputDirectory": "app/dist",
   "installCommand": "cd app && npm install",
   "framework": null,
