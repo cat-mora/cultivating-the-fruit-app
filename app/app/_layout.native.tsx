@@ -1,11 +1,3 @@
-// Load platform-specific styles
-if (typeof window === 'undefined') {
-  // Native only: load NativeWind
-  require("../global.css");
-} else {
-  // Web only: load web CSS
-  require("../global.web.css");
-}
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { DarkTheme, DefaultTheme, ThemeProvider, Theme } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
@@ -14,6 +6,14 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useState } from 'react';
 import { Platform } from 'react-native';
 import 'react-native-reanimated';
+
+// Load platform-specific styles using the actual Expo platform, not window presence.
+if (Platform.OS === 'web') {
+  require('../global.web.generated.css');
+  require('../global.web.css');
+} else {
+  require('../global.css');
+}
 
 import { useUserStore } from '../store/user-store';
 import { initializeAuth } from '../store/auth-store';
