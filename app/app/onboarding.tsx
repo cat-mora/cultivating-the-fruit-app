@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Text, View, Pressable, ScrollView } from 'react-native';
+import { Text, View, Pressable, ScrollView, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useUserStore, JourneyStream, BibleTranslation } from '../store/user-store';
 
@@ -34,10 +34,14 @@ export default function OnboardingScreen() {
 
   return (
     <ScrollView className="flex-1 bg-cream p-6">
-      {/* Decorative Fruit Cluster */}
-      <View className="mt-16 mb-4 items-center">
-        <Text className="text-6xl">🍇🍎🍊</Text>
-        <Text className="text-4xl mt-1">🫒🍋🍑</Text>
+      {/* Hero Logo */}
+      <View className="mt-16 mb-6 items-center">
+        <Image
+          source={require('../assets/images/logo-full.png')}
+          accessibilityLabel="Cultivating the Fruits"
+          resizeMode="contain"
+          style={{ width: 220, height: 88 }}
+        />
       </View>
 
       <View className="mb-8 items-center">
