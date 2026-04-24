@@ -52,36 +52,6 @@ const LogoTheme: Theme = {
   },
 };
 
-const logoImage = require('../assets/images/logo-full.png');
-
-function getWebAssetUri(asset: unknown): string | undefined {
-  if (typeof asset === 'string') {
-    return asset;
-  }
-
-  if (asset && typeof asset === 'object') {
-    const assetRecord = asset as { uri?: unknown; default?: unknown };
-
-    if (typeof assetRecord.uri === 'string') {
-      return assetRecord.uri;
-    }
-
-    if (typeof assetRecord.default === 'string') {
-      return assetRecord.default;
-    }
-
-    if (assetRecord.default && typeof assetRecord.default === 'object') {
-      const defaultAsset = assetRecord.default as { uri?: unknown };
-
-      if (typeof defaultAsset.uri === 'string') {
-        return defaultAsset.uri;
-      }
-    }
-  }
-
-  return undefined;
-}
-
 export {
   // Catch any errors thrown by the Layout component.
   ErrorBoundary,
@@ -131,21 +101,6 @@ export default function RootLayout() {
 
   if (!loaded && Platform.OS !== 'web') {
     return null;
-  }
-
-  // Web: render logo banner
-  if (Platform.OS === 'web') {
-    return (
-      <>
-        <div className="logo-banner">
-          <img
-            src={getWebAssetUri(logoImage)}
-            alt="Cultivating the Fruits - Love Renewed Through Daily Action"
-          />
-        </div>
-        <RootLayoutNav />
-      </>
-    );
   }
 
   return <RootLayoutNav />;

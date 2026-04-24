@@ -35,12 +35,12 @@ export default function OnboardingScreen() {
   return (
     <ScrollView className="flex-1 bg-cream p-6">
       {/* Hero Logo */}
-      <View className="mt-16 mb-6 items-center">
+      <View className="mt-12 mb-8 items-center">
         <Image
           source={require('../assets/images/logo-full.png')}
           accessibilityLabel="Cultivating the Fruits"
           resizeMode="contain"
-          style={{ width: 220, height: 88 }}
+          style={{ width: 320, height: 128 }}
         />
       </View>
 
