@@ -1,7 +1,7 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { DarkTheme, DefaultTheme, ThemeProvider, Theme } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
-import { Stack, Redirect } from 'expo-router';
+import { Stack, Redirect, usePathname } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useState } from 'react';
 import { Platform } from 'react-native';
@@ -51,6 +51,36 @@ const LogoTheme: Theme = {
     notification: '#D99BA6',   // Rose
   },
 };
+
+const logoImage = require('../assets/images/logo-full.png');
+
+function getWebAssetUri(asset: unknown): string | undefined {
+  if (typeof asset === 'string') {
+    return asset;
+  }
+
+  if (asset && typeof asset === 'object') {
+    const assetRecord = asset as { uri?: unknown; default?: unknown };
+
+    if (typeof assetRecord.uri === 'string') {
+      return assetRecord.uri;
+    }
+
+    if (typeof assetRecord.default === 'string') {
+      return assetRecord.default;
+    }
+
+    if (assetRecord.default && typeof assetRecord.default === 'object') {
+      const defaultAsset = assetRecord.default as { uri?: unknown };
+
+      if (typeof defaultAsset.uri === 'string') {
+        return defaultAsset.uri;
+      }
+    }
+  }
+
+  return undefined;
+}
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -108,23 +138,38 @@ export default function RootLayout() {
 
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
+  const pathname = usePathname();
   const hasOnboarded = useUserStore((state) => state.hasOnboarded);
+  const showWebLogoBanner =
+    Platform.OS === 'web' &&
+    pathname !== '/onboarding' &&
+    !(pathname === '/' && hasOnboarded === false);
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : LogoTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="onboarding" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
-        <Stack.Screen
-          name="partner-linking"
-          options={{
-            title: 'Relational Handshake',
-            headerBackTitle: 'Settings',
-          }}
-        />
-      </Stack>
-      {hasOnboarded === false && <Redirect href="/onboarding" />}
-    </ThemeProvider>
+    <>
+      {showWebLogoBanner && (
+        <div className="logo-banner">
+          <img
+            src={getWebAssetUri(logoImage)}
+            alt="Cultivating the Fruits - Love Renewed Through Daily Action"
+          />
+        </div>
+      )}
+      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : LogoTheme}>
+        <Stack>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="onboarding" options={{ headerShown: false }} />
+          <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+          <Stack.Screen
+            name="partner-linking"
+            options={{
+              title: 'Relational Handshake',
+              headerBackTitle: 'Settings',
+            }}
+          />
+        </Stack>
+        {hasOnboarded === false && <Redirect href="/onboarding" />}
+      </ThemeProvider>
+    </>
   );
 }
