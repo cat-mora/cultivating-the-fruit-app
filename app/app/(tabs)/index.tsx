@@ -6,12 +6,18 @@ import { Alert as WebAlert } from '../../lib/alert-web';
 
 const Alert = Platform.OS === 'web' ? WebAlert : RNAlert;
 
-const timeTiers = [5, 5, 10, 20, 60];
+const timeTiers = [
+  { label: '5 mins', index: 0 },
+  { label: '5 mins', index: 1 },
+  { label: '10 mins', index: 2 },
+  { label: '20 mins', index: 3 },
+  { label: '1hr+', index: 4 },
+];
 
 export default function DashboardScreen() {
   const content = useDailyContent();
   const { completeActivityToday, hasCompletedToday, getStreakInfo } = useStreak();
-  const [selectedTier, setSelectedTier] = useState<number>(10);
+  const [selectedIndex, setSelectedIndex] = useState<number>(2);
   const [isCompleting, setIsCompleting] = useState(false);
 
   const streak = getStreakInfo();
@@ -45,8 +51,7 @@ export default function DashboardScreen() {
     );
   }
 
-  const selectedActivity = content.activities.find(a => a.duration_minutes === selectedTier)
-    || content.activities[0];
+  const selectedActivity = content.activities[selectedIndex] || content.activities[0];
 
   return (
     <View className="flex-1 bg-cream" style={{ overflow: 'hidden' }}>
@@ -81,22 +86,22 @@ export default function DashboardScreen() {
         </View>
 
         {/* Time Tier Selector */}
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 10, paddingHorizontal: 4 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
           {timeTiers.map((tier) => (
             <Pressable
-              key={tier}
-              onPress={() => setSelectedTier(tier)}
+              key={tier.index}
+              onPress={() => setSelectedIndex(tier.index)}
               style={{
-                paddingHorizontal: 8,
-                paddingVertical: 4,
-                borderRadius: 20,
                 flex: 1,
+                marginHorizontal: 2,
+                paddingVertical: 7,
+                borderRadius: 20,
                 alignItems: 'center',
-                backgroundColor: selectedTier === tier ? '#6B3B5E' : '#EDE8E0',
+                backgroundColor: selectedIndex === tier.index ? '#6B3B5E' : '#EDE8E0',
               }}
             >
-              <Text style={{ fontSize: 11, fontWeight: 'bold', color: selectedTier === tier ? 'white' : 'rgba(47,47,47,0.4)' }}>
-                {tier >= 60 ? '1hr+' : `${tier} mins`}
+              <Text style={{ fontSize: 10, fontWeight: 'bold', color: selectedIndex === tier.index ? 'white' : 'rgba(47,47,47,0.4)' }}>
+                {tier.label}
               </Text>
             </Pressable>
           ))}
@@ -104,11 +109,11 @@ export default function DashboardScreen() {
 
         {/* Activity Card */}
         {selectedActivity && (
-<View className="bg-blush rounded-[20px]" style={{ padding: 16 }}> 
-  <Text className="text-xl font-serif text-wine" style={{ marginBottom: 6 }}>
+          <View className="bg-blush rounded-[20px]" style={{ padding: 16 }}>
+            <Text className="text-xl font-serif text-wine" style={{ marginBottom: 6 }}>
               {selectedActivity.title}
             </Text>
-            <Text className="text-charcoal/70 text-sm leading-relaxed" style={{ marginBottom: 16, flex: 1 }}>
+            <Text className="text-charcoal/70 text-sm leading-relaxed" style={{ marginBottom: 16 }}>
               {selectedActivity.description}
             </Text>
 
