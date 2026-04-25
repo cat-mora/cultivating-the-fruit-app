@@ -85,19 +85,17 @@ export default function DashboardScreen() {
           <Text className="text-white/70 text-center font-bold text-xs">{content.bible_reference}</Text>
         </View>
 
-        {/* Time Tier Selector — full width, no wrapping */}
-        <View style={{ flexDirection: 'row', marginBottom: 10, marginHorizontal: -20 }}>
+        {/* Time Tier Selector */}
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, marginBottom: 10 }}>
           {timeTiers.map((tier) => (
             <Pressable
               key={tier.index}
               onPress={() => setSelectedIndex(tier.index)}
               style={{
-                flex: 1,
-                paddingVertical: 8,
-                alignItems: 'center',
-                backgroundColor: selectedIndex === tier.index ? '#6B3B5E' : '#EDE8E0',
-                marginHorizontal: 2,
+                paddingHorizontal: 14,
+                paddingVertical: 6,
                 borderRadius: 20,
+                backgroundColor: selectedIndex === tier.index ? '#6B3B5E' : '#EDE8E0',
               }}
             >
               <Text style={{ fontSize: 11, fontWeight: 'bold', color: selectedIndex === tier.index ? 'white' : 'rgba(47,47,47,0.4)' }}>
@@ -116,7 +114,6 @@ export default function DashboardScreen() {
             <Text className="text-charcoal/70 text-sm leading-relaxed" style={{ marginBottom: 16 }}>
               {selectedActivity.description}
             </Text>
-
             <Pressable
               onPress={handleMarkComplete}
               disabled={isCompleting || completedToday}
