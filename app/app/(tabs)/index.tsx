@@ -87,8 +87,8 @@ export default function DashboardScreen() {
               key={tier}
               onPress={() => setSelectedTier(tier)}
               style={{
-                paddingHorizontal: 14,
-                paddingVertical: 6,
+                paddingHorizontal: 10,
+                paddingVertical: 5,
                 borderRadius: 20,
                 backgroundColor: selectedTier === tier ? '#6B3B5E' : '#EDE8E0',
               }}
