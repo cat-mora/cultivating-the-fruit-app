@@ -6,7 +6,7 @@ import { Alert as WebAlert } from '../../lib/alert-web';
 
 const Alert = Platform.OS === 'web' ? WebAlert : RNAlert;
 
-const timeTiers = [5, 10, 20, 60];
+const timeTiers = [5, 5, 10, 20, 60];
 
 export default function DashboardScreen() {
   const content = useDailyContent();
@@ -102,8 +102,8 @@ export default function DashboardScreen() {
 
         {/* Activity Card */}
         {selectedActivity && (
-          <View className="bg-blush rounded-[20px]" style={{ flex: 1, padding: 16 }}>
-            <Text className="text-xl font-serif text-wine" style={{ marginBottom: 6 }}>
+<View className="bg-blush rounded-[20px]" style={{ padding: 16 }}> 
+  <Text className="text-xl font-serif text-wine" style={{ marginBottom: 6 }}>
               {selectedActivity.title}
             </Text>
             <Text className="text-charcoal/70 text-sm leading-relaxed" style={{ marginBottom: 16, flex: 1 }}>
