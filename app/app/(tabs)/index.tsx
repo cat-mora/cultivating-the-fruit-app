@@ -81,15 +81,17 @@ export default function DashboardScreen() {
         </View>
 
         {/* Time Tier Selector */}
-        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, marginBottom: 10 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 10, paddingHorizontal: 4 }}>
           {timeTiers.map((tier) => (
             <Pressable
               key={tier}
               onPress={() => setSelectedTier(tier)}
               style={{
-                paddingHorizontal: 10,
-                paddingVertical: 5,
+                paddingHorizontal: 8,
+                paddingVertical: 4,
                 borderRadius: 20,
+                flex: 1,
+                alignItems: 'center',
                 backgroundColor: selectedTier === tier ? '#6B3B5E' : '#EDE8E0',
               }}
             >
