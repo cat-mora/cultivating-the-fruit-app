@@ -7,10 +7,10 @@ import { Alert as WebAlert } from '../../lib/alert-web';
 const Alert = Platform.OS === 'web' ? WebAlert : RNAlert;
 
 const timeTiers = [
-  { label: '5 mins', index: 0 },
-  { label: '5 mins', index: 1 },
-  { label: '10 mins', index: 2 },
-  { label: '20 mins', index: 3 },
+  { label: '5m', index: 0 },
+  { label: '5m', index: 1 },
+  { label: '10m', index: 2 },
+  { label: '20m', index: 3 },
   { label: '1hr+', index: 4 },
 ];
 
@@ -85,22 +85,22 @@ export default function DashboardScreen() {
           <Text className="text-white/70 text-center font-bold text-xs">{content.bible_reference}</Text>
         </View>
 
-        {/* Time Tier Selector */}
-        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+        {/* Time Tier Selector — full width, no wrapping */}
+        <View style={{ flexDirection: 'row', marginBottom: 10, marginHorizontal: -20 }}>
           {timeTiers.map((tier) => (
             <Pressable
               key={tier.index}
               onPress={() => setSelectedIndex(tier.index)}
               style={{
                 flex: 1,
-                marginHorizontal: 2,
-                paddingVertical: 7,
-                borderRadius: 20,
+                paddingVertical: 8,
                 alignItems: 'center',
                 backgroundColor: selectedIndex === tier.index ? '#6B3B5E' : '#EDE8E0',
+                marginHorizontal: 2,
+                borderRadius: 20,
               }}
             >
-              <Text style={{ fontSize: 10, fontWeight: 'bold', color: selectedIndex === tier.index ? 'white' : 'rgba(47,47,47,0.4)' }}>
+              <Text style={{ fontSize: 11, fontWeight: 'bold', color: selectedIndex === tier.index ? 'white' : 'rgba(47,47,47,0.4)' }}>
                 {tier.label}
               </Text>
             </Pressable>
