@@ -1,6 +1,6 @@
 import { useState, FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { signInWithEmail } from '../../lib/auth/auth-service';
+import { signInWithEmail } from '../../../lib/auth/auth-service';
 
 /**
  * Sign In Page

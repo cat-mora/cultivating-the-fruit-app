@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { usePartnerLinkByCode, useAcceptPartnerInvite } from '../../lib/data/queries/use-partner';
-import { useAuthStore } from '../../store/auth-store';
+import { usePartnerLinkByCode, useAcceptPartnerInvite } from '../../../lib/data/queries/use-partner';
+import { useAuthStore } from '../../../store/auth-store';
 
 /**
  * Partner Join Page
