@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { View, Text, TextInput, Pressable, Alert, StyleSheet } from 'react-native';
+import { View, Text, TextInput, Pressable, Alert, StyleSheet, Image } from 'react-native';
 import { Link, useRouter } from 'expo-router';
 import { signUpWithEmail } from '@/lib/auth/auth-service';
 import { validateSignupInvite, markInviteAsUsed } from '@/lib/admin/admin-service';
@@ -84,7 +84,11 @@ export default function SignUp() {
     <View style={styles.container}>
       <View style={styles.card}>
         <View style={styles.header}>
-          <Text style={styles.logo}>🍇 Cultivating the Fruits</Text>
+          <Image
+            source={require('../../../assets/images/logo-full.png')}
+            style={styles.logo}
+            resizeMode="contain"
+          />
           <Text style={styles.tagline}>Grow your spiritual life, one day at a time</Text>
         </View>
 
@@ -196,9 +200,8 @@ const styles = StyleSheet.create({
     marginBottom: 40,
   },
   logo: {
-    fontSize: 32,
-    fontWeight: '700',
-    color: '#6B2D3E',
+    width: 280,
+    height: 80,
     marginBottom: 8,
   },
   tagline: {

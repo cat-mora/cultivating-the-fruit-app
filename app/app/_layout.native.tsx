@@ -168,7 +168,8 @@ function RootLayoutNav() {
   const showWebLogoBanner =
     Platform.OS === 'web' &&
     pathname !== '/onboarding' &&
-    !(pathname === '/' && hasOnboarded === false);
+    !(pathname === '/' && hasOnboarded === false) &&
+    !isAuthPage;
 
   return (
     <QueryClientProvider client={queryClient}>
