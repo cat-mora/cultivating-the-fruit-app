@@ -33,38 +33,58 @@ export const supabase = createClient(clientUrl, clientAnonKey, {
 
 /**
  * Get current authenticated user
+ * Returns null if no user is logged in (not an error state)
  */
 export async function getCurrentUser() {
   if (!isSupabaseEnabled) {
     return null;
   }
 
-  const { data: { user }, error } = await supabase.auth.getUser();
+  try {
+    const { data: { user }, error } = await supabase.auth.getUser();
 
-  if (error) {
-    console.error('Error getting current user:', error);
+    // No session is a normal state (user not logged in), not an error
+    if (error) {
+      // Only log unexpected errors, not "no session" errors
+      if (!error.message?.includes('session') && !error.message?.includes('JWT')) {
+        console.error('Error getting current user:', error);
+      }
+      return null;
+    }
+
+    return user;
+  } catch (err) {
+    // Silently handle auth errors - user simply isn't logged in
     return null;
   }
-
-  return user;
 }
 
 /**
  * Get current session
+ * Returns null if no session exists (not an error state)
  */
 export async function getCurrentSession() {
   if (!isSupabaseEnabled) {
     return null;
   }
 
-  const { data: { session }, error } = await supabase.auth.getSession();
+  try {
+    const { data: { session }, error } = await supabase.auth.getSession();
 
-  if (error) {
-    console.error('Error getting current session:', error);
+    // No session is a normal state (user not logged in), not an error
+    if (error) {
+      // Only log unexpected errors, not "no session" errors
+      if (!error.message?.includes('session') && !error.message?.includes('JWT')) {
+        console.error('Error getting current session:', error);
+      }
+      return null;
+    }
+
+    return session;
+  } catch (err) {
+    // Silently handle auth errors - user simply isn't logged in
     return null;
   }
-
-  return session;
 }
 
 /**
