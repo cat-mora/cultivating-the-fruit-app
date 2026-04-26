@@ -1,6 +1,7 @@
 import { useState, FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { signUpWithEmail } from '../../../lib/auth/auth-service';
+import { validateSignupInvite, markInviteAsUsed } from '../../../lib/admin/admin-service';
 
 /**
  * Sign Up Page
@@ -14,6 +15,7 @@ import { signUpWithEmail } from '../../../lib/auth/auth-service';
  */
 export default function SignUp() {
   const navigate = useNavigate();
+  const [inviteCode, setInviteCode] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -23,6 +25,12 @@ export default function SignUp() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError('');
+
+    // Validate invite code
+    if (!inviteCode || inviteCode.trim().length !== 6) {
+      setError('Please enter a valid 6-character invite code');
+      return;
+    }
 
     // Validate passwords match
     if (password !== confirmPassword) {
@@ -39,7 +47,31 @@ export default function SignUp() {
     setIsLoading(true);
 
     try {
-      await signUpWithEmail(email, password);
+      // Validate invite code before creating account
+      const invite = await validateSignupInvite(inviteCode.trim());
+
+      if (!invite) {
+        setError('Invalid, expired, or already used invite code');
+        setIsLoading(false);
+        return;
+      }
+
+      // Create account
+      const user = await signUpWithEmail(email, password);
+
+      if (!user) {
+        setError('Failed to create account');
+        setIsLoading(false);
+        return;
+      }
+
+      // Mark invite as used
+      const marked = await markInviteAsUsed(inviteCode.trim(), user.id);
+
+      if (!marked) {
+        console.error('Failed to mark invite as used, but account was created');
+      }
+
       // After signup, user will need to complete onboarding
       // For now, just redirect to dashboard (onboarding will be added in Phase 5)
       navigate('/dashboard');
@@ -75,6 +107,62 @@ export default function SignUp() {
       </p>
 
       <form onSubmit={handleSubmit}>
+        {/* Invite Code Input */}
+        <div style={{ marginBottom: '20px' }}>
+          <label
+            htmlFor="inviteCode"
+            style={{
+              display: 'block',
+              fontSize: '14px',
+              fontWeight: '600',
+              color: '#6B2D3E',
+              marginBottom: '8px',
+              fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
+            }}
+          >
+            Invite Code
+          </label>
+          <input
+            id="inviteCode"
+            type="text"
+            value={inviteCode}
+            onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
+            required
+            maxLength={6}
+            disabled={isLoading}
+            placeholder="ABC123"
+            style={{
+              width: '100%',
+              padding: '12px 16px',
+              fontSize: '16px',
+              border: '2px solid #F5EDE0',
+              borderRadius: '8px',
+              outline: 'none',
+              fontFamily: 'monospace',
+              letterSpacing: '2px',
+              textTransform: 'uppercase',
+              transition: 'border-color 0.2s',
+              boxSizing: 'border-box',
+            }}
+            onFocus={(e) => {
+              e.target.style.borderColor = '#DEB9C5';
+            }}
+            onBlur={(e) => {
+              e.target.style.borderColor = '#F5EDE0';
+            }}
+          />
+          <p
+            style={{
+              fontSize: '12px',
+              color: '#8B6F47',
+              margin: '4px 0 0 0',
+              fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
+            }}
+          >
+            Enter the 6-character code provided by an admin
+          </p>
+        </div>
+
         {/* Email Input */}
         <div style={{ marginBottom: '20px' }}>
           <label

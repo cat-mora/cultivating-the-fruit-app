@@ -4,6 +4,7 @@ import { supabase, isSupabaseEnabled } from '../supabase/config';
 import { useAuthStore } from '../../store/auth-store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { WEB_URL } from '../env';
+import { validateSignupInvite, markInviteAsUsed } from '../admin/admin-service';
 
 /**
  * Auth Service
@@ -45,7 +46,7 @@ export async function signUpWithEmail(email: string, password: string) {
   useAuthStore.getState().setUser(data.user);
   useAuthStore.getState().setSession(data.session);
 
-  return data;
+  return data.user;
 }
 
 /**
@@ -128,7 +129,12 @@ export async function getSupportedBiometricTypes() {
 /**
  * Setup PIN for native authentication
  */
-export async function setupBiometricPIN(pin: string): Promise<void> {
+/**
+ * Setup PIN for native authentication
+ * @param pin - The PIN code to set up
+ * @param inviteCode - Optional invite code required for signup (if Supabase enabled)
+ */
+export async function setupBiometricPIN(pin: string, inviteCode?: string): Promise<void> {
   if (Platform.OS === 'web') {
     throw new Error('Biometric PIN is only available on native platforms');
   }
@@ -143,6 +149,14 @@ export async function setupBiometricPIN(pin: string): Promise<void> {
       const existingUserId = await AsyncStorage.getItem(ANONYMOUS_USER_ID_KEY);
 
       if (!existingUserId) {
+        // Validate invite code if provided
+        if (inviteCode) {
+          const invite = await validateSignupInvite(inviteCode);
+          if (!invite) {
+            throw new Error('Invalid, expired, or already used invite code');
+          }
+        }
+
         // Create anonymous Supabase account
         // Use device ID as email: device_[uuid]@anonymous.local
         const deviceId = `device_${Math.random().toString(36).substring(2)}`;
@@ -156,16 +170,21 @@ export async function setupBiometricPIN(pin: string): Promise<void> {
 
         if (error) {
           console.error('Failed to create anonymous Supabase account:', error);
-          // Don't throw - allow local-only mode
+          throw new Error('Failed to create account: ' + error.message);
         } else if (data.user) {
           await AsyncStorage.setItem(ANONYMOUS_USER_ID_KEY, data.user.id);
           useAuthStore.getState().setUser(data.user);
           useAuthStore.getState().setSession(data.session);
+
+          // Mark invite as used if provided
+          if (inviteCode) {
+            await markInviteAsUsed(inviteCode, data.user.id);
+          }
         }
       }
     } catch (error) {
       console.error('Error setting up anonymous account:', error);
-      // Don't throw - allow local-only mode
+      throw error;
     }
   }
 }
