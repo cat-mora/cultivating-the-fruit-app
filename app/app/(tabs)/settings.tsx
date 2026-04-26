@@ -90,14 +90,6 @@ export default function SettingsScreen() {
   };
 
   const handleOpenPartnerLinking = () => {
-    if (!userId) {
-      Alert.alert(
-        'Cloud Sync Required',
-        'Relational Handshake needs a synced account on this device before you can connect with a partner.'
-      );
-      return;
-    }
-
     router.push('/partner-linking');
   };
 
@@ -192,6 +184,8 @@ export default function SettingsScreen() {
           <Text className="text-charcoal/60 text-sm">
             {activePartner
               ? `Linked with ${partnerLabel}`
+              : !userId
+              ? 'Create your synced account and connect with a partner'
               : linkedPartners.length > 0
               ? `${linkedPartners.length} partner(s) linked`
               : 'Link your journey with a partner'}
