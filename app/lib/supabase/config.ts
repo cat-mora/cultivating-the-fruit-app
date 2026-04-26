@@ -76,14 +76,22 @@ export async function getCurrentUser() {
     return null;
   }
 
-  const { data: { user }, error } = await supabase.auth.getUser();
+  try {
+    const { data: { user }, error } = await supabase.auth.getUser();
 
-  if (error) {
-    console.error('Error getting current user:', error);
+    if (error) {
+      // Don't log "session missing" errors - they're expected on native
+      if (error.message && !error.message.includes('session missing')) {
+        console.error('Error getting current user:', error);
+      }
+      return null;
+    }
+
+    return user;
+  } catch (error) {
+    // Silently handle auth errors (common on native without Supabase session)
     return null;
   }
-
-  return user;
 }
 
 /**
@@ -94,14 +102,22 @@ export async function getCurrentSession() {
     return null;
   }
 
-  const { data: { session }, error } = await supabase.auth.getSession();
+  try {
+    const { data: { session }, error } = await supabase.auth.getSession();
 
-  if (error) {
-    console.error('Error getting current session:', error);
+    if (error) {
+      // Don't log "session missing" errors - they're expected on native
+      if (error.message && !error.message.includes('session missing')) {
+        console.error('Error getting current session:', error);
+      }
+      return null;
+    }
+
+    return session;
+  } catch (error) {
+    // Silently handle auth errors (common on native without Supabase session)
     return null;
   }
-
-  return session;
 }
 
 /**
