@@ -67,6 +67,35 @@ export function useProfile() {
   });
 }
 
+/**
+ * Fetch a specific profile by user id.
+ * Used for partner visibility after an accepted Relational Handshake.
+ */
+export function useProfileByUserId(userId: string | null | undefined) {
+  const user = useAuthStore((state) => state.user);
+
+  return useQuery({
+    queryKey: profileKeys.user(userId || ''),
+    queryFn: async () => {
+      if (!userId) throw new Error('Missing user id');
+
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+
+      if (error && error.code !== 'PGRST116') {
+        throw error;
+      }
+
+      return data as ProfileData | null;
+    },
+    enabled: !!user && !!userId,
+    staleTime: 5 * 60 * 1000,
+  });
+}
+
 // ============================================================================
 // MUTATIONS
 // ============================================================================

@@ -7,6 +7,13 @@ import { usePartnerStore } from '../../store/partner-store';
 import { resetAppState } from '../../lib/reset-app-state';
 import { usePartnerLinking } from '../../features/partner/hooks/use-partner-linking';
 import { useAuthStore } from '../../store/auth-store';
+import {
+  getPartnerUserIdFromLink,
+  useActivePartner,
+  useRemovePartner,
+} from '../../lib/data/queries/use-partner';
+import { useProfileByUserId } from '../../lib/data/queries/use-profile';
+import { usePartnerProgressRealtimeSync } from '../../lib/data/queries/use-progress';
 
 const streams: { id: JourneyStream; label: string }[] = [
   { id: 'strengthen', label: 'Strengthen' },
@@ -20,9 +27,19 @@ export default function SettingsScreen() {
   const router = useRouter();
   const [isResetting, setIsResetting] = useState(false);
   const { selectedStream, selectedTranslation, setStream, setTranslation } = useUserStore();
-  const linkedPartners = usePartnerStore((state) => state.getLinkedPartners());
+  const linkedPartners = usePartnerStore((state) => state.linkedPartners);
+  const setLinkedPartners = usePartnerStore((state) => state.setLinkedPartners);
   const userId = useAuthStore((state) => state.user?.id);
   const { fetchLinkedPartners } = usePartnerLinking();
+  const { data: activePartner, isLoading: isPartnerLoading } = useActivePartner();
+  const removePartnerMutation = useRemovePartner();
+
+  const partnerUserId = getPartnerUserIdFromLink(activePartner, userId);
+  const { data: partnerProfile } = useProfileByUserId(partnerUserId);
+  const cachedPartner = linkedPartners.find((partner) => partner.partnerId === partnerUserId) || linkedPartners[0];
+  const partnerLabel = partnerProfile?.email || cachedPartner?.partnerEmail || 'Partner';
+
+  usePartnerProgressRealtimeSync(userId, partnerUserId);
 
   useFocusEffect(
     useCallback(() => {
@@ -72,6 +89,59 @@ export default function SettingsScreen() {
     );
   };
 
+  const handleOpenPartnerLinking = () => {
+    if (!userId) {
+      Alert.alert(
+        'Cloud Sync Required',
+        'Relational Handshake needs a synced account on this device before you can connect with a partner.'
+      );
+      return;
+    }
+
+    router.push('/partner-linking');
+  };
+
+  const handleUnlinkPartner = async () => {
+    if (!activePartner) {
+      return;
+    }
+
+    try {
+      await removePartnerMutation.mutateAsync(activePartner.id);
+      setLinkedPartners([]);
+      Alert.alert(
+        'Partner Unlinked',
+        'You and your partner will no longer see each other\'s shared progress until you reconnect.'
+      );
+    } catch (error) {
+      Alert.alert(
+        'Unlink failed',
+        'Unable to remove this partner connection right now. Please try again.'
+      );
+    }
+  };
+
+  const confirmUnlinkPartner = () => {
+    if (!activePartner || removePartnerMutation.isPending) {
+      return;
+    }
+
+    Alert.alert(
+      'Unlink partner?',
+      'This will stop both of you from seeing each other\'s shared progress until one of you reconnects with a new code.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Unlink',
+          style: 'destructive',
+          onPress: () => {
+            void handleUnlinkPartner();
+          },
+        },
+      ]
+    );
+  };
+
   return (
     <ScrollView className="flex-1 bg-cream p-6">
       <View className="mt-14 mb-8">
@@ -115,16 +185,65 @@ export default function SettingsScreen() {
       <View className="mb-12">
         <Text className="text-lg font-bold text-charcoal mb-4">Partner Connection</Text>
         <Pressable
-          onPress={() => router.push('/partner-linking')}
+          onPress={handleOpenPartnerLinking}
           className="p-5 rounded-[20px] border-2 border-rose bg-rose-light/30"
         >
           <Text className="text-wine font-bold mb-1">Relational Handshake</Text>
           <Text className="text-charcoal/60 text-sm">
-            {linkedPartners.length > 0
+            {activePartner
+              ? `Linked with ${partnerLabel}`
+              : linkedPartners.length > 0
               ? `${linkedPartners.length} partner(s) linked`
               : 'Link your journey with a partner'}
           </Text>
         </Pressable>
+
+        {activePartner && (
+          <View className="mt-4 p-5 rounded-[20px] border border-cream-dark bg-white">
+            <View className="flex-row items-start justify-between gap-3">
+              <View className="flex-1">
+                <Text className="text-charcoal font-bold mb-1">{partnerLabel}</Text>
+                <Text className="text-charcoal/60 text-sm">
+                  {partnerProfile?.current_day
+                    ? `Currently on Day ${partnerProfile.current_day}`
+                    : 'Partner journey details appear after their next sync'}
+                </Text>
+                <Text className="text-charcoal/40 text-xs mt-2">
+                  {activePartner.accepted_at
+                    ? `Linked since ${new Date(activePartner.accepted_at).toLocaleDateString()}`
+                    : 'Link accepted'}
+                </Text>
+              </View>
+
+              <View className={`px-3 py-1 rounded-full ${isPartnerLoading ? 'bg-cream-dark' : 'bg-mint'}`}>
+                <Text className={`text-xs font-bold ${isPartnerLoading ? 'text-charcoal/50' : 'text-wine'}`}>
+                  {isPartnerLoading ? 'Checking' : 'Connected'}
+                </Text>
+              </View>
+            </View>
+
+            <View className="flex-row gap-3 mt-4">
+              <Pressable
+                onPress={handleOpenPartnerLinking}
+                className="flex-1 bg-parchment border border-cream-dark px-4 py-3 rounded-full"
+              >
+                <Text className="text-charcoal font-semibold text-center">Manage</Text>
+              </Pressable>
+
+              <Pressable
+                onPress={confirmUnlinkPartner}
+                disabled={removePartnerMutation.isPending}
+                className={`flex-1 px-4 py-3 rounded-full ${
+                  removePartnerMutation.isPending ? 'bg-cream-dark' : 'bg-rose-dark'
+                }`}
+              >
+                <Text className="text-white font-semibold text-center">
+                  {removePartnerMutation.isPending ? 'Unlinking...' : 'Unlink Partner'}
+                </Text>
+              </Pressable>
+            </View>
+          </View>
+        )}
       </View>
 
       <View className="mb-12">

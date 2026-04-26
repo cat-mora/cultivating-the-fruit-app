@@ -1,4 +1,5 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { QueryClientProvider } from '@tanstack/react-query';
 import { DarkTheme, DefaultTheme, ThemeProvider, Theme } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { Stack, Redirect, usePathname } from 'expo-router';
@@ -17,6 +18,7 @@ if (Platform.OS === 'web') {
 
 import { useUserStore } from '../store/user-store';
 import { initializeAuth } from '../store/auth-store';
+import { queryClient } from '../lib/data/query-client';
 import { logFeatureFlags } from '../lib/feature-flags';
 import { startBackgroundSync } from '../lib/data/sync-service';
 import { promptMigrationIfNeeded } from '../lib/migration/migrate-to-supabase';
@@ -147,32 +149,34 @@ function RootLayoutNav() {
     !(pathname === '/' && hasOnboarded === false);
 
   return (
-    <>
-      {showWebLogoBanner && (
-        <div className="logo-banner">
-          <img
-            src={getWebAssetUri(logoImage)}
-            alt="Cultivating the Fruits - Love Renewed Through Daily Action"
-          />
-        </div>
-      )}
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : LogoTheme}>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="onboarding" options={{ headerShown: false }} />
-          <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
-          <Stack.Screen
-            name="partner-linking"
-            options={{
-              title: 'Relational Handshake',
-              headerBackTitle: 'Settings',
-            }}
-          />
-        </Stack>
-        {hasOnboarded === false && <Redirect href="/onboarding" />}
+    <QueryClientProvider client={queryClient}>
+      <>
+        {showWebLogoBanner && (
+          <div className="logo-banner">
+            <img
+              src={getWebAssetUri(logoImage)}
+              alt="Cultivating the Fruits - Love Renewed Through Daily Action"
+            />
+          </div>
+        )}
+        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : LogoTheme}>
+          <Stack>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="onboarding" options={{ headerShown: false }} />
+            <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+            <Stack.Screen
+              name="partner-linking"
+              options={{
+                title: 'Relational Handshake',
+                headerBackTitle: 'Settings',
+              }}
+            />
+          </Stack>
+          {hasOnboarded === false && <Redirect href="/onboarding" />}
 
-        <PWAInstallPrompt />
-      </ThemeProvider>
-    </>
+          <PWAInstallPrompt />
+        </ThemeProvider>
+      </>
+    </QueryClientProvider>
   );
 }
