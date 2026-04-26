@@ -188,18 +188,8 @@ function RootLayoutNav() {
             />
           </Stack>
 
-          {/* Authentication Guard */}
-          {!isAuthenticated && !isPublicRoute && Platform.OS === 'web' && (
-            <Redirect href="/auth/sign-in" />
-          )}
-
-          {/* Onboarding Check (for authenticated users without onboarding) */}
-          {isAuthenticated && hasOnboarded === false && !pathname?.startsWith('/onboarding') && (
-            <Redirect href="/onboarding" />
-          )}
-
-          {/* Native onboarding (no Supabase) */}
-          {Platform.OS !== 'web' && !isSupabaseEnabled && hasOnboarded === false && (
+          {/* Onboarding Check (non-web or Supabase disabled) */}
+          {Platform.OS !== 'web' && hasOnboarded === false && !pathname?.startsWith('/onboarding') && (
             <Redirect href="/onboarding" />
           )}
 
