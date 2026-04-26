@@ -76,28 +76,23 @@ export default function SettingsScreen() {
   };
 
   const handleLogout = async () => {
-    Alert.alert(
-      'Log Out',
-      'Are you sure you want to log out? Your data will remain saved and you can log back in anytime.',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Log Out',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await signOut();
-              router.replace('/(web)/auth/sign-in');
-            } catch (error) {
-              Alert.alert(
-                'Logout failed',
-                'Unable to log out right now. Please try again.'
-              );
-            }
-          },
-        },
-      ]
-    );
+    const confirmed = typeof window !== 'undefined'
+      ? window.confirm('Are you sure you want to log out? Your data will remain saved and you can log back in anytime.')
+      : true;
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      await signOut();
+      router.replace('/(web)/auth/sign-in');
+    } catch (error) {
+      console.error('Logout error:', error);
+      if (typeof window !== 'undefined') {
+        window.alert('Unable to log out right now. Please try again.');
+      }
+    }
   };
 
   return (
