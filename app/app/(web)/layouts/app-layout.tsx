@@ -1,6 +1,6 @@
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
-import { useAuthStore } from '../../../store/auth-store';
-import { signOut } from '../../../lib/auth/auth-service';
+import { useAuthStore } from '@/store/auth-store';
+import { signOut } from '@/lib/auth/auth-service';
 
 /**
  * App Layout

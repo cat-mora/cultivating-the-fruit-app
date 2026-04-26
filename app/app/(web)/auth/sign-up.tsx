@@ -1,7 +1,7 @@
 import { useState, FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { signUpWithEmail } from '../../../lib/auth/auth-service';
-import { validateSignupInvite, markInviteAsUsed } from '../../../lib/admin/admin-service';
+import { signUpWithEmail } from '@/lib/auth/auth-service';
+import { validateSignupInvite, markInviteAsUsed } from '@/lib/admin/admin-service';
 
 /**
  * Sign Up Page

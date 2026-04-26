@@ -6,9 +6,9 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
-import { getCurrentUser } from '../../../lib/supabase/config';
-import { isAdmin } from '../../../lib/admin/admin-service';
-import InviteCodeManager from '../../../features/admin/components/invite-code-manager';
+import { getCurrentUser } from '@/lib/supabase/config';
+import { isAdmin } from '@/lib/admin/admin-service';
+import InviteCodeManager from '@/features/admin/components/invite-code-manager';
 
 export default function AdminPage() {
   const router = useRouter();
