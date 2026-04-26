@@ -8,9 +8,12 @@ coverage/
 
 # Production builds
 dist/
+dist-sanity/
 build/
 *.tgz
 web-bundles/
+.vercel/
+.temp-backup/
 
 # Expo
 .expo/
