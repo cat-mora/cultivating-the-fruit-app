@@ -47,11 +47,12 @@ export const useAuthStore = create<AuthState>((set) => ({
       // Import supabase client dynamically to avoid circular dependencies
       const { supabase } = await import('../lib/supabase/config');
 
-      // Sign out from Supabase
-      const { error } = await supabase.auth.signOut();
-
-      if (error) {
-        throw error;
+      // Try to sign out from Supabase (may not have a session on native)
+      try {
+        await supabase.auth.signOut();
+      } catch (supabaseError) {
+        // Ignore Supabase signout errors (e.g., no session on native)
+        console.log('Supabase signout skipped:', supabaseError);
       }
 
       // Clear local state
