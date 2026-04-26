@@ -148,7 +148,12 @@ function RootLayoutNav() {
   const isLoading = useAuthStore((state) => state.isLoading);
 
   // Check if user is on an auth page (sign-in, sign-up, etc.)
-  const isAuthPage = pathname?.startsWith('/(web)/auth') || pathname?.includes('/auth/');
+  const isAuthPage = pathname?.includes('/auth/') || pathname?.includes('sign-in') || pathname?.includes('sign-up');
+
+  // Debug logging (remove after fixing)
+  if (typeof window !== 'undefined') {
+    console.log('🔍 Auth Debug:', { pathname, isAuthPage, session: !!session, isLoading, hasOnboarded });
+  }
 
   const showWebLogoBanner =
     Platform.OS === 'web' &&
@@ -182,10 +187,14 @@ function RootLayoutNav() {
           </Stack>
 
           {/* Authentication Check - Redirect to sign-in if not authenticated */}
-          {!isLoading && !session && !isAuthPage && <Redirect href="/(web)/auth/sign-in" />}
+          {!isLoading && !session && !isAuthPage && pathname !== null && (
+            <Redirect href="/(web)/auth/sign-in" />
+          )}
 
           {/* Onboarding Check - Only if authenticated */}
-          {!isLoading && session && hasOnboarded === false && !isAuthPage && <Redirect href="/onboarding" />}
+          {!isLoading && session && hasOnboarded === false && !isAuthPage && pathname !== '/onboarding' && (
+            <Redirect href="/onboarding" />
+          )}
 
           <PWAInstallPrompt />
         </ThemeProvider>
