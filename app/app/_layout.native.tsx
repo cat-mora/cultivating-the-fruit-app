@@ -150,9 +150,19 @@ function RootLayoutNav() {
   // Check if user is on an auth page (sign-in, sign-up, etc.)
   const isAuthPage = pathname?.includes('/auth/') || pathname?.includes('sign-in') || pathname?.includes('sign-up');
 
-  // Debug logging (remove after fixing)
+  // Determine if we should redirect to auth
+  const shouldRedirectToAuth = !isLoading && !session && !isAuthPage && pathname !== null && pathname !== '/(web)/auth/sign-in';
+
+  // Debug logging
   if (typeof window !== 'undefined') {
-    console.log('🔍 Auth Debug:', { pathname, isAuthPage, session: !!session, isLoading, hasOnboarded });
+    console.log('🔍 Auth Debug:', {
+      pathname,
+      isAuthPage,
+      session: !!session,
+      isLoading,
+      hasOnboarded,
+      shouldRedirectToAuth
+    });
   }
 
   const showWebLogoBanner =
@@ -187,11 +197,9 @@ function RootLayoutNav() {
           </Stack>
 
           {/* Authentication Check - Redirect to sign-in if not authenticated */}
-          {/* TEMPORARILY DISABLED FOR DEBUGGING
-          {!isLoading && !session && !isAuthPage && pathname !== null && (
+          {shouldRedirectToAuth && (
             <Redirect href="/(web)/auth/sign-in" />
           )}
-          */}
 
           {/* Onboarding Check - Only if authenticated */}
           {!isLoading && session && hasOnboarded === false && !isAuthPage && pathname !== '/onboarding' && (
