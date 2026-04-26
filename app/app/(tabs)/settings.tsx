@@ -7,6 +7,7 @@ import { usePartnerStore } from '../../store/partner-store';
 import { resetAppState } from '../../lib/reset-app-state';
 import { getCurrentUser } from '../../lib/supabase/config';
 import { isAdmin } from '../../lib/admin/admin-service';
+import { signOut } from '../../lib/auth/auth-service';
 
 const streams: { id: JourneyStream; label: string }[] = [
   { id: 'strengthen', label: 'Strengthen' },
@@ -69,6 +70,31 @@ export default function SettingsScreen() {
           style: 'destructive',
           onPress: () => {
             void handleStartOver();
+          },
+        },
+      ]
+    );
+  };
+
+  const handleLogout = async () => {
+    Alert.alert(
+      'Log Out',
+      'Are you sure you want to log out? Your data will remain saved and you can log back in anytime.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Log Out',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await signOut();
+              router.replace('/onboarding');
+            } catch (error) {
+              Alert.alert(
+                'Logout failed',
+                'Unable to log out right now. Please try again.'
+              );
+            }
           },
         },
       ]
@@ -144,6 +170,19 @@ export default function SettingsScreen() {
           </Pressable>
         </View>
       )}
+
+      <View className="mb-12">
+        <Text className="text-lg font-bold text-charcoal mb-4">Account</Text>
+        <Pressable
+          onPress={handleLogout}
+          className="p-5 rounded-[20px] border-2 border-wine bg-wine/10"
+        >
+          <Text className="text-wine font-bold mb-1">Log Out</Text>
+          <Text className="text-charcoal/60 text-sm">
+            Sign out of your account. Your data will remain saved.
+          </Text>
+        </Pressable>
+      </View>
 
       <View className="mb-12">
         <Text className="text-lg font-bold text-charcoal mb-4">Reset App</Text>
