@@ -17,12 +17,13 @@ if (Platform.OS === 'web') {
 }
 
 import { useUserStore } from '../store/user-store';
-import { initializeAuth } from '../store/auth-store';
+import { initializeAuth, useAuthStore } from '../store/auth-store';
 import { queryClient } from '../lib/data/query-client';
 import { logFeatureFlags } from '../lib/feature-flags';
 import { startBackgroundSync } from '../lib/data/sync-service';
 import { promptMigrationIfNeeded } from '../lib/migration/migrate-to-supabase';
 import { PWAInstallPrompt } from '../components/pwa-install-prompt';
+import { isSupabaseEnabled } from '../lib/supabase/config';
 
 import { useColorScheme } from '@/components/useColorScheme';
 
@@ -143,9 +144,23 @@ function RootLayoutNav() {
   const colorScheme = useColorScheme();
   const pathname = usePathname();
   const hasOnboarded = useUserStore((state) => state.hasOnboarded);
+  const session = useAuthStore((state) => state.session);
+
+  // Determine if user is authenticated
+  // For web with Supabase: check session
+  // For native or Supabase disabled: check onboarding status (local auth)
+  const isAuthenticated = Platform.OS === 'web' && isSupabaseEnabled
+    ? !!session
+    : hasOnboarded;
+
+  // Public routes that don't require authentication
+  const publicRoutes = ['/auth/sign-in', '/auth/sign-up', '/onboarding'];
+  const isPublicRoute = publicRoutes.some(route => pathname?.startsWith(route));
+
   const showWebLogoBanner =
     Platform.OS === 'web' &&
     pathname !== '/onboarding' &&
+    !pathname?.startsWith('/auth/') &&
     !(pathname === '/' && hasOnboarded === false);
 
   return (
@@ -162,6 +177,10 @@ function RootLayoutNav() {
         <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : LogoTheme}>
           <Stack>
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="(web)/auth/sign-in" options={{ headerShown: false }} />
+            <Stack.Screen name="(web)/auth/sign-up" options={{ headerShown: false }} />
+            <Stack.Screen name="(web)/dashboard" options={{ headerShown: false }} />
+            <Stack.Screen name="(web)/admin" options={{ headerShown: false }} />
             <Stack.Screen name="onboarding" options={{ headerShown: false }} />
             <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
             <Stack.Screen
@@ -172,7 +191,21 @@ function RootLayoutNav() {
               }}
             />
           </Stack>
-          {hasOnboarded === false && <Redirect href="/onboarding" />}
+
+          {/* Authentication Guard */}
+          {!isAuthenticated && !isPublicRoute && Platform.OS === 'web' && (
+            <Redirect href="/auth/sign-in" />
+          )}
+
+          {/* Onboarding Check (for authenticated users without onboarding) */}
+          {isAuthenticated && hasOnboarded === false && !pathname?.startsWith('/onboarding') && (
+            <Redirect href="/onboarding" />
+          )}
+
+          {/* Native onboarding (no Supabase) */}
+          {Platform.OS !== 'web' && !isSupabaseEnabled && hasOnboarded === false && (
+            <Redirect href="/onboarding" />
+          )}
 
           <PWAInstallPrompt />
         </ThemeProvider>
