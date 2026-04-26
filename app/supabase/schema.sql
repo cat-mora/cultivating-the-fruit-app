@@ -13,6 +13,7 @@ CREATE TABLE profiles (
   stream TEXT NOT NULL CHECK (stream IN ('strengthen', 'repair', 'family')),
   translation TEXT NOT NULL CHECK (translation IN ('NIV', 'ESV', 'KJV', 'NLT', 'NKJV')),
   onboarding_date TIMESTAMPTZ NOT NULL,
+  current_day INTEGER NOT NULL DEFAULT 1 CHECK (current_day >= 1),
   device_id TEXT, -- For native anonymous auth
   email TEXT, -- For web auth or linked accounts
   created_at TIMESTAMPTZ DEFAULT NOW(),
@@ -52,7 +53,7 @@ CREATE TABLE fruit_progress (
   completed_at TIMESTAMPTZ,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW(),
-  UNIQUE(user_id, fruit_type, entry_date)
+  UNIQUE(user_id, fruit_type, day_number)
 );
 
 -- Create index for efficient fruit progress queries

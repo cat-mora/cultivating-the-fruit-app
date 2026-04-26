@@ -27,6 +27,7 @@ export type ProfileData = {
   stream: 'strengthen' | 'repair' | 'family';
   translation: 'NIV' | 'ESV' | 'KJV' | 'NLT' | 'NKJV';
   onboarding_date: string;
+  current_day: number;
   device_id: string | null;
   email: string | null;
   created_at: string;
@@ -82,6 +83,7 @@ export function useUpdateProfile() {
       stream: ProfileData['stream'];
       translation: ProfileData['translation'];
       onboarding_date: string;
+      current_day?: number;
       device_id?: string | null;
       email?: string | null;
     }) => {

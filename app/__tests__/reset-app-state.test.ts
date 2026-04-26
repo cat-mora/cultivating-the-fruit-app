@@ -34,6 +34,10 @@ describe('resetAppState', () => {
     fruitProgress.set('love', {
       ...currentLoveProgress!,
       completedDays: [1, 2],
+      completedDayDates: {
+        1: '2026-04-10',
+        2: '2026-04-11',
+      },
       firstCompletedDate: '2026-04-10T00:00:00.000Z',
       lastCompletedDate: '2026-04-11T00:00:00.000Z',
     });
@@ -44,6 +48,7 @@ describe('resetAppState', () => {
         selectedStream: 'repair',
         selectedTranslation: 'KJV',
         onboardingDate: '2026-04-01',
+        currentDay: 9,
       });
 
       usePartnerStore.setState({
@@ -102,6 +107,7 @@ describe('resetAppState', () => {
       selectedStream: null,
       selectedTranslation: 'NIV',
       onboardingDate: null,
+      currentDay: 1,
     });
 
     expect(usePartnerStore.getState()).toMatchObject({
@@ -120,6 +126,7 @@ describe('resetAppState', () => {
       completedDates: [],
     });
     expect(useProgressStore.getState().fruitProgress.get('love')?.completedDays).toEqual([]);
+    expect(useProgressStore.getState().fruitProgress.get('love')?.completedDayDates).toEqual({});
   });
 
   it('still resets local state when sign out throws', async () => {

@@ -20,7 +20,7 @@ export interface PartnerJoinResult {
  * Web: Generates shareable URL from same code
  */
 export function usePartnerLinking() {
-  const { setInviteCode, addPartner } = usePartnerStore();
+  const { setInviteCode, addPartner, setLinkedPartners } = usePartnerStore();
   const [isLoading, setIsLoading] = useState(false);
 
   /**
@@ -166,6 +166,10 @@ export function usePartnerLinking() {
           (data || []).map(async (link) => {
             const partnerId = link.creator_id === userId ? link.partner_id : link.creator_id;
 
+            if (!partnerId) {
+              return null;
+            }
+
             // Fetch partner email from profiles
             const { data: partnerProfile } = await supabase
               .from('profiles')
@@ -182,13 +186,18 @@ export function usePartnerLinking() {
           })
         );
 
-        return { data: partners, error: null };
+        const hydratedPartners = partners.filter(
+          (partner): partner is NonNullable<typeof partner> => partner !== null
+        );
+        setLinkedPartners(hydratedPartners);
+
+        return { data: hydratedPartners, error: null };
       } catch (err) {
         const errorMsg = err instanceof Error ? err.message : 'Failed to fetch partners';
         return { data: null, error: errorMsg };
       }
     },
-    []
+    [setLinkedPartners]
   );
 
   return {

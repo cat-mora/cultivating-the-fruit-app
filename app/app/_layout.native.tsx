@@ -3,7 +3,7 @@ import { DarkTheme, DefaultTheme, ThemeProvider, Theme } from '@react-navigation
 import { useFonts } from 'expo-font';
 import { Stack, Redirect, usePathname } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Platform } from 'react-native';
 import 'react-native-reanimated';
 
@@ -20,6 +20,7 @@ import { initializeAuth } from '../store/auth-store';
 import { logFeatureFlags } from '../lib/feature-flags';
 import { startBackgroundSync } from '../lib/data/sync-service';
 import { promptMigrationIfNeeded } from '../lib/migration/migrate-to-supabase';
+import { PWAInstallPrompt } from '../components/pwa-install-prompt';
 
 import { useColorScheme } from '@/components/useColorScheme';
 
@@ -169,6 +170,8 @@ function RootLayoutNav() {
           />
         </Stack>
         {hasOnboarded === false && <Redirect href="/onboarding" />}
+
+        <PWAInstallPrompt />
       </ThemeProvider>
     </>
   );

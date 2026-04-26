@@ -1,9 +1,12 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Text, View, Pressable, ScrollView, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useFocusEffect } from '@react-navigation/native';
 import { useUserStore, JourneyStream, BibleTranslation } from '../../store/user-store';
 import { usePartnerStore } from '../../store/partner-store';
 import { resetAppState } from '../../lib/reset-app-state';
+import { usePartnerLinking } from '../../features/partner/hooks/use-partner-linking';
+import { useAuthStore } from '../../store/auth-store';
 
 const streams: { id: JourneyStream; label: string }[] = [
   { id: 'strengthen', label: 'Strengthen' },
@@ -18,6 +21,20 @@ export default function SettingsScreen() {
   const [isResetting, setIsResetting] = useState(false);
   const { selectedStream, selectedTranslation, setStream, setTranslation } = useUserStore();
   const linkedPartners = usePartnerStore((state) => state.getLinkedPartners());
+  const userId = useAuthStore((state) => state.user?.id);
+  const { fetchLinkedPartners } = usePartnerLinking();
+
+  useFocusEffect(
+    useCallback(() => {
+      if (!userId) {
+        return undefined;
+      }
+
+      void fetchLinkedPartners(userId);
+
+      return undefined;
+    }, [fetchLinkedPartners, userId])
+  );
 
   const handleStartOver = async () => {
     try {
