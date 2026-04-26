@@ -3,44 +3,18 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { syncProgress, syncFruitProgress } from '../lib/data/sync-service';
 import { Platform } from 'react-native';
-import { JOURNEY_CONTENT } from '../features/content/data/journey-content';
+import {
+  CANONICAL_FRUITS,
+  CanonicalFruit,
+  getFruitOccurrencesForStream,
+} from '../features/content/utils/journey-metrics';
 
-export type FruitType =
-  | 'love' | 'joy' | 'peace' | 'patience' | 'kindness'
-  | 'goodness' | 'faithfulness' | 'gentleness' | 'self-control';
-
-/**
- * Calculate how many times each fruit appears in the content
- * This ensures we mark fruits as complete based on actual occurrences
- */
-const calculateFruitOccurrences = (): Map<FruitType, number> => {
-  const occurrences = new Map<FruitType, number>();
-
-  // Count occurrences across all streams
-  Object.values(JOURNEY_CONTENT).forEach(stream => {
-    stream.forEach(day => {
-      // Normalize fruit names to match FruitType enum (lowercase and replace spaces with hyphens)
-      const normalizedFruit = day.fruit_theme.toLowerCase().replace(/\s+/g, '-');
-
-      // Only count fruits that match our FruitType enum
-      const validFruits: FruitType[] = ['love', 'joy', 'peace', 'patience', 'kindness', 'goodness', 'faithfulness', 'gentleness', 'self-control'];
-
-      if (validFruits.includes(normalizedFruit as FruitType)) {
-        const fruit = normalizedFruit as FruitType;
-        occurrences.set(fruit, (occurrences.get(fruit) || 0) + 1);
-      }
-      // Skip non-standard fruits like 'Admiration', 'Unity', etc.
-    });
-  });
-
-  return occurrences;
-};
-
-const FRUIT_OCCURRENCES = calculateFruitOccurrences();
+export type FruitType = CanonicalFruit;
 
 export interface FruitProgress {
   fruitTheme: FruitType;
   completedDays: number[];
+  completedDayDates: Record<number, string>;
   isCompleted: boolean;
   firstCompletedDate: string;
   lastCompletedDate: string;
@@ -60,7 +34,12 @@ interface ProgressState {
 
   // Actions
   incrementStreak: (today: string) => void;
-  updateFruitProgress: (fruit: FruitType, dayNumber: number) => void;
+  updateFruitProgress: (
+    fruit: FruitType,
+    dayNumber: number,
+    entryDate: string,
+    stream?: string | null
+  ) => void;
   recordActivityCompletion: (date: string) => void;
   getStreakStatus: () => StreakData;
   getFruitProgress: (fruit: FruitType) => FruitProgress | undefined;
@@ -76,27 +55,28 @@ const defaultStreakData: StreakData = {
   completedDates: [],
 };
 
-const defaultFruits: FruitType[] = [
-  'love', 'joy', 'peace', 'patience', 'kindness',
-  'goodness', 'faithfulness', 'gentleness', 'self-control',
-];
+const defaultFruits: FruitType[] = [...CANONICAL_FRUITS];
+
+const createDefaultFruitProgress = (): Map<FruitType, FruitProgress> =>
+  new Map<FruitType, FruitProgress>(
+    defaultFruits.map((fruit) => [
+      fruit,
+      {
+        fruitTheme: fruit,
+        completedDays: [],
+        completedDayDates: {},
+        isCompleted: false,
+        firstCompletedDate: '',
+        lastCompletedDate: '',
+      },
+    ])
+  );
 
 export const useProgressStore = create<ProgressState>()(
   persist(
     (set, get) => ({
       streakData: defaultStreakData,
-      fruitProgress: new Map(
-        defaultFruits.map(fruit => [
-          fruit,
-          {
-            fruitTheme: fruit,
-            completedDays: [],
-            isCompleted: false,
-            firstCompletedDate: '',
-            lastCompletedDate: '',
-          },
-        ])
-      ),
+      fruitProgress: createDefaultFruitProgress(),
 
       incrementStreak: (today: string) => {
         set((state) => {
@@ -152,38 +132,46 @@ export const useProgressStore = create<ProgressState>()(
         // Native: background sync will handle it
       },
 
-      updateFruitProgress: (fruit: FruitType, dayNumber: number) => {
+      updateFruitProgress: (
+        fruit: FruitType,
+        dayNumber: number,
+        entryDate: string,
+        stream?: string | null
+      ) => {
         set((state) => {
           const fruitMap = new Map(state.fruitProgress);
+          const completionTarget = getFruitOccurrencesForStream(stream).get(fruit) || 1;
+          const completedAt = new Date().toISOString();
           const current = fruitMap.get(fruit) || {
             fruitTheme: fruit,
             completedDays: [],
+            completedDayDates: {},
             isCompleted: false,
             firstCompletedDate: '',
             lastCompletedDate: '',
           };
 
           if (!current.completedDays.includes(dayNumber)) {
-            current.completedDays.push(dayNumber);
-            current.completedDays.sort((a, b) => a - b);
-            current.lastCompletedDate = new Date().toISOString();
+            const nextCompletedDays = [...current.completedDays, dayNumber].sort((a, b) => a - b);
 
             if (!current.firstCompletedDate) {
-              current.firstCompletedDate = new Date().toISOString();
+              current.firstCompletedDate = completedAt;
             }
 
-            // Check if fruit is completed based on actual occurrences in content
-            // Mark as complete when user has finished 80% of that fruit's days
-            const totalOccurrences = FRUIT_OCCURRENCES.get(fruit) || 0;
-            const completionThreshold = Math.ceil(totalOccurrences * 0.8);
-
-            if (current.completedDays.length >= completionThreshold) {
-              current.isCompleted = true;
-            }
+            fruitMap.set(fruit, {
+              ...current,
+              completedDays: nextCompletedDays,
+              completedDayDates: {
+                ...current.completedDayDates,
+                [dayNumber]: entryDate,
+              },
+              lastCompletedDate: completedAt,
+              isCompleted: nextCompletedDays.length >= completionTarget,
+            });
+            return { fruitProgress: fruitMap };
           }
 
-          fruitMap.set(fruit, current);
-          return { fruitProgress: fruitMap };
+          return state;
         });
 
         // Sync to Supabase after state update
@@ -217,10 +205,10 @@ export const useProgressStore = create<ProgressState>()(
           });
 
           // Sync fruit progress
-          const fruitProgressArray = Array.from(state.fruitProgress.values()).flatMap(fruit => {
-            return fruit.completedDays.map(day => ({
+          const fruitProgressArray = Array.from(state.fruitProgress.values()).flatMap((fruit) => {
+            return fruit.completedDays.map((day) => ({
               fruit_type: fruit.fruitTheme,
-              entry_date: new Date().toISOString().split('T')[0], // TODO: Use actual date from day number
+              entry_date: fruit.completedDayDates[day] || state.streakData.lastCompletedDate || new Date().toISOString().split('T')[0],
               day_number: day,
               completed: true,
               completed_at: fruit.lastCompletedDate,
@@ -249,9 +237,25 @@ export const useProgressStore = create<ProgressState>()(
           typeof persistedState === 'object' &&
           'fruitProgress' in persistedState
         ) {
-          const fruitMap = new Map<FruitType, FruitProgress>(
-            (persistedState as any).fruitProgress || []
+          const fruitMap = createDefaultFruitProgress();
+
+          ((persistedState as any).fruitProgress || []).forEach(
+            ([fruitKey, fruitData]: [FruitType, Partial<FruitProgress>]) => {
+              const existing = fruitMap.get(fruitKey);
+
+              if (!existing) {
+                return;
+              }
+
+              fruitMap.set(fruitKey, {
+                ...existing,
+                ...fruitData,
+                completedDays: (fruitData.completedDays as number[] | undefined) || [],
+                completedDayDates: (fruitData.completedDayDates as Record<number, string> | undefined) || {},
+              });
+            }
           );
+
           return {
             ...currentState,
             ...persistedState,

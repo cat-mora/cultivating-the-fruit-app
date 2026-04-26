@@ -81,6 +81,7 @@ async function migrateUserProfile(): Promise<boolean> {
       stream: state.selectedStream,
       translation: state.selectedTranslation || 'NIV',
       onboarding_date: state.onboardingDate,
+      current_day: state.currentDay || 1,
       device_id: Platform.OS !== 'web' ? 'migrated-device' : null,
       email: user.email || null,
     });

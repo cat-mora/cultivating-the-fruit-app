@@ -36,8 +36,8 @@ export async function syncUserProfile(userId: string, profileData: {
   translation: 'NIV' | 'ESV' | 'KJV' | 'NLT' | 'NKJV';
   onboarding_date: string;
   current_day?: number; // Current day in the journey (activity-based progression)
-  device_id?: string;
-  email?: string;
+  device_id?: string | null;
+  email?: string | null;
 }) {
   if (!isSyncEnabled()) {
     if (isDebugMode()) console.log('[Sync] Sync disabled, skipping user profile sync');
@@ -147,7 +147,7 @@ export async function syncFruitProgress(fruitProgressData: Array<{
     const { error } = await supabase
       .from('fruit_progress')
       .upsert(records, {
-        onConflict: 'user_id,fruit_type,entry_date',
+        onConflict: 'user_id,fruit_type,day_number',
       });
 
     if (error) {

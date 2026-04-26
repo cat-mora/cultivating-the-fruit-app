@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { act } from 'react-test-renderer';
 
 import { APP_STORAGE_KEYS, resetAppState } from '../lib/reset-app-state';
-import { supabase } from '../lib/supabase/config';
+import { supabase } from '../lib/supabase-client';
 import { useJournalStore } from '../store/journal-store';
 import { usePartnerStore } from '../store/partner-store';
 import { useProgressStore } from '../store/progress-store';
@@ -15,13 +15,22 @@ jest.mock('@react-native-async-storage/async-storage', () => ({
   multiRemove: jest.fn(() => Promise.resolve()),
 }));
 
-jest.mock('../lib/supabase/config', () => ({
+jest.mock('../lib/supabase-client', () => ({
   supabase: {
     auth: {
       signOut: jest.fn(() => Promise.resolve({ error: null })),
     },
   },
-  isSupabaseEnabled: true,
+}));
+
+jest.mock('../lib/supabase/config', () => ({
+  supabase: {
+    auth: {
+      getUser: jest.fn(() => Promise.resolve({ data: { user: null } })),
+      signOut: jest.fn(() => Promise.resolve({ error: null })),
+    },
+  },
+  isSupabaseEnabled: false,
 }));
 
 describe('resetAppState', () => {
@@ -34,6 +43,10 @@ describe('resetAppState', () => {
     fruitProgress.set('love', {
       ...currentLoveProgress!,
       completedDays: [1, 2],
+      completedDayDates: {
+        1: '2026-04-10',
+        2: '2026-04-11',
+      },
       firstCompletedDate: '2026-04-10T00:00:00.000Z',
       lastCompletedDate: '2026-04-11T00:00:00.000Z',
     });
@@ -44,6 +57,7 @@ describe('resetAppState', () => {
         selectedStream: 'repair',
         selectedTranslation: 'KJV',
         onboardingDate: '2026-04-01',
+        currentDay: 9,
       });
 
       usePartnerStore.setState({
@@ -102,6 +116,7 @@ describe('resetAppState', () => {
       selectedStream: null,
       selectedTranslation: 'NIV',
       onboardingDate: null,
+      currentDay: 1,
     });
 
     expect(usePartnerStore.getState()).toMatchObject({
@@ -120,6 +135,7 @@ describe('resetAppState', () => {
       completedDates: [],
     });
     expect(useProgressStore.getState().fruitProgress.get('love')?.completedDays).toEqual([]);
+    expect(useProgressStore.getState().fruitProgress.get('love')?.completedDayDates).toEqual({});
   });
 
   it('still resets local state when sign out throws', async () => {

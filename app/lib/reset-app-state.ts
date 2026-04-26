@@ -40,6 +40,7 @@ const createDefaultFruitProgress = () =>
       {
         fruitTheme: fruit,
         completedDays: [],
+        completedDayDates: {},
         isCompleted: false,
         firstCompletedDate: '',
         lastCompletedDate: '',
@@ -68,6 +69,7 @@ export async function resetAppState() {
     selectedStream: null,
     selectedTranslation: 'NIV',
     onboardingDate: null,
+    currentDay: 1,
   });
 
   usePartnerStore.setState({

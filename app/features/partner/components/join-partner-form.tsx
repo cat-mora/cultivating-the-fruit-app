@@ -53,11 +53,16 @@ export function JoinPartnerForm({ userId, onPartnerJoined }: JoinPartnerFormProp
           <TextInput
             value={inviteCode}
             onChangeText={(text) => {
-              setInviteCode(text.toUpperCase());
+              setInviteCode(
+                text
+                  .toUpperCase()
+                  .replace(/[^A-Z0-9]/g, '')
+                  .slice(0, 6)
+              );
               setError(null);
             }}
             placeholder="Enter 6-character code"
-            maxLength={8}
+            maxLength={6}
             placeholderTextColor="#C2B9A7"
             className={`px-4 py-3 border-2 rounded-[12px] font-semibold text-center ${
               error ? 'border-terracotta bg-terracotta/5' : 'border-cream-dark bg-white'

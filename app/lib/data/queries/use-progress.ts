@@ -197,7 +197,7 @@ export function useCompleteActivity() {
           completed: true,
           completed_at: new Date().toISOString(),
         }, {
-          onConflict: 'user_id,fruit_type,entry_date',
+          onConflict: 'user_id,fruit_type,day_number',
         })
         .select()
         .single();

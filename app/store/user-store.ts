@@ -3,6 +3,7 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { syncUserProfile } from '../lib/data/sync-service';
 import { Platform } from 'react-native';
+import { clampJourneyDay, getMaxJourneyDay } from '../features/content/utils/journey-metrics';
 
 export type JourneyStream = 'strengthen' | 'repair' | 'family';
 export type BibleTranslation = 'NIV' | 'ESV' | 'KJV' | 'NLT' | 'NKJV';
@@ -31,7 +32,11 @@ export const useUserStore = create<UserState>()(
       currentDay: 1,
 
       setStream: (stream) => {
-        set({ selectedStream: stream });
+        const currentDay = get().currentDay;
+        set({
+          selectedStream: stream,
+          currentDay: clampJourneyDay(currentDay, stream),
+        });
         // Sync to Supabase after state update
         if (Platform.OS === 'web') {
           // Web: immediate sync
@@ -62,9 +67,9 @@ export const useUserStore = create<UserState>()(
       },
 
       advanceToNextDay: () => {
-        const { currentDay } = get();
-        // Cap at 90 days (or whatever the max is for the selected stream)
-        const nextDay = Math.min(currentDay + 1, 90);
+        const { currentDay, selectedStream } = get();
+        const maxDay = getMaxJourneyDay(selectedStream);
+        const nextDay = Math.min(currentDay + 1, maxDay);
         set({ currentDay: nextDay });
         // Sync to Supabase after state update
         if (Platform.OS === 'web') {
@@ -73,8 +78,7 @@ export const useUserStore = create<UserState>()(
       },
 
       setCurrentDay: (day: number) => {
-        // Allow navigating to any day between 1 and 90
-        const validDay = Math.max(1, Math.min(day, 90));
+        const validDay = clampJourneyDay(day, get().selectedStream);
         set({ currentDay: validDay });
         // Note: We don't sync navigation to Supabase - only actual progression (advanceToNextDay)
       },

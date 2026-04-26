@@ -1,10 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Text, View, Pressable, ScrollView, Alert as RNAlert, Platform } from 'react-native';
-import { useRouter } from 'expo-router';
-import { useDailyContent } from '../../features/content/hooks/use-daily-content';
 import { useStreak } from '../../features/progress/hooks/use-streak';
 import { useUserStore } from '../../store/user-store';
-import { Activity, JOURNEY_CONTENT } from '../../features/content/data/journey-content';
+import { getJourneyContent, getMaxJourneyDay } from '../../features/content/utils/journey-metrics';
 import { Alert as WebAlert } from '../../lib/alert-web';
 
 const Alert = Platform.OS === 'web' ? WebAlert : RNAlert;
@@ -12,11 +10,9 @@ const Alert = Platform.OS === 'web' ? WebAlert : RNAlert;
 const timeTiers = [5, 15, 30, 60, 120];
 
 export default function DashboardScreen() {
-  const router = useRouter();
   const { completeActivityToday, hasCompletedToday, getStreakInfo } = useStreak();
   const advanceToNextDay = useUserStore((state) => state.advanceToNextDay);
   const currentDay = useUserStore((state) => state.currentDay); // Actual progression day
-  const setCurrentDay = useUserStore((state) => state.setCurrentDay);
   const selectedStream = useUserStore((state) => state.selectedStream);
   const selectedTranslation = useUserStore((state) => state.selectedTranslation);
 
@@ -34,13 +30,13 @@ export default function DashboardScreen() {
   const completedToday = hasCompletedToday();
 
   // Get content for the day we're viewing (not necessarily the current day)
-  const contentList = selectedStream ? JOURNEY_CONTENT[selectedStream] : null;
-  const content = contentList?.find((c) => c.day_number === viewingDay);
+  const contentList = getJourneyContent(selectedStream);
+  const content = contentList.find((c) => c.day_number === viewingDay);
   const scriptureText = content?.bible_text[selectedTranslation] || content?.bible_text['NIV'];
   const displayContent = content ? { ...content, scriptureText } : null;
 
   // Calculate max days for the selected stream
-  const maxDays = selectedStream ? contentList?.length || 90 : 90;
+  const maxDays = getMaxJourneyDay(selectedStream);
   const canGoPrev = viewingDay > 1;
   const canGoNext = viewingDay < maxDays;
   const isPreviewing = viewingDay !== currentDay;
@@ -67,7 +63,7 @@ export default function DashboardScreen() {
     try {
       setIsCompleting(true);
       await completeActivityToday(
-        displayContent.fruit_theme.toLowerCase() as any,
+        displayContent.fruit_theme,
         displayContent.day_number
       );
 

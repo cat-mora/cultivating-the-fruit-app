@@ -1,5 +1,5 @@
 import { useUserStore } from '../../../store/user-store';
-import { JOURNEY_CONTENT, DailyContent } from '../data/journey-content';
+import { getJourneyContentForDay } from '../utils/journey-metrics';
 
 /**
  * Get daily content based on activity completion, not calendar dates
@@ -10,11 +10,7 @@ export const useDailyContent = () => {
   const selectedTranslation = useUserStore((state) => state.selectedTranslation);
   const currentDay = useUserStore((state) => state.currentDay);
 
-  // Use activity-based day progression instead of calendar dates
-  const dayNumber = currentDay;
-
-  const contentList = selectedStream ? JOURNEY_CONTENT[selectedStream] : null;
-  const todayContent = contentList?.find((c) => c.day_number === dayNumber) || null;
+  const todayContent = getJourneyContentForDay(selectedStream, currentDay);
 
   if (!todayContent) return null;
 
