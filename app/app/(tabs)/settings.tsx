@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Text, View, Pressable, ScrollView, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Platform } from 'react-native';
 import { useUserStore, JourneyStream, BibleTranslation } from '../../store/user-store';
 import { usePartnerStore } from '../../store/partner-store';
 import { resetAppState } from '../../lib/reset-app-state';
@@ -156,7 +155,7 @@ export default function SettingsScreen() {
         </Pressable>
       </View>
 
-      {isUserAdmin && Platform.OS === 'web' && (
+      {isUserAdmin && (
         <View className="mb-12">
           <Text className="text-lg font-bold text-charcoal mb-4">Admin</Text>
           <Pressable

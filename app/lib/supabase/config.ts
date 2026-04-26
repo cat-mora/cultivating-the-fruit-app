@@ -1,6 +1,4 @@
 import { createClient } from '@supabase/supabase-js';
-import { Platform } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SUPABASE_URL, SUPABASE_ANON_KEY, ENABLE_SUPABASE } from '../env';
 
 // Use environment variables from centralized env module
@@ -18,53 +16,18 @@ const clientAnonKey = isSupabaseEnabled
   : 'placeholder-anon-key';
 
 /**
- * Platform-specific storage adapter for Supabase Auth
- *
- * Web: Uses localStorage (default browser storage)
- * Native: Uses AsyncStorage for React Native
- */
-const platformStorage = Platform.OS === 'web'
-  ? undefined // Use default localStorage
-  : {
-      // AsyncStorage adapter for React Native
-      getItem: async (key: string) => {
-        try {
-          return await AsyncStorage.getItem(key);
-        } catch (error) {
-          console.error('AsyncStorage getItem error:', error);
-          return null;
-        }
-      },
-      setItem: async (key: string, value: string) => {
-        try {
-          await AsyncStorage.setItem(key, value);
-        } catch (error) {
-          console.error('AsyncStorage setItem error:', error);
-        }
-      },
-      removeItem: async (key: string) => {
-        try {
-          await AsyncStorage.removeItem(key);
-        } catch (error) {
-          console.error('AsyncStorage removeItem error:', error);
-        }
-      },
-    };
-
-/**
  * Supabase client instance
  *
  * Configured with:
- * - Platform-specific auth storage
+ * - localStorage for auth storage (default web behavior)
  * - Auto refresh tokens
  * - Persistent sessions
  */
 export const supabase = createClient(clientUrl, clientAnonKey, {
   auth: {
-    storage: platformStorage,
     autoRefreshToken: true,
     persistSession: true,
-    detectSessionInUrl: Platform.OS === 'web', // Only detect session in URL on web
+    detectSessionInUrl: true,
   },
 });
 
@@ -76,22 +39,14 @@ export async function getCurrentUser() {
     return null;
   }
 
-  try {
-    const { data: { user }, error } = await supabase.auth.getUser();
+  const { data: { user }, error } = await supabase.auth.getUser();
 
-    if (error) {
-      // Don't log "session missing" errors - they're expected on native
-      if (error.message && !error.message.includes('session missing')) {
-        console.error('Error getting current user:', error);
-      }
-      return null;
-    }
-
-    return user;
-  } catch (error) {
-    // Silently handle auth errors (common on native without Supabase session)
+  if (error) {
+    console.error('Error getting current user:', error);
     return null;
   }
+
+  return user;
 }
 
 /**
@@ -102,22 +57,14 @@ export async function getCurrentSession() {
     return null;
   }
 
-  try {
-    const { data: { session }, error } = await supabase.auth.getSession();
+  const { data: { session }, error } = await supabase.auth.getSession();
 
-    if (error) {
-      // Don't log "session missing" errors - they're expected on native
-      if (error.message && !error.message.includes('session missing')) {
-        console.error('Error getting current session:', error);
-      }
-      return null;
-    }
-
-    return session;
-  } catch (error) {
-    // Silently handle auth errors (common on native without Supabase session)
+  if (error) {
+    console.error('Error getting current session:', error);
     return null;
   }
+
+  return session;
 }
 
 /**
