@@ -187,9 +187,11 @@ function RootLayoutNav() {
           </Stack>
 
           {/* Authentication Check - Redirect to sign-in if not authenticated */}
+          {/* TEMPORARILY DISABLED FOR DEBUGGING
           {!isLoading && !session && !isAuthPage && pathname !== null && (
             <Redirect href="/(web)/auth/sign-in" />
           )}
+          */}
 
           {/* Onboarding Check - Only if authenticated */}
           {!isLoading && session && hasOnboarded === false && !isAuthPage && pathname !== '/onboarding' && (
