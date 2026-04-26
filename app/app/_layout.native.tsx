@@ -177,10 +177,6 @@ function RootLayoutNav() {
         <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : LogoTheme}>
           <Stack>
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="(web)/auth/sign-in" options={{ headerShown: false }} />
-            <Stack.Screen name="(web)/auth/sign-up" options={{ headerShown: false }} />
-            <Stack.Screen name="(web)/dashboard" options={{ headerShown: false }} />
-            <Stack.Screen name="(web)/admin" options={{ headerShown: false }} />
             <Stack.Screen name="onboarding" options={{ headerShown: false }} />
             <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
             <Stack.Screen
