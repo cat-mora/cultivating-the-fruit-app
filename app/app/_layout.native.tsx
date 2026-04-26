@@ -144,6 +144,11 @@ function RootLayoutNav() {
   const colorScheme = useColorScheme();
   const pathname = usePathname();
   const hasOnboarded = useUserStore((state) => state.hasOnboarded);
+  const session = useAuthStore((state) => state.session);
+  const isLoading = useAuthStore((state) => state.isLoading);
+
+  // Check if user is on an auth page (sign-in, sign-up, etc.)
+  const isAuthPage = pathname?.startsWith('/(web)/auth') || pathname?.includes('/auth/');
 
   const showWebLogoBanner =
     Platform.OS === 'web' &&
@@ -166,6 +171,7 @@ function RootLayoutNav() {
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen name="onboarding" options={{ headerShown: false }} />
             <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+            <Stack.Screen name="(web)" options={{ headerShown: false }} />
             <Stack.Screen
               name="partner-linking"
               options={{
@@ -175,8 +181,11 @@ function RootLayoutNav() {
             />
           </Stack>
 
-          {/* Onboarding Check */}
-          {hasOnboarded === false && <Redirect href="/onboarding" />}
+          {/* Authentication Check - Redirect to sign-in if not authenticated */}
+          {!isLoading && !session && !isAuthPage && <Redirect href="/(web)/auth/sign-in" />}
+
+          {/* Onboarding Check - Only if authenticated */}
+          {!isLoading && session && hasOnboarded === false && !isAuthPage && <Redirect href="/onboarding" />}
 
           <PWAInstallPrompt />
         </ThemeProvider>
