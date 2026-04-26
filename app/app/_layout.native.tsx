@@ -144,23 +144,10 @@ function RootLayoutNav() {
   const colorScheme = useColorScheme();
   const pathname = usePathname();
   const hasOnboarded = useUserStore((state) => state.hasOnboarded);
-  const session = useAuthStore((state) => state.session);
-
-  // Determine if user is authenticated
-  // For web with Supabase: check session
-  // For native or Supabase disabled: check onboarding status (local auth)
-  const isAuthenticated = Platform.OS === 'web' && isSupabaseEnabled
-    ? !!session
-    : hasOnboarded;
-
-  // Public routes that don't require authentication
-  const publicRoutes = ['/auth/sign-in', '/auth/sign-up', '/onboarding'];
-  const isPublicRoute = publicRoutes.some(route => pathname?.startsWith(route));
 
   const showWebLogoBanner =
     Platform.OS === 'web' &&
     pathname !== '/onboarding' &&
-    !pathname?.startsWith('/auth/') &&
     !(pathname === '/' && hasOnboarded === false);
 
   return (
@@ -188,10 +175,8 @@ function RootLayoutNav() {
             />
           </Stack>
 
-          {/* Onboarding Check (non-web or Supabase disabled) */}
-          {Platform.OS !== 'web' && hasOnboarded === false && !pathname?.startsWith('/onboarding') && (
-            <Redirect href="/onboarding" />
-          )}
+          {/* Onboarding Check */}
+          {hasOnboarded === false && <Redirect href="/onboarding" />}
 
           <PWAInstallPrompt />
         </ThemeProvider>
