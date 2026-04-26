@@ -14,10 +14,13 @@ export default function SignIn() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleSubmit = async () => {
+    setError('');
+
     if (!email || !password) {
-      Alert.alert('Error', 'Please enter both email and password');
+      setError('Please enter both email and password');
       return;
     }
 
@@ -27,10 +30,9 @@ export default function SignIn() {
       await signInWithEmail(email, password);
       router.replace('/(tabs)');
     } catch (err) {
-      Alert.alert(
-        'Sign In Failed',
-        err instanceof Error ? err.message : 'Unable to sign in. Please try again.'
-      );
+      const errorMessage = err instanceof Error ? err.message : 'Unable to sign in. Please try again.';
+      setError(errorMessage);
+      console.error('Sign in error:', err);
     } finally {
       setIsLoading(false);
     }
@@ -50,6 +52,12 @@ export default function SignIn() {
 
         <Text style={styles.title}>Welcome Back</Text>
         <Text style={styles.subtitle}>Sign in to continue your spiritual journey</Text>
+
+        {error ? (
+          <View style={styles.errorContainer}>
+            <Text style={styles.errorText}>{error}</Text>
+          </View>
+        ) : null}
 
         <View style={styles.form}>
           <View style={styles.inputGroup}>
@@ -201,5 +209,18 @@ const styles = StyleSheet.create({
     color: '#6B2D3E',
     fontWeight: '600',
     textDecorationLine: 'none',
+  },
+  errorContainer: {
+    backgroundColor: '#FEE2E2',
+    borderWidth: 1,
+    borderColor: '#EF4444',
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 16,
+  },
+  errorText: {
+    color: '#991B1B',
+    fontSize: 14,
+    textAlign: 'center',
   },
 });

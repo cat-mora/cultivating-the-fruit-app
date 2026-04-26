@@ -17,26 +17,29 @@ export default function SignUp() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleSubmit = async () => {
+    setError('');
+
     // Validation
     if (!inviteCode || inviteCode.trim().length !== 6) {
-      Alert.alert('Error', 'Please enter a valid 6-character invite code');
+      setError('Please enter a valid 6-character invite code');
       return;
     }
 
     if (!email || !password) {
-      Alert.alert('Error', 'Please enter both email and password');
+      setError('Please enter both email and password');
       return;
     }
 
     if (password !== confirmPassword) {
-      Alert.alert('Error', 'Passwords do not match');
+      setError('Passwords do not match');
       return;
     }
 
     if (password.length < 8) {
-      Alert.alert('Error', 'Password must be at least 8 characters');
+      setError('Password must be at least 8 characters');
       return;
     }
 
@@ -47,7 +50,7 @@ export default function SignUp() {
       const invite = await validateSignupInvite(inviteCode.trim());
 
       if (!invite) {
-        Alert.alert('Error', 'Invalid, expired, or already used invite code');
+        setError('Invalid, expired, or already used invite code');
         setIsLoading(false);
         return;
       }
@@ -56,7 +59,7 @@ export default function SignUp() {
       const user = await signUpWithEmail(email, password);
 
       if (!user) {
-        Alert.alert('Error', 'Failed to create account');
+        setError('Failed to create account');
         setIsLoading(false);
         return;
       }
@@ -71,10 +74,9 @@ export default function SignUp() {
       // Success - redirect to onboarding
       router.replace('/onboarding');
     } catch (err) {
-      Alert.alert(
-        'Sign Up Failed',
-        err instanceof Error ? err.message : 'Unable to create account. Please try again.'
-      );
+      const errorMessage = err instanceof Error ? err.message : 'Unable to create account. Please try again.';
+      setError(errorMessage);
+      console.error('Sign up error:', err);
     } finally {
       setIsLoading(false);
     }
@@ -94,6 +96,12 @@ export default function SignUp() {
 
         <Text style={styles.title}>Create Account</Text>
         <Text style={styles.subtitle}>Begin your journey of cultivating spiritual fruits</Text>
+
+        {error ? (
+          <View style={styles.errorContainer}>
+            <Text style={styles.errorText}>{error}</Text>
+          </View>
+        ) : null}
 
         <View style={styles.form}>
           <View style={styles.inputGroup}>
@@ -280,5 +288,18 @@ const styles = StyleSheet.create({
     color: '#6B2D3E',
     fontWeight: '600',
     textDecorationLine: 'none',
+  },
+  errorContainer: {
+    backgroundColor: '#FEE2E2',
+    borderWidth: 1,
+    borderColor: '#EF4444',
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 16,
+  },
+  errorText: {
+    color: '#991B1B',
+    fontSize: 14,
+    textAlign: 'center',
   },
 });
