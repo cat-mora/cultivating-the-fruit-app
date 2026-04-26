@@ -1,0 +1,16 @@
+{
+  "projectId": "prj_pHUQVFjHYFTXTW1ICjzE4nZsJ44j",
+  "orgId": "team_jvuV8LFkTwNUeceMkuHIYzoN",
+  "projectName": "cultivating-the-fruits",
+  "settings": {
+    "createdAt": 1776984536670,
+    "framework": null,
+    "devCommand": null,
+    "installCommand": "cd app && npm install",
+    "buildCommand": "cd app && npm install && npx expo export -p web",
+    "outputDirectory": "app/dist",
+    "rootDirectory": null,
+    "directoryListing": false,
+    "nodeVersion": "24.x"
+  }
+}
