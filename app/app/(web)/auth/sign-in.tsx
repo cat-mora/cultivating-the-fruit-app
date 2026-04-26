@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { View, Text, TextInput, Pressable, Alert, StyleSheet, Image } from 'react-native';
+import { View, Text, TextInput, Pressable, Alert, StyleSheet, Image, ActivityIndicator } from 'react-native';
 import { Link, useRouter } from 'expo-router';
 import { signInWithEmail } from '@/lib/auth/auth-service';
 
