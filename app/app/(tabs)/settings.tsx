@@ -8,7 +8,6 @@ import { resetAppState } from '../../lib/reset-app-state';
 const streams: { id: JourneyStream; label: string }[] = [
   { id: 'strengthen', label: 'Strengthen' },
   { id: 'repair', label: 'Repair' },
-  { id: 'family', label: 'Family' },
 ];
 
 const translations: BibleTranslation[] = ['NIV', 'ESV', 'KJV', 'NLT', 'NKJV'];
