@@ -101,9 +101,6 @@ export default function DashboardScreen() {
               </Pressable>
             </View>
           </View>
-          <Text className="text-charcoal/50 text-xs font-semibold" style={{ marginLeft: 4 }}>
-            Day {displayContent.day_number}
-          </Text>
         </View>
 
         {/* Streak Badge */}
@@ -143,11 +140,14 @@ export default function DashboardScreen() {
           ))}
         </View>
 
-        {/* Activity Card */}
+{/* Activity Card */}
         {selectedActivity && (
           <View className="bg-blush rounded-[20px]" style={{ padding: 16 }}>
             <Text className="text-xl font-serif text-wine" style={{ marginBottom: 6 }}>
               {selectedActivity.title}
+            </Text>
+            <Text className="text-charcoal/70 text-sm leading-relaxed" style={{ marginBottom: 16 }}>
+              {selectedActivity.description}
             </Text>
             <Pressable
               onPress={handleMarkComplete}
