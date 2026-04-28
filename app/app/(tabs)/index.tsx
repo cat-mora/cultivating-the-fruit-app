@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Text, View, Pressable, ScrollView, Alert as RNAlert, Platform } from 'react-native';
+import { Text, View, Pressable, Alert as RNAlert, Platform } from 'react-native';
 import { useStreak } from '../../features/progress/hooks/use-streak';
 import { useUserStore } from '../../store/user-store';
 import { getJourneyContent, getMaxJourneyDay } from '../../features/content/utils/journey-metrics';
@@ -7,21 +7,25 @@ import { Alert as WebAlert } from '../../lib/alert-web';
 
 const Alert = Platform.OS === 'web' ? WebAlert : RNAlert;
 
-const timeTiers = [5, 15, 30, 60, 120];
+const timeTiers = [
+  { label: '5m', index: 0 },
+  { label: '5m', index: 1 },
+  { label: '10m', index: 2 },
+  { label: '20m', index: 3 },
+  { label: '1hr+', index: 4 },
+];
 
 export default function DashboardScreen() {
   const { completeActivityToday, hasCompletedToday, getStreakInfo } = useStreak();
   const advanceToNextDay = useUserStore((state) => state.advanceToNextDay);
-  const currentDay = useUserStore((state) => state.currentDay); // Actual progression day
+  const currentDay = useUserStore((state) => state.currentDay);
   const selectedStream = useUserStore((state) => state.selectedStream);
   const selectedTranslation = useUserStore((state) => state.selectedTranslation);
 
-  // Local state for which day user is viewing (can be different from currentDay)
   const [viewingDay, setViewingDay] = useState(currentDay);
-  const [selectedTier, setSelectedTier] = useState<number>(15);
+  const [selectedIndex, setSelectedIndex] = useState<number>(2);
   const [isCompleting, setIsCompleting] = useState(false);
 
-  // Sync viewing day with current day when current day changes (after completion)
   useEffect(() => {
     setViewingDay(currentDay);
   }, [currentDay]);
@@ -29,47 +33,25 @@ export default function DashboardScreen() {
   const streak = getStreakInfo();
   const completedToday = hasCompletedToday();
 
-  // Get content for the day we're viewing (not necessarily the current day)
   const contentList = getJourneyContent(selectedStream);
   const content = contentList.find((c) => c.day_number === viewingDay);
   const scriptureText = content?.bible_text[selectedTranslation] || content?.bible_text['NIV'];
   const displayContent = content ? { ...content, scriptureText } : null;
 
-  // Calculate max days for the selected stream
   const maxDays = getMaxJourneyDay(selectedStream);
   const canGoPrev = viewingDay > 1;
   const canGoNext = viewingDay < maxDays;
   const isPreviewing = viewingDay !== currentDay;
 
-  const handlePrevDay = () => {
-    if (canGoPrev) {
-      setViewingDay(viewingDay - 1);
-    }
-  };
-
-  const handleNextDay = () => {
-    if (canGoNext) {
-      setViewingDay(viewingDay + 1);
-    }
-  };
-
-  const handleBackToCurrent = () => {
-    setViewingDay(currentDay);
-  };
-
   const handleMarkComplete = async () => {
     if (!displayContent || completedToday || isPreviewing) return;
-
     try {
       setIsCompleting(true);
       await completeActivityToday(
         displayContent.fruit_theme,
         displayContent.day_number
       );
-
-      // Advance to the next day after completing an activity
       advanceToNextDay();
-
       Alert.alert(
         '🎉 Activity Complete!',
         `Great work! Your streak is now ${streak.currentStreak + 1} days. Keep it going!`,
@@ -90,147 +72,101 @@ export default function DashboardScreen() {
     );
   }
 
-  const selectedActivity = displayContent.activities.find(a => a.duration_minutes === selectedTier);
+  const selectedActivity = displayContent.activities[selectedIndex] || displayContent.activities[0];
 
   return (
-    <ScrollView className="flex-1 bg-cream p-6" contentContainerStyle={{ paddingBottom: 32 }}>
-      {/* Header */}
-      <View className="mt-14 mb-6">
-        <View className="flex-row items-center justify-between mb-3">
-          <View className="flex-row items-center gap-3">
-            <Text className="text-3xl">🍇</Text>
-            <Text className="text-3xl font-serif text-wine">{displayContent.fruit_theme}</Text>
-          </View>
+    <View className="flex-1 bg-cream">
+      <View style={{ flex: 1, paddingHorizontal: 20, paddingTop: 12, paddingBottom: 12 }}>
 
-          {/* Day Navigation */}
-          <View className="flex-row items-center gap-3">
-            <Pressable
-              onPress={handlePrevDay}
-              disabled={!canGoPrev}
-              className={`w-10 h-10 rounded-full items-center justify-center ${
-                canGoPrev ? 'bg-wine' : 'bg-cream-dark'
-              }`}
-            >
-              <Text className={`text-lg font-bold ${canGoPrev ? 'text-white' : 'text-charcoal/20'}`}>
-                ‹
-              </Text>
-            </Pressable>
-
-            <View className="bg-parchment px-4 py-2 rounded-full border border-cream-dark">
-              <Text className="text-wine font-bold text-sm">
-                Day {displayContent.day_number}
-              </Text>
+        {/* Header */}
+        <View style={{ marginBottom: 8 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 2 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+              <Text style={{ fontSize: 22 }}>🍇</Text>
+              <Text className="text-2xl font-serif text-wine">{displayContent.fruit_theme}</Text>
             </View>
-
-            <Pressable
-              onPress={handleNextDay}
-              disabled={!canGoNext}
-              className={`w-10 h-10 rounded-full items-center justify-center ${
-                canGoNext ? 'bg-wine' : 'bg-cream-dark'
-              }`}
-            >
-              <Text className={`text-lg font-bold ${canGoNext ? 'text-white' : 'text-charcoal/20'}`}>
-                ›
-              </Text>
-            </Pressable>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+              <Pressable
+                onPress={() => canGoPrev && setViewingDay(viewingDay - 1)}
+                style={{ width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center', backgroundColor: canGoPrev ? '#6B2D3E' : '#EDE8E0' }}
+              >
+                <Text style={{ color: canGoPrev ? 'white' : 'rgba(47,47,47,0.2)', fontWeight: 'bold', fontSize: 16 }}>‹</Text>
+              </Pressable>
+              <Text className="text-wine font-bold text-sm">Day {displayContent.day_number}</Text>
+              <Pressable
+                onPress={() => canGoNext && setViewingDay(viewingDay + 1)}
+                style={{ width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center', backgroundColor: canGoNext ? '#6B2D3E' : '#EDE8E0' }}
+              >
+                <Text style={{ color: canGoNext ? 'white' : 'rgba(47,47,47,0.2)', fontWeight: 'bold', fontSize: 16 }}>›</Text>
+              </Pressable>
+            </View>
           </View>
+          <Text className="text-charcoal/50 text-xs font-semibold" style={{ marginLeft: 4 }}>
+            Day {displayContent.day_number}
+          </Text>
         </View>
 
-        {isPreviewing && (
-          <Pressable
-            onPress={handleBackToCurrent}
-            className="bg-mint-light p-3 rounded-[16px] border border-mint mb-2 flex-row items-center justify-center gap-2"
-          >
-            <Text className="text-charcoal/60 text-xs text-center">
-              👁️ Previewing Day {displayContent.day_number}
-            </Text>
-            <View className="bg-mint px-3 py-1 rounded-full">
-              <Text className="text-wine text-xs font-bold">
-                Back to Day {currentDay}
-              </Text>
-            </View>
-          </Pressable>
+        {/* Streak Badge */}
+        {streak.currentStreak > 0 && (
+          <View style={{ marginBottom: 8, flexDirection: 'row', alignItems: 'center', gap: 6, alignSelf: 'flex-start', backgroundColor: 'rgba(184,142,48,0.15)', paddingHorizontal: 12, paddingVertical: 4, borderRadius: 20 }}>
+            <Text style={{ fontSize: 13 }}>🔥</Text>
+            <Text className="text-gold font-bold text-xs">{streak.currentStreak} Day Streak</Text>
+          </View>
         )}
-      </View>
 
-      {/* Streak Badge */}
-      {streak.currentStreak > 0 && (
-        <View className="mb-5 flex-row items-center gap-2 self-start bg-gold/15 px-4 py-2 rounded-full">
-          <Text className="text-lg">🔥</Text>
-          <Text className="text-gold font-bold text-sm">
-            {streak.currentStreak} Day Streak
+        {/* Scripture Card */}
+        <View className="bg-rose-dark rounded-[20px] shadow-lg" style={{ padding: 16, marginBottom: 10 }}>
+          <Text className="text-white/40 text-3xl font-serif" style={{ position: 'absolute', top: 8, left: 16 }}>"</Text>
+          <Text className="text-white text-base font-serif text-center" style={{ lineHeight: 24, marginTop: 16, marginBottom: 6 }}>
+            {displayContent.scriptureText}
           </Text>
+          <Text className="text-white/70 text-center font-bold text-xs">{displayContent.bible_reference}</Text>
         </View>
-      )}
 
-      {/* Scripture Card */}
-      <View className="bg-rose-dark p-7 rounded-[28px] shadow-lg mb-5">
-        <Text className="text-white/40 text-5xl font-serif absolute top-4 left-5">"</Text>
-        <Text className="text-white text-xl font-serif text-center leading-8 mt-6 mb-4">
-          {displayContent.scriptureText}
-        </Text>
-        <Text className="text-white/70 text-center font-bold text-sm">{displayContent.bible_reference}</Text>
-      </View>
+        {/* Time Tier Selector */}
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, marginBottom: 10 }}>
+          {timeTiers.map((tier) => (
+            <Pressable
+              key={tier.index}
+              onPress={() => setSelectedIndex(tier.index)}
+              style={{
+                paddingHorizontal: 14,
+                paddingVertical: 6,
+                borderRadius: 20,
+                backgroundColor: selectedIndex === tier.index ? '#6B3B5E' : '#EDE8E0',
+              }}
+            >
+              <Text style={{ fontSize: 11, fontWeight: 'bold', color: selectedIndex === tier.index ? 'white' : 'rgba(47,47,47,0.4)' }}>
+                {tier.label}
+              </Text>
+            </Pressable>
+          ))}
+        </View>
 
-      {/* Time Tier Selector */}
-      <View className="flex-row items-center justify-center gap-2 mb-5 py-3">
-        {timeTiers.map((tier) => (
-          <Pressable
-            key={tier}
-            onPress={() => setSelectedTier(tier)}
-            className={`px-4 py-2 rounded-full ${
-              selectedTier === tier ? 'bg-wine' : 'bg-cream-dark'
-            }`}
-          >
-            <Text className={`text-xs font-bold ${selectedTier === tier ? 'text-white' : 'text-charcoal/40'}`}>
-              {tier > 60 ? `${tier / 60}h` : `${tier}m`}
+        {/* Activity Card */}
+        {selectedActivity && (
+          <View className="bg-blush rounded-[20px]" style={{ padding: 16 }}>
+            <Text className="text-xl font-serif text-wine" style={{ marginBottom: 6 }}>
+              {selectedActivity.title}
             </Text>
-          </Pressable>
-        ))}
-      </View>
-
-      {/* Activity Card */}
-      {selectedActivity && (
-        <View className="bg-blush p-6 rounded-[28px] mb-6">
-          <View className="flex-row items-center mb-3 gap-2">
-            <View className="bg-wine/10 px-3 py-1 rounded-full">
-              <Text className="text-wine font-bold text-xs uppercase">{selectedActivity.category.replace(/-/g, ' ')}</Text>
-            </View>
-            <Text className="text-charcoal/40 text-xs font-bold uppercase">{selectedTier} min</Text>
+            <Pressable
+              onPress={handleMarkComplete}
+              disabled={isCompleting || completedToday || isPreviewing}
+              style={{
+                padding: 14,
+                borderRadius: 30,
+                alignItems: 'center',
+                backgroundColor: isPreviewing ? '#EDE8E0' : completedToday ? 'rgba(100,140,100,0.5)' : isCompleting ? 'rgba(100,140,100,0.7)' : '#7A9E7E',
+              }}
+            >
+              <Text style={{ color: isPreviewing ? 'rgba(47,47,47,0.4)' : 'white', fontSize: 15, fontWeight: 'bold' }}>
+                {isPreviewing ? '👁️ Preview Only' : completedToday ? '✓ Completed Today' : isCompleting ? 'Recording...' : 'Mark Complete'}
+              </Text>
+            </Pressable>
           </View>
+        )}
 
-          <Text className="text-2xl font-serif text-wine mb-2">{selectedActivity.title}</Text>
-          <Text className="text-charcoal/70 text-base leading-relaxed mb-6">
-            {selectedActivity.description}
-          </Text>
-
-          <Pressable
-            onPress={handleMarkComplete}
-            disabled={isCompleting || completedToday || isPreviewing}
-            className={`p-4 rounded-full items-center shadow-md ${
-              isPreviewing
-                ? 'bg-cream-dark'
-                : completedToday
-                ? 'bg-sage/50'
-                : isCompleting
-                ? 'bg-sage/70'
-                : 'bg-sage'
-            }`}
-          >
-            <Text className={`text-lg font-bold ${
-              isPreviewing ? 'text-charcoal/40' : 'text-white'
-            }`}>
-              {isPreviewing
-                ? '👁️ Preview Only'
-                : completedToday
-                ? '✓ Completed Today'
-                : isCompleting
-                ? 'Recording...'
-                : 'Mark Complete'}
-            </Text>
-          </Pressable>
-        </View>
-      )}
-    </ScrollView>
+      </View>
+    </View>
   );
 }
