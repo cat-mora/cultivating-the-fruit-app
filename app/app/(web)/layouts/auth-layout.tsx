@@ -1,8 +1,23 @@
 import { ReactNode } from 'react';
-import { Image } from 'react-native';
+
+const logoImage = require('../../../assets/images/logo-full.png');
+
+function getWebAssetUri(asset: unknown): string | undefined {
+  if (typeof asset === 'string') return asset;
+  if (asset && typeof asset === 'object') {
+    const assetRecord = asset as { uri?: unknown; default?: unknown };
+    if (typeof assetRecord.uri === 'string') return assetRecord.uri;
+    if (typeof assetRecord.default === 'string') return assetRecord.default;
+    if (assetRecord.default && typeof assetRecord.default === 'object') {
+      const defaultAsset = assetRecord.default as { uri?: unknown };
+      if (typeof defaultAsset.uri === 'string') return defaultAsset.uri;
+    }
+  }
+  return undefined;
+}
 
 export default function AuthLayout({ children }: { children: ReactNode }) {
-  const logoSrc = Image.resolveAssetSource(require('../../../assets/images/logo-full.png'))?.uri;
+  const logoSrc = getWebAssetUri(logoImage);
 
   return (
     <div
@@ -54,11 +69,11 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
           fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
         }}
       >
-        <p style={{ margin: 0 }}>
-          "But the fruit of the Spirit is love, joy, peace..."
-          <br />
-          <span style={{ fontSize: '12px', opacity: 0.8 }}>— Galatians 5:22-23</span>
-        </p>
+<p style={{ margin: 0 }}>
+  "But the fruit of the Spirit is love, joy, peace..."
+  <br />
+  <span style={{ fontSize: '12px', opacity: 0.8 }}>Galatians 5:22-23</span>
+</p>
       </div>
     </div>
   );
