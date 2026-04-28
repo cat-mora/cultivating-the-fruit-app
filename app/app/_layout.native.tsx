@@ -27,22 +27,6 @@ import { isSupabaseEnabled } from '../lib/supabase/config';
 
 import { useColorScheme } from '@/components/useColorScheme';
 
-// Web debug: show errors on screen
-if (Platform.OS === 'web' && typeof window !== 'undefined') {
-  window.onerror = function(msg, src, line, col, err) {
-    const el = document.createElement('pre');
-    el.style.cssText = 'color:red;padding:20px;font-size:14px;white-space:pre-wrap;';
-    el.textContent = `ERROR: ${msg}\nSource: ${src}:${line}:${col}\n${err?.stack || ''}`;
-    document.body.prepend(el);
-  };
-  window.onunhandledrejection = function(e) {
-    const el = document.createElement('pre');
-    el.style.cssText = 'color:red;padding:20px;font-size:14px;white-space:pre-wrap;';
-    el.textContent = `UNHANDLED: ${e.reason?.message || e.reason}\n${e.reason?.stack || ''}`;
-    document.body.prepend(el);
-  };
-}
-
 const LogoTheme: Theme = {
   ...DefaultTheme,
   colors: {
