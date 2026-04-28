@@ -1,15 +1,6 @@
-import { Outlet } from 'react-router-dom';
+import { ReactNode } from 'react';
 
-/**
- * Auth Layout
- *
- * Layout for public authentication pages (sign-in, sign-up)
- * Features:
- * - Centered auth form
- * - Warm Bible app aesthetic
- * - Mobile-first responsive design
- */
-export default function AuthLayout() {
+export default function AuthLayout({ children }: { children: ReactNode }) {
   return (
     <div
       style={{
@@ -22,25 +13,23 @@ export default function AuthLayout() {
         padding: '20px',
       }}
     >
-      {/* Logo/Header */}
-      <div
-        style={{
-          textAlign: 'center',
-          marginBottom: '40px',
-        }}
-      >
+      <div style={{ textAlign: 'center', marginBottom: '40px' }}>
         <img
           src={require('../../../assets/images/logo-full.png')}
-          alt="Cultivating the Fruits"
-          style={{
-            maxWidth: '280px',
-            height: 'auto',
-            margin: '0 auto',
-          }}
+          alt="Cultivating the Fruit"
+          style={{ maxWidth: '280px', height: 'auto', margin: '0 auto' }}
         />
+        <p
+          style={{
+            fontSize: '15px',
+            color: '#8B6F47',
+            margin: '12px 0 0 0',
+            fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
+          }}
+        >
+          Love renewed through daily action
+        </p>
       </div>
-
-      {/* Auth Form Container */}
       <div
         style={{
           width: '100%',
@@ -51,10 +40,8 @@ export default function AuthLayout() {
           padding: '40px 32px',
         }}
       >
-        <Outlet />
+        {children}
       </div>
-
-      {/* Footer */}
       <div
         style={{
           marginTop: '24px',
@@ -67,9 +54,7 @@ export default function AuthLayout() {
         <p style={{ margin: 0 }}>
           "But the fruit of the Spirit is love, joy, peace..."
           <br />
-          <span style={{ fontSize: '12px', opacity: 0.8 }}>
-            — Galatians 5:22-23
-          </span>
+          <span style={{ fontSize: '12px', opacity: 0.8 }}>— Galatians 5:22-23</span>
         </p>
       </div>
     </div>
