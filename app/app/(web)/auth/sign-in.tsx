@@ -54,7 +54,7 @@ export default function SignIn() {
         }}
       >
         <img
-          src={require('../../../assets/images/logo-full.png')}
+src="/assets/images/logo-full.png"
           alt="Cultivating the Fruits"
           style={{
             maxWidth: '280px',
@@ -70,7 +70,7 @@ export default function SignIn() {
             fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
           }}
         >
-          Grow your spiritual life, one day at a time
+          Love renewed through daily action
         </p>
       </div>
 
