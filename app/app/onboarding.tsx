@@ -3,10 +3,9 @@ import { Text, View, Pressable, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useUserStore, JourneyStream, BibleTranslation } from '../store/user-store';
 
-const streams: { id: JourneyStream; label: string; description: string; emoji: string }[] = [
-  { id: 'strengthen', label: 'Strengthen', description: 'For healthy relationships wanting to grow deeper.', emoji: '🌿' },
-  { id: 'repair', label: 'Repair', description: 'For struggling relationships seeking restoration.', emoji: '🌱' },
-  { id: 'family', label: 'Family', description: 'For parent-child relationship building.', emoji: '🌻' },
+const streams: { id: JourneyStream; label: string; description: string }[] = [
+  { id: 'strengthen', label: 'Strengthen', description: 'For healthy relationships wanting to grow deeper.' },
+  { id: 'repair', label: 'Repair', description: 'For struggling relationships seeking restoration.' },
 ];
 
 const streamColors: Record<JourneyStream, { selected: string; border: string; text: string }> = {
@@ -43,13 +42,12 @@ export default function OnboardingScreen() {
         {streams.map((stream) => {
           const isSelected = selectedStream === stream.id;
           const colors = streamColors[stream.id];
+
           return (
             <Pressable
               key={stream.id}
               onPress={() => setSelectedStreamLocal(stream.id)}
-              className={`p-5 rounded-[20px] border-2 ${
-                isSelected ? colors.selected : 'border-charcoal/10 bg-white'
-              }`}
+              className={`p-5 rounded-[20px] border-2 ${isSelected ? colors.selected : 'border-charcoal/10 bg-white'}`}
             >
               <View>
                 <Text className={`text-xl font-bold ${isSelected ? colors.text : 'text-charcoal'}`}>
@@ -69,11 +67,11 @@ export default function OnboardingScreen() {
             <Pressable
               key={t}
               onPress={() => setSelectedTranslationLocal(t)}
-              className={`px-5 py-2.5 rounded-full border ${
-                selectedTranslation === t ? 'bg-wine border-wine' : 'bg-white border-charcoal/10'
-              }`}
+              className={`px-5 py-2.5 rounded-full border ${selectedTranslation === t ? 'bg-wine border-wine' : 'bg-white border-charcoal/10'}`}
             >
-              <Text className={`font-semibold ${selectedTranslation === t ? 'text-white' : 'text-charcoal'}`}>{t}</Text>
+              <Text className={`font-semibold ${selectedTranslation === t ? 'text-white' : 'text-charcoal'}`}>
+                {t}
+              </Text>
             </Pressable>
           ))}
         </View>
