@@ -5,7 +5,7 @@ module.exports = {
     "./components/**/*.{js,jsx,ts,tsx}",
     "./features/**/*.{js,jsx,ts,tsx}",
   ],
-  presets: [require("nativewind/preset")],
+  presets: process.env.EXPO_OS !== 'web' ? [require("nativewind/preset")] : [],
   theme: {
     extend: {
       colors: {

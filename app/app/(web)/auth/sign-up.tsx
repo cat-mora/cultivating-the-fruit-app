@@ -1,43 +1,36 @@
-import { useState } from 'react';
-import { View, Text, TextInput, Pressable, Alert, StyleSheet, Image } from 'react-native';
+import { useState, FormEvent } from 'react';
 import { Link, useRouter } from 'expo-router';
-import { signUpWithEmail } from '@/lib/auth/auth-service';
-import { validateSignupInvite, markInviteAsUsed } from '@/lib/admin/admin-service';
+import { signUpWithEmail } from '../../../lib/auth/auth-service';
 
 /**
  * Sign Up Page
  *
  * Email/password registration for web users
- * Uses Expo Router and React Native components
+ * Features:
+ * - Email and password form with confirmation
+ * - Error handling and validation
+ * - Link to sign in
+ * - Warm Bible app aesthetic
  */
 export default function SignUp() {
   const router = useRouter();
-  const [inviteCode, setInviteCode] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
     setError('');
 
-    // Validation
-    if (!inviteCode || inviteCode.trim().length !== 6) {
-      setError('Please enter a valid 6-character invite code');
-      return;
-    }
-
-    if (!email || !password) {
-      setError('Please enter both email and password');
-      return;
-    }
-
+    // Validate passwords match
     if (password !== confirmPassword) {
       setError('Passwords do not match');
       return;
     }
 
+    // Validate password length
     if (password.length < 8) {
       setError('Password must be at least 8 characters');
       return;
@@ -46,260 +39,253 @@ export default function SignUp() {
     setIsLoading(true);
 
     try {
-      // Validate invite code
-      const invite = await validateSignupInvite(inviteCode.trim());
-
-      if (!invite) {
-        setError('Invalid, expired, or already used invite code');
-        setIsLoading(false);
-        return;
-      }
-
-      // Create account
-      const user = await signUpWithEmail(email, password);
-
-      if (!user) {
-        setError('Failed to create account');
-        setIsLoading(false);
-        return;
-      }
-
-      // Mark invite as used
-      const marked = await markInviteAsUsed(inviteCode.trim(), user.id);
-
-      if (!marked) {
-        console.error('Failed to mark invite as used, but account was created');
-      }
-
-      // Success - redirect to onboarding
+      await signUpWithEmail(email, password);
+      // After signup, user will need to complete onboarding
       router.replace('/onboarding');
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Unable to create account. Please try again.';
-      setError(errorMessage);
-      console.error('Sign up error:', err);
+      setError(err instanceof Error ? err.message : 'Sign up failed');
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.card}>
-        <View style={styles.header}>
-          <Image
-            source={require('../../../assets/images/logo-full.png')}
-            style={styles.logo}
-            resizeMode="contain"
-          />
-          <Text style={styles.tagline}>Grow your spiritual life, one day at a time</Text>
-        </View>
+    <div>
+      <h2
+        style={{
+          fontSize: '24px',
+          fontWeight: '700',
+          color: '#6B2D3E',
+          margin: '0 0 8px 0',
+          fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
+        }}
+      >
+        Create Account
+      </h2>
+      <p
+        style={{
+          fontSize: '14px',
+          color: '#8B6F47',
+          margin: '0 0 32px 0',
+          fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
+        }}
+      >
+        Begin your journey of cultivating spiritual fruits
+      </p>
 
-        <Text style={styles.title}>Create Account</Text>
-        <Text style={styles.subtitle}>Begin your journey of cultivating spiritual fruits</Text>
-
-        {error ? (
-          <View style={styles.errorContainer}>
-            <Text style={styles.errorText}>{error}</Text>
-          </View>
-        ) : null}
-
-        <View style={styles.form}>
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Invite Code</Text>
-            <TextInput
-              style={[styles.input, styles.inviteInput]}
-              value={inviteCode}
-              onChangeText={(text) => setInviteCode(text.toUpperCase())}
-              placeholder="ABC123"
-              maxLength={6}
-              autoCapitalize="characters"
-              editable={!isLoading}
-            />
-            <Text style={styles.helperText}>Enter the 6-character code provided by an admin</Text>
-          </View>
-
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Email</Text>
-            <TextInput
-              style={styles.input}
-              value={email}
-              onChangeText={setEmail}
-              placeholder="your@email.com"
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoComplete="email"
-              editable={!isLoading}
-            />
-          </View>
-
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Password</Text>
-            <TextInput
-              style={styles.input}
-              value={password}
-              onChangeText={setPassword}
-              placeholder="••••••••"
-              secureTextEntry
-              autoComplete="password-new"
-              editable={!isLoading}
-            />
-            <Text style={styles.helperText}>At least 8 characters</Text>
-          </View>
-
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Confirm Password</Text>
-            <TextInput
-              style={styles.input}
-              value={confirmPassword}
-              onChangeText={setConfirmPassword}
-              placeholder="••••••••"
-              secureTextEntry
-              autoComplete="password-new"
-              editable={!isLoading}
-            />
-          </View>
-
-          <Pressable
-            style={[styles.button, isLoading && styles.buttonDisabled]}
-            onPress={handleSubmit}
-            disabled={isLoading}
+      <form onSubmit={handleSubmit}>
+        {/* Email Input */}
+        <div style={{ marginBottom: '20px' }}>
+          <label
+            htmlFor="email"
+            style={{
+              display: 'block',
+              fontSize: '14px',
+              fontWeight: '600',
+              color: '#6B2D3E',
+              marginBottom: '8px',
+              fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
+            }}
           >
-            <Text style={styles.buttonText}>
-              {isLoading ? 'Creating account...' : 'Sign Up'}
-            </Text>
-          </Pressable>
+            Email
+          </label>
+          <input
+            id="email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            autoComplete="email"
+            disabled={isLoading}
+            style={{
+              width: '100%',
+              padding: '12px 16px',
+              fontSize: '16px',
+              border: '2px solid #F5EDE0',
+              borderRadius: '8px',
+              outline: 'none',
+              fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
+              transition: 'border-color 0.2s',
+              boxSizing: 'border-box',
+            }}
+            onFocus={(e) => {
+              e.target.style.borderColor = '#DEB9C5';
+            }}
+            onBlur={(e) => {
+              e.target.style.borderColor = '#F5EDE0';
+            }}
+          />
+        </div>
 
-          <View style={styles.footer}>
-            <Text style={styles.footerText}>Already have an account? </Text>
-            <Link href="/(web)/auth/sign-in" asChild>
-              <Pressable>
-                <Text style={styles.link}>Sign In</Text>
-              </Pressable>
-            </Link>
-          </View>
-        </View>
-      </View>
-    </View>
+        {/* Password Input */}
+        <div style={{ marginBottom: '20px' }}>
+          <label
+            htmlFor="password"
+            style={{
+              display: 'block',
+              fontSize: '14px',
+              fontWeight: '600',
+              color: '#6B2D3E',
+              marginBottom: '8px',
+              fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
+            }}
+          >
+            Password
+          </label>
+          <input
+            id="password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            autoComplete="new-password"
+            disabled={isLoading}
+            minLength={8}
+            style={{
+              width: '100%',
+              padding: '12px 16px',
+              fontSize: '16px',
+              border: '2px solid #F5EDE0',
+              borderRadius: '8px',
+              outline: 'none',
+              fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
+              transition: 'border-color 0.2s',
+              boxSizing: 'border-box',
+            }}
+            onFocus={(e) => {
+              e.target.style.borderColor = '#DEB9C5';
+            }}
+            onBlur={(e) => {
+              e.target.style.borderColor = '#F5EDE0';
+            }}
+          />
+          <p
+            style={{
+              fontSize: '12px',
+              color: '#8B6F47',
+              margin: '4px 0 0 0',
+              fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
+            }}
+          >
+            At least 8 characters
+          </p>
+        </div>
+
+        {/* Confirm Password Input */}
+        <div style={{ marginBottom: '24px' }}>
+          <label
+            htmlFor="confirmPassword"
+            style={{
+              display: 'block',
+              fontSize: '14px',
+              fontWeight: '600',
+              color: '#6B2D3E',
+              marginBottom: '8px',
+              fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
+            }}
+          >
+            Confirm Password
+          </label>
+          <input
+            id="confirmPassword"
+            type="password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            required
+            autoComplete="new-password"
+            disabled={isLoading}
+            style={{
+              width: '100%',
+              padding: '12px 16px',
+              fontSize: '16px',
+              border: '2px solid #F5EDE0',
+              borderRadius: '8px',
+              outline: 'none',
+              fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
+              transition: 'border-color 0.2s',
+              boxSizing: 'border-box',
+            }}
+            onFocus={(e) => {
+              e.target.style.borderColor = '#DEB9C5';
+            }}
+            onBlur={(e) => {
+              e.target.style.borderColor = '#F5EDE0';
+            }}
+          />
+        </div>
+
+        {/* Error Message */}
+        {error && (
+          <div
+            style={{
+              background: '#FEE',
+              border: '1px solid #FCC',
+              borderRadius: '8px',
+              padding: '12px',
+              marginBottom: '20px',
+              fontSize: '14px',
+              color: '#C00',
+              fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
+            }}
+          >
+            {error}
+          </div>
+        )}
+
+        {/* Submit Button */}
+        <button
+          type="submit"
+          disabled={isLoading}
+          style={{
+            width: '100%',
+            padding: '14px',
+            fontSize: '16px',
+            fontWeight: '600',
+            color: '#FFFFFF',
+            background: isLoading ? '#A67C89' : '#6B2D3E',
+            border: 'none',
+            borderRadius: '8px',
+            cursor: isLoading ? 'not-allowed' : 'pointer',
+            fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
+            transition: 'background 0.2s',
+          }}
+          onMouseOver={(e) => {
+            if (!isLoading) {
+              e.currentTarget.style.background = '#84364D';
+            }
+          }}
+          onMouseOut={(e) => {
+            if (!isLoading) {
+              e.currentTarget.style.background = '#6B2D3E';
+            }
+          }}
+        >
+          {isLoading ? 'Creating account...' : 'Sign Up'}
+        </button>
+      </form>
+
+      {/* Sign In Link */}
+      <div
+        style={{
+          marginTop: '24px',
+          textAlign: 'center',
+          fontSize: '14px',
+          color: '#8B6F47',
+          fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
+        }}
+      >
+        Already have an account?{' '}
+        <Link
+          href="/(web)/auth/sign-in"
+          style={{
+            color: '#6B2D3E',
+            fontWeight: '600',
+            textDecoration: 'none',
+          }}
+        >
+          Sign In
+        </Link>
+      </div>
+    </div>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#FFF9F0',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 20,
-  },
-  card: {
-    width: '100%',
-    maxWidth: 420,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 40,
-    shadowColor: '#6B2D3E',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 20,
-    elevation: 5,
-  },
-  header: {
-    alignItems: 'center',
-    marginBottom: 40,
-  },
-  logo: {
-    width: 280,
-    height: 80,
-    marginBottom: 8,
-  },
-  tagline: {
-    fontSize: 16,
-    color: '#8B6F47',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: '#6B2D3E',
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 14,
-    color: '#8B6F47',
-    marginBottom: 32,
-  },
-  form: {
-    gap: 20,
-  },
-  inputGroup: {
-    gap: 8,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#6B2D3E',
-  },
-  input: {
-    width: '100%',
-    padding: 12,
-    fontSize: 16,
-    borderWidth: 2,
-    borderColor: '#F5EDE0',
-    borderRadius: 8,
-    backgroundColor: '#FFFFFF',
-    outlineStyle: 'none',
-  },
-  inviteInput: {
-    fontFamily: 'monospace',
-    letterSpacing: 2,
-    textTransform: 'uppercase',
-  },
-  helperText: {
-    fontSize: 12,
-    color: '#8B6F47',
-  },
-  button: {
-    width: '100%',
-    padding: 14,
-    backgroundColor: '#6B2D3E',
-    borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 4,
-  },
-  buttonDisabled: {
-    backgroundColor: '#A67C89',
-  },
-  buttonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  footer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: 4,
-  },
-  footerText: {
-    fontSize: 14,
-    color: '#8B6F47',
-  },
-  link: {
-    fontSize: 14,
-    color: '#6B2D3E',
-    fontWeight: '600',
-    textDecorationLine: 'none',
-  },
-  errorContainer: {
-    backgroundColor: '#FEE2E2',
-    borderWidth: 1,
-    borderColor: '#EF4444',
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 16,
-  },
-  errorText: {
-    color: '#991B1B',
-    fontSize: 14,
-    textAlign: 'center',
-  },
-});
