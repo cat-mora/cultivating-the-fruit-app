@@ -93,6 +93,45 @@ export async function resetPassword(email: string) {
   }
 }
 
+/**
+ * Update password for logged-in user (Web only)
+ */
+export async function updatePassword(currentPassword: string, newPassword: string) {
+  if (!isSupabaseEnabled) {
+    throw new Error('Supabase is not enabled. Check your .env configuration.');
+  }
+
+  if (Platform.OS !== 'web') {
+    throw new Error('Password update is only available for web users');
+  }
+
+  // Get current user
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user || !user.email) {
+    throw new Error('No authenticated user found');
+  }
+
+  // Verify current password by attempting sign in
+  const { error: signInError } = await supabase.auth.signInWithPassword({
+    email: user.email,
+    password: currentPassword,
+  });
+
+  if (signInError) {
+    throw new Error('Current password is incorrect');
+  }
+
+  // Update to new password
+  const { error } = await supabase.auth.updateUser({
+    password: newPassword,
+  });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+}
+
 // ============================================================================
 // NATIVE AUTHENTICATION (Biometric/PIN)
 // ============================================================================
