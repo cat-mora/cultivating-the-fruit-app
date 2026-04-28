@@ -127,6 +127,7 @@ export type Database = {
           current_day: number;
           device_id: string | null;
           email: string | null;
+          is_admin: boolean;
           created_at: string;
           updated_at: string;
         };
@@ -138,6 +139,7 @@ export type Database = {
           current_day?: number;
           device_id?: string | null;
           email?: string | null;
+          is_admin?: boolean;
           created_at?: string;
           updated_at?: string;
         };
@@ -149,6 +151,7 @@ export type Database = {
           current_day?: number;
           device_id?: string | null;
           email?: string | null;
+          is_admin?: boolean;
           created_at?: string;
           updated_at?: string;
         };
@@ -285,6 +288,38 @@ export type Database = {
           accepted_at?: string | null;
           created_at?: string;
           updated_at?: string;
+        };
+      };
+      signup_invites: {
+        Row: {
+          id: string;
+          invite_code: string;
+          created_by: string;
+          used_by: string | null;
+          status: 'pending' | 'used' | 'expired' | 'revoked';
+          expires_at: string | null;
+          created_at: string;
+          used_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          invite_code: string;
+          created_by: string;
+          used_by?: string | null;
+          status?: 'pending' | 'used' | 'expired' | 'revoked';
+          expires_at?: string | null;
+          created_at?: string;
+          used_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          invite_code?: string;
+          created_by?: string;
+          used_by?: string | null;
+          status?: 'pending' | 'used' | 'expired' | 'revoked';
+          expires_at?: string | null;
+          created_at?: string;
+          used_at?: string | null;
         };
       };
     };

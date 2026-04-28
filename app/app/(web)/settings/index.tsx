@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useProfile } from '../../../lib/data/queries/use-profile';
 import { usePartner } from '../../../lib/data/queries/use-partner';
 import { JourneyStream, BibleTranslation } from '../../../store/user-store';
-import { supabase } from '../../../lib/supabase/config';
+import { supabase, getCurrentUser } from '../../../lib/supabase/config';
+import { isAdmin } from '../../../lib/admin/admin-service';
+import { ChangePasswordForm } from '../../../features/auth/components/change-password-form';
 
 const streams: { id: JourneyStream; label: string; description: string }[] = [
   { id: 'strengthen', label: 'Strengthen', description: 'Deepen and strengthen your marriage bond' },
@@ -23,6 +25,20 @@ export default function SettingsWeb() {
     profile?.selected_translation || 'NIV'
   );
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
+  const [isUserAdmin, setIsUserAdmin] = useState(false);
+  const [showPasswordChange, setShowPasswordChange] = useState(false);
+
+  useEffect(() => {
+    checkAdminStatus();
+  }, []);
+
+  const checkAdminStatus = async () => {
+    const user = await getCurrentUser();
+    if (user) {
+      const adminStatus = await isAdmin(user.id);
+      setIsUserAdmin(adminStatus);
+    }
+  };
 
   const handleSavePreferences = async () => {
     try {
@@ -153,10 +169,37 @@ export default function SettingsWeb() {
           </button>
         </section>
 
+        {/* Admin Section */}
+        {isUserAdmin && (
+          <section className="mb-12">
+            <h2 className="text-lg font-bold text-charcoal mb-4">Admin</h2>
+            <button
+              onClick={() => navigate('/admin')}
+              className="w-full p-5 rounded-[20px] border-2 border-wine bg-wine/10 hover:bg-wine/20 transition-colors text-left"
+            >
+              <p className="text-wine font-bold mb-1">Manage Invites</p>
+              <p className="text-charcoal/60 text-sm">
+                Create and manage signup invite codes
+              </p>
+            </button>
+          </section>
+        )}
+
         {/* Account Actions */}
         <section className="mb-12">
           <h2 className="text-lg font-bold text-charcoal mb-4">Account</h2>
           <div className="space-y-3">
+            {/* Change Password */}
+            <button
+              onClick={() => setShowPasswordChange(true)}
+              className="w-full p-5 rounded-[20px] border-2 border-cream-dark bg-white hover:border-sage transition-colors text-left"
+            >
+              <p className="text-charcoal font-bold mb-1">Change Password</p>
+              <p className="text-charcoal/60 text-sm">
+                Update your account password
+              </p>
+            </button>
+
             {/* Export Data */}
             <button
               onClick={() => alert('Export feature coming soon!')}
@@ -212,6 +255,23 @@ export default function SettingsWeb() {
         {/* Spacer */}
         <div className="h-20" />
       </div>
+
+      {/* Password Change Modal */}
+      {showPasswordChange && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-[20px] p-6 max-w-md w-full">
+            <h2 className="text-2xl font-bold text-charcoal mb-4">Change Password</h2>
+            <ChangePasswordForm
+              onSuccess={() => {
+                setShowPasswordChange(false);
+                setSaveMessage('✓ Password updated successfully');
+                setTimeout(() => setSaveMessage(null), 3000);
+              }}
+              onCancel={() => setShowPasswordChange(false)}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

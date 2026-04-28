@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import { Text, View, Pressable, ScrollView, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
@@ -7,6 +7,9 @@ import { usePartnerStore } from '../../store/partner-store';
 import { resetAppState } from '../../lib/reset-app-state';
 import { usePartnerLinking } from '../../features/partner/hooks/use-partner-linking';
 import { useAuthStore } from '../../store/auth-store';
+import { getCurrentUser } from '../../lib/supabase/config';
+import { isAdmin } from '../../lib/admin/admin-service';
+import { signOut } from '../../lib/auth/auth-service';
 
 const streams: { id: JourneyStream; label: string }[] = [
   { id: 'strengthen', label: 'Strengthen' },
@@ -19,10 +22,27 @@ const translations: BibleTranslation[] = ['NIV', 'ESV', 'KJV', 'NLT', 'NKJV'];
 export default function SettingsScreen() {
   const router = useRouter();
   const [isResetting, setIsResetting] = useState(false);
+  const [isUserAdmin, setIsUserAdmin] = useState(false);
   const { selectedStream, selectedTranslation, setStream, setTranslation } = useUserStore();
   const linkedPartners = usePartnerStore((state) => state.getLinkedPartners());
   const userId = useAuthStore((state) => state.user?.id);
   const { fetchLinkedPartners } = usePartnerLinking();
+
+  useEffect(() => {
+    checkAdminStatus();
+  }, []);
+
+  const checkAdminStatus = async () => {
+    try {
+      const user = await getCurrentUser();
+      if (user) {
+        const adminStatus = await isAdmin(user.id);
+        setIsUserAdmin(adminStatus);
+      }
+    } catch (error) {
+      console.error('Error checking admin status:', error);
+    }
+  };
 
   useFocusEffect(
     useCallback(() => {
@@ -66,6 +86,29 @@ export default function SettingsScreen() {
           style: 'destructive',
           onPress: () => {
             void handleStartOver();
+          },
+        },
+      ]
+    );
+  };
+
+  const handleLogout = async () => {
+    Alert.alert(
+      'Log Out',
+      'Are you sure you want to log out? Your data will remain saved and you can log back in anytime.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Log Out',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await signOut();
+              router.replace('/(web)/auth/sign-in');
+            } catch (error) {
+              console.error('Logout error:', error);
+              Alert.alert('Error', 'Unable to log out right now. Please try again.');
+            }
           },
         },
       ]
@@ -123,6 +166,34 @@ export default function SettingsScreen() {
             {linkedPartners.length > 0
               ? `${linkedPartners.length} partner(s) linked`
               : 'Link your journey with a partner'}
+          </Text>
+        </Pressable>
+      </View>
+
+      {isUserAdmin && (
+        <View className="mb-12">
+          <Text className="text-lg font-bold text-charcoal mb-4">Admin</Text>
+          <Pressable
+            onPress={() => router.push('/(web)/admin')}
+            className="p-5 rounded-[20px] border-2 border-wine bg-wine/10"
+          >
+            <Text className="text-wine font-bold mb-1">Manage Invites</Text>
+            <Text className="text-charcoal/60 text-sm">
+              Create and manage signup invite codes
+            </Text>
+          </Pressable>
+        </View>
+      )}
+
+      <View className="mb-12">
+        <Text className="text-lg font-bold text-charcoal mb-4">Account</Text>
+        <Pressable
+          onPress={handleLogout}
+          className="p-5 rounded-[20px] border-2 border-wine bg-wine/10"
+        >
+          <Text className="text-wine font-bold mb-1">Log Out</Text>
+          <Text className="text-charcoal/60 text-sm">
+            Sign out of your account. Your data will remain saved.
           </Text>
         </Pressable>
       </View>
