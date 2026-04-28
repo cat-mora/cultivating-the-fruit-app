@@ -35,30 +35,79 @@ export default function SignIn() {
   };
 
   return (
-    <div>
-      <h2
+    <div
+      style={{
+        minHeight: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: 'linear-gradient(135deg, #FFF9F0 0%, #F5EDE0 100%)',
+        padding: '20px',
+      }}
+    >
+      {/* Logo/Header */}
+      <div
         style={{
-          fontSize: '24px',
-          fontWeight: '700',
-          color: '#6B2D3E',
-          margin: '0 0 8px 0',
-          fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
+          textAlign: 'center',
+          marginBottom: '32px',
         }}
       >
-        Welcome Back
-      </h2>
-      <p
-        style={{
-          fontSize: '14px',
-          color: '#8B6F47',
-          margin: '0 0 32px 0',
-          fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
-        }}
-      >
-        Sign in to continue your spiritual journey
-      </p>
+        <img
+          src={require('../../../assets/images/logo-full.png')}
+          alt="Cultivating the Fruits"
+          style={{
+            maxWidth: '280px',
+            height: 'auto',
+            marginBottom: '12px',
+          }}
+        />
+        <p
+          style={{
+            fontSize: '15px',
+            color: '#8B6F47',
+            margin: 0,
+            fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
+          }}
+        >
+          Grow your spiritual life, one day at a time
+        </p>
+      </div>
 
-      <form onSubmit={handleSubmit}>
+      {/* Auth Form Container */}
+      <div
+        style={{
+          width: '100%',
+          maxWidth: '420px',
+          background: '#FFFFFF',
+          borderRadius: '16px',
+          boxShadow: '0 4px 20px rgba(107, 45, 62, 0.1)',
+          padding: '40px 32px',
+        }}
+      >
+        <h2
+          style={{
+            fontSize: '24px',
+            fontWeight: '700',
+            color: '#6B2D3E',
+            margin: '0 0 8px 0',
+            fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
+          }}
+        >
+          Welcome Back
+        </h2>
+        <p
+          style={{
+            fontSize: '14px',
+            color: '#8B6F47',
+            margin: '0 0 32px 0',
+            fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
+          }}
+        >
+          Sign in to continue your spiritual journey
+        </p>
+
+        <form onSubmit={handleSubmit}>
         {/* Email Input */}
         <div style={{ marginBottom: '20px' }}>
           <label
@@ -195,27 +244,28 @@ export default function SignIn() {
         </button>
       </form>
 
-      {/* Sign Up Link */}
-      <div
-        style={{
-          marginTop: '24px',
-          textAlign: 'center',
-          fontSize: '14px',
-          color: '#8B6F47',
-          fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
-        }}
-      >
-        Don't have an account?{' '}
-        <Link
-          href="/(web)/auth/sign-up"
+        {/* Sign Up Link */}
+        <div
           style={{
-            color: '#6B2D3E',
-            fontWeight: '600',
-            textDecoration: 'none',
+            marginTop: '24px',
+            textAlign: 'center',
+            fontSize: '14px',
+            color: '#8B6F47',
+            fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
           }}
         >
-          Sign Up
-        </Link>
+          Don't have an account?{' '}
+          <Link
+            href="/(web)/auth/sign-up"
+            style={{
+              color: '#6B2D3E',
+              fontWeight: '600',
+              textDecoration: 'none',
+            }}
+          >
+            Sign Up
+          </Link>
+        </div>
       </div>
     </div>
   );
