@@ -69,7 +69,7 @@ export default function SignUp() {
         }}
       >
         <img
-          src="/assets/images/logo-full.png"
+          src={require('../../../assets/images/logo-full.png')}
           alt="Cultivating the Fruits"
           style={{
             maxWidth: '280px',
