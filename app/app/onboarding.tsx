@@ -34,13 +34,7 @@ export default function OnboardingScreen() {
 
   return (
     <ScrollView className="flex-1 bg-cream p-6">
-      {/* Decorative Fruit Cluster */}
-      <View className="mt-16 mb-4 items-center">
-        <Text className="text-6xl">🍇🍎🍊</Text>
-        <Text className="text-4xl mt-1">🫒🍋🍑</Text>
-      </View>
-
-      <View className="mb-8 items-center">
+      <View className="mt-16 mb-8 items-center">
         <Text className="text-4xl font-serif text-wine mb-2">Welcome</Text>
         <Text className="text-charcoal/70 text-lg text-center">Choose your journey stream to begin cultivating the fruits of the spirit.</Text>
       </View>
@@ -57,14 +51,11 @@ export default function OnboardingScreen() {
                 isSelected ? colors.selected : 'border-charcoal/10 bg-white'
               }`}
             >
-              <View className="flex-row items-center gap-3">
-                <Text className="text-2xl">{stream.emoji}</Text>
-                <View className="flex-1">
-                  <Text className={`text-xl font-bold ${isSelected ? colors.text : 'text-charcoal'}`}>
-                    {stream.label}
-                  </Text>
-                  <Text className="text-charcoal/60 mt-1">{stream.description}</Text>
-                </View>
+              <View>
+                <Text className={`text-xl font-bold ${isSelected ? colors.text : 'text-charcoal'}`}>
+                  {stream.label}
+                </Text>
+                <Text className="text-charcoal/60 mt-1">{stream.description}</Text>
               </View>
             </Pressable>
           );

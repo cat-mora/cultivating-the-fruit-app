@@ -29,27 +29,15 @@ export default function AuthLayout() {
           marginBottom: '40px',
         }}
       >
-        <h1
+        <img
+          src={require('../../../assets/images/logo-full.png')}
+          alt="Cultivating the Fruits"
           style={{
-            fontSize: '32px',
-            fontWeight: '700',
-            color: '#6B2D3E',
-            margin: '0 0 8px 0',
-            fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
+            maxWidth: '280px',
+            height: 'auto',
+            margin: '0 auto',
           }}
-        >
-          🍇 Cultivating the Fruits
-        </h1>
-        <p
-          style={{
-            fontSize: '16px',
-            color: '#8B6F47',
-            margin: 0,
-            fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
-          }}
-        >
-          Grow your spiritual life, one day at a time
-        </p>
+        />
       </div>
 
       {/* Auth Form Container */}

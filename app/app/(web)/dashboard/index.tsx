@@ -54,11 +54,8 @@ export default function DashboardWeb() {
       <div className="max-w-2xl mx-auto p-6 pb-8">
         {/* Header */}
         <header className="mt-14 mb-6">
-          <div className="flex items-center gap-3 mb-1">
-            <span className="text-3xl">🍇</span>
-            <h1 className="text-3xl font-serif text-wine">{content.fruit_theme}</h1>
-          </div>
-          <p className="text-charcoal/50 text-sm font-semibold ml-1">Day {content.day_number}</p>
+          <h1 className="text-3xl font-serif text-wine mb-1">{content.fruit_theme}</h1>
+          <p className="text-charcoal/50 text-sm font-semibold">Day {content.day_number}</p>
         </header>
 
         {/* Streak Badge */}
