@@ -1,6 +1,9 @@
 import { ReactNode } from 'react';
+import { Image } from 'react-native';
 
 export default function AuthLayout({ children }: { children: ReactNode }) {
+  const logoSrc = Image.resolveAssetSource(require('../../../assets/images/logo-full.png'))?.uri;
+
   return (
     <div
       style={{
@@ -15,7 +18,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
     >
       <div style={{ textAlign: 'center', marginBottom: '40px' }}>
         <img
-          src={require('../../../assets/images/logo-full.png')}
+          src={logoSrc}
           alt="Cultivating the Fruit"
           style={{ maxWidth: '280px', height: 'auto', margin: '0 auto' }}
         />
