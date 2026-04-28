@@ -1,4 +1,4 @@
-# Instructions for Cat-Mora: Adding UI to Working Backend
+# Instructions for Cat-Mora: Merging Your UI to Working Backend
 
 ## ✅ GOOD NEWS
 The main repository now has ALL the working backend:
@@ -9,158 +9,239 @@ The main repository now has ALL the working backend:
 - ✅ All API/data queries
 
 ## 🎯 YOUR TASK
-Add your UI improvements WITHOUT breaking the backend.
+Copy your UI files from your fork to the main branch WITHOUT breaking the backend.
 
 ---
 
-## STEP 1: Fetch the Correct Repository
+## STEP 1: Setup
 
-```bash
-# Make sure you're pointing to the right repo
-git remote -v
-# Should show: origin  https://github.com/cat-mora/cultivating-the-fruit-app.git
+**Copy and paste this to Claude:**
 
-# Fetch latest changes
-git fetch origin
+```
+I need to merge UI files from my fork to the main repository.
 
-# Create a new branch from the working main
-git checkout -b ui-improvements origin/main
+SETUP:
+1. Make sure I'm in the correct directory
+2. Check current remotes: git remote -v
+3. Add my fork as a remote if not already added:
+   git remote add my-fork https://github.com/cat-mora/cultivating-the-fruit-app.git
+   (or whatever my fork URL is)
+4. Fetch from both:
+   git fetch origin
+   git fetch my-fork
+5. Create a new branch from the working main:
+   git checkout -b ui-merge origin/main
 ```
 
 ---
 
-## STEP 2: Tell Claude What to Do
+## STEP 2: Cherry-Pick Your UI Files
 
 **Copy and paste this EXACT prompt to Claude:**
 
 ```
-I need to update ONLY the UI files to add the logo and styling improvements.
+I need to copy SPECIFIC UI files from my fork to this branch.
 
-CRITICAL RULES:
-1. Do NOT modify ANY backend files
-2. Do NOT touch database migrations
-3. Do NOT change environment config
-4. ONLY update the 5 UI files listed below
+MY FORK INFO:
+- Fork remote name: my-fork
+- Commit with working UI: 2658bb5 (or latest commit from my fork)
 
-FILES TO UPDATE (and ONLY these files):
+FILES TO COPY FROM MY FORK (and ONLY these):
+1. app/app/(web)/auth/sign-in.tsx
+2. app/app/(web)/auth/sign-up.tsx
+3. app/app/(web)/layouts/auth-layout.tsx
+4. app/app/(web)/dashboard/index.tsx
+5. app/app/onboarding.tsx
+6. app/global.web.css
+
+IMPORTANT RULES:
+- ONLY copy these 6 files
+- Do NOT copy: env.ts, admin files, database files, or any backend code
+- After copying, MUST convert react-router-dom to expo-router if needed
+
+STEPS:
+1. For EACH file above, run:
+   git show my-fork/main:path/to/file > path/to/file
+
+   Example:
+   git show my-fork/main:app/app/(web)/auth/sign-in.tsx > app/app/(web)/auth/sign-in.tsx
+
+2. After copying ALL 6 files, check what we got:
+   git diff origin/main --name-only
+
+3. CRITICAL: If the files use react-router-dom, convert to expo-router:
+   - Change: import { useNavigate } from 'react-router-dom'
+   - To: import { useRouter } from 'expo-router'
+   - Change: const navigate = useNavigate()
+   - To: const router = useRouter()
+   - Change: navigate('/path')
+   - To: router.replace('/path') or router.push('/path')
+   - Change: <Link to="/path">
+   - To: <Link href="/path">
+
+4. Verify ONLY these 6 files changed:
+   git status
+
+5. If you see ANY other files (especially env.ts, migrations, admin files):
+   STOP and tell me immediately!
+```
+
+---
+
+## STEP 3: Verify No Backend Changes
+
+**Tell Claude:**
+
+```
+Show me what files changed:
+git diff origin/main --name-status
+
+Expected output should ONLY show:
+M       app/app/(web)/auth/sign-in.tsx
+M       app/app/(web)/auth/sign-up.tsx
+M       app/app/(web)/layouts/auth-layout.tsx
+M       app/app/(web)/dashboard/index.tsx
+M       app/app/onboarding.tsx
+M       app/global.web.css
+
+If you see:
+- D (deleted files) - STOP! We're deleting something
+- Changes to app/lib/* - STOP! We're modifying backend
+- Changes to database/* - STOP! We're touching migrations
+
+If everything looks good, show me a summary:
+git diff origin/main --stat
+```
+
+---
+
+## STEP 4: Test the Changes
+
+**Tell Claude:**
+
+```
+Before committing, let's verify the auth files work with expo-router:
+
+1. Check app/app/(web)/auth/sign-in.tsx:
+   - Should import from 'expo-router' NOT 'react-router-dom'
+   - Should use useRouter() not useNavigate()
+   - Should use <Link href="..."> not <Link to="...">
+
+2. Check app/app/(web)/auth/sign-up.tsx:
+   - Same as above
+
+3. Check app/app/(web)/layouts/auth-layout.tsx:
+   - Should use require() for logo image
+   - Should NOT use <Outlet> from react-router-dom
+   - Should render children directly for expo-router
+
+If any files still have react-router-dom imports, fix them now.
+```
+
+---
+
+## STEP 5: Commit and Push
+
+**Tell Claude:**
+
+```
+Everything looks good! Now commit and push:
+
+git add app/app/(web)/auth/sign-in.tsx
+git add app/app/(web)/auth/sign-up.tsx
+git add app/app/(web)/layouts/auth-layout.tsx
+git add app/app/(web)/dashboard/index.tsx
+git add app/app/onboarding.tsx
+git add app/global.web.css
+
+git commit -m "feat: Merge UI improvements from fork
+
+- Add logo image to auth screens
+- Remove fruit emojis from UI
+- Update auth layout with tagline
+- Clean dashboard and onboarding styling
+- Convert react-router to expo-router where needed
+- Keep all backend functionality intact"
+
+git push origin ui-merge
+```
+
+---
+
+## STEP 6: Create Pull Request
+
+1. Go to: https://github.com/cat-mora/cultivating-the-fruit-app
+2. You should see: "Compare & pull request" for `ui-merge` branch
+3. Click it
+4. Verify the "Files changed" tab shows ONLY the 6 UI files
+5. Title: "Merge UI improvements from fork"
+6. Create pull request
+
+---
+
+## 🚨 RED FLAGS - Stop Immediately If:
+
+- ❌ Files being deleted (shows as `D` in git status)
+- ❌ Changes to `app/lib/env.ts`
+- ❌ Changes to `app/lib/supabase/config.ts`
+- ❌ Changes to `database/migrations/*`
+- ❌ Changes to `app/lib/admin/*`
+- ❌ Any file in `app/features/admin/`
+- ❌ More than 6 files changed
+
+**If you see any of these, run:**
+```bash
+git reset --hard origin/main
+```
+And start over.
+
+---
+
+## Alternative: If You Can't Access Your Fork
+
+If you can't fetch from your fork, manually copy the UI files:
+
+```
+I'll manually update these 6 files with my UI design:
 
 1. app/app/(web)/auth/sign-in.tsx
    - Add full-page layout with logo
    - Use: require('../../../assets/images/logo-full.png')
-   - Keep Expo Router (useRouter, not useNavigate)
-   - Background: linear-gradient(135deg, #FFF9F0 0%, #F5EDE0 100%)
+   - Gradient background: linear-gradient(135deg, #FFF9F0 0%, #F5EDE0 100%)
+   - Centered white card with form
+   - Tagline: "Grow your spiritual life, one day at a time"
 
 2. app/app/(web)/auth/sign-up.tsx
    - Same layout as sign-in
-   - Logo + tagline + centered white card
-   - Keep Expo Router
 
-3. app/app/(web)/dashboard/index.tsx
-   - Remove fruit emoji from header (line ~58)
-   - Keep everything else the same
+3. app/app/(web)/layouts/auth-layout.tsx
+   - Replace emoji with logo image
+   - Add tagline below logo
 
-4. app/app/onboarding.tsx
-   - Remove decorative fruit cluster (lines ~37-41)
-   - Remove stream emojis from cards
+4. app/app/(web)/dashboard/index.tsx
+   - Remove fruit emoji from header
 
-5. app/global.web.css
-   - Update logo-banner styling:
+5. app/app/onboarding.tsx
+   - Remove fruit emoji cluster
+   - Remove stream emojis
+
+6. app/global.web.css
+   - Update .logo-banner with:
      background: white;
      padding: 16px 20px;
      box-shadow: 0 2px 8px rgba(61, 122, 154, 0.15);
      border-bottom: 3px solid #3D7A9A;
 
-BEFORE making changes:
-- Run: git diff origin/main --name-only
-- Should show: nothing (clean start)
-
-AFTER making changes:
-- Run: git diff origin/main --name-only
-- Should show: ONLY the 5 files above
-- If you see env.ts, admin-service.ts, or migrations/* - STOP IMMEDIATELY
-
-Then commit and push to THIS branch (ui-improvements), NOT main.
+Make these changes ONLY to these files.
 ```
-
----
-
-## STEP 3: Verify Changes
-
-After Claude makes changes:
-
-```bash
-# Check what files changed
-git diff origin/main --name-only
-
-# Expected output (ONLY these files):
-# app/app/(web)/auth/sign-in.tsx
-# app/app/(web)/auth/sign-up.tsx
-# app/app/(web)/dashboard/index.tsx
-# app/app/onboarding.tsx
-# app/global.web.css
-```
-
-**If you see ANY other files - DO NOT COMMIT!**
-
----
-
-## STEP 4: Commit and Push
-
-```bash
-# Add only the UI files
-git add app/app/(web)/auth/sign-in.tsx
-git add app/app/(web)/auth/sign-up.tsx
-git add app/app/(web)/dashboard/index.tsx
-git add app/app/onboarding.tsx
-git add app/global.web.css
-
-# Commit
-git commit -m "feat: Add logo and clean UI styling
-
-- Replace emoji with actual logo image
-- Add tagline: Grow your spiritual life, one day at a time
-- Remove fruit emojis from dashboard and onboarding
-- Update logo banner styling
-- Keep all backend functionality intact"
-
-# Push to your branch
-git push origin ui-improvements
-```
-
----
-
-## STEP 5: Create Pull Request
-
-1. Go to: https://github.com/cat-mora/cultivating-the-fruit-app
-2. Click "Compare & pull request"
-3. Base: main
-4. Compare: ui-improvements
-5. Title: "Add logo and clean UI styling"
-6. Description: "UI-only changes - no backend modifications"
-7. Create pull request
-
----
-
-## 🚨 RED FLAGS - Stop if you see:
-
-- ❌ Changes to `app/lib/env.ts`
-- ❌ Changes to `app/lib/supabase/config.ts`
-- ❌ Changes to `database/migrations/*`
-- ❌ Changes to `app/lib/admin/*`
-- ❌ Deleted files (admin-service.ts, invite-code-manager.tsx, etc.)
-- ❌ Import changes from `expo-router` to `react-router-dom`
-
-If Claude tries to change ANY of these - say:
-> "STOP. Do not modify backend files. Only update the 5 UI files I listed."
 
 ---
 
 ## Questions?
 
-If Claude gets confused or suggests modifying backend files:
-1. Stop immediately
-2. Ask it to show you: `git diff origin/main --stat`
-3. Verify only UI files are changing
-4. If not, reset and start over: `git reset --hard origin/main`
+If something goes wrong:
+1. `git status` - see what's changed
+2. `git diff origin/main --name-only` - list changed files
+3. `git reset --hard origin/main` - start over if needed
 
-Good luck! 🎉
+Good luck! 🚀
