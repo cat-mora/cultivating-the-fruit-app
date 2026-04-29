@@ -7,7 +7,8 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "test": "jest"
+    "test": "jest",
+    "build:web": "npx tailwindcss -i ./web-tailwind.input.css -o ./global.web.generated.css --minify && npx expo export -p web && cp global.web.generated.css dist/ && cp global.web.css dist/ && node -e \"require('fs').copyFileSync('dist/index.html','dist/404.html')\""
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",
