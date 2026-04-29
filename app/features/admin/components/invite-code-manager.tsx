@@ -5,6 +5,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, FlatList, ActivityIndicator, Alert } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { getCurrentUser } from '../../../lib/supabase/config';
 import {
   createSignupInvite,
@@ -26,6 +27,7 @@ export default function InviteCodeManager({ platform }: InviteCodeManagerProps) 
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
   const [adminUserId, setAdminUserId] = useState<string | null>(null);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   useEffect(() => {
     loadInvites();
@@ -190,50 +192,68 @@ export default function InviteCodeManager({ platform }: InviteCodeManagerProps) 
     );
   };
 
-  if (loading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#4CAF50" />
-        <Text style={styles.loadingText}>Loading invites...</Text>
-      </View>
-    );
-  }
-
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Invite Code Manager</Text>
-        <Text style={styles.subtitle}>
-          Create and manage signup invite codes for new users
-        </Text>
-      </View>
-
+      {/* Collapsible Header - Always Visible */}
       <TouchableOpacity
-        style={[styles.createButton, creating && styles.createButtonDisabled]}
-        onPress={handleCreateInvite}
-        disabled={creating}
+        style={styles.collapsibleHeader}
+        onPress={() => setIsExpanded(!isExpanded)}
+        activeOpacity={0.7}
       >
-        {creating ? (
-          <ActivityIndicator color="#FFF" />
-        ) : (
-          <Text style={styles.createButtonText}>Create New Invite Code</Text>
-        )}
-      </TouchableOpacity>
-
-      {invites.length === 0 ? (
-        <View style={styles.emptyState}>
-          <Text style={styles.emptyStateText}>No invite codes created yet</Text>
-          <Text style={styles.emptyStateSubtext}>
-            Create your first invite code to allow new users to sign up
+        <View>
+          <Text style={styles.title}>Invite Code Manager</Text>
+          <Text style={styles.subtitle}>
+            {invites.length} {invites.length === 1 ? 'code' : 'codes'} generated
           </Text>
         </View>
-      ) : (
-        <FlatList
-          data={invites}
-          renderItem={renderInviteItem}
-          keyExtractor={(item) => item.id}
-          contentContainerStyle={styles.listContainer}
+        <Ionicons
+          name={isExpanded ? 'chevron-up' : 'chevron-down'}
+          size={24}
+          color="#666"
         />
+      </TouchableOpacity>
+
+      {/* Expanded Content - Only Visible When Expanded */}
+      {isExpanded && (
+        <View style={styles.expandedContent}>
+          {loading ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color="#4CAF50" />
+              <Text style={styles.loadingText}>Loading invites...</Text>
+            </View>
+          ) : (
+            <>
+              <TouchableOpacity
+                style={[styles.createButton, creating && styles.createButtonDisabled]}
+                onPress={handleCreateInvite}
+                disabled={creating}
+              >
+                {creating ? (
+                  <ActivityIndicator color="#FFF" />
+                ) : (
+                  <Text style={styles.createButtonText}>Create New Invite Code</Text>
+                )}
+              </TouchableOpacity>
+
+              {invites.length === 0 ? (
+                <View style={styles.emptyState}>
+                  <Text style={styles.emptyStateText}>No invite codes created yet</Text>
+                  <Text style={styles.emptyStateSubtext}>
+                    Create your first invite code to allow new users to sign up
+                  </Text>
+                </View>
+              ) : (
+                <FlatList
+                  data={invites}
+                  renderItem={renderInviteItem}
+                  keyExtractor={(item) => item.id}
+                  contentContainerStyle={styles.listContainer}
+                  scrollEnabled={false}
+                />
+              )}
+            </>
+          )}
+        </View>
       )}
     </View>
   );
@@ -241,33 +261,37 @@ export default function InviteCodeManager({ platform }: InviteCodeManagerProps) 
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: '#FFF',
   },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
+  collapsibleHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#F5F5F5',
-  },
-  loadingText: {
-    marginTop: 16,
-    fontSize: 16,
-    color: '#666',
-  },
-  header: {
-    padding: 24,
+    padding: 20,
     backgroundColor: '#FFF',
     borderBottomWidth: 1,
     borderBottomColor: '#E0E0E0',
   },
   title: {
-    fontSize: 28,
+    fontSize: 18,
     fontWeight: 'bold',
     color: '#333',
-    marginBottom: 8,
+    marginBottom: 4,
   },
   subtitle: {
+    fontSize: 14,
+    color: '#666',
+  },
+  expandedContent: {
+    backgroundColor: '#F5F5F5',
+  },
+  loadingContainer: {
+    padding: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    marginTop: 16,
     fontSize: 16,
     color: '#666',
   },
@@ -356,7 +380,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   emptyState: {
-    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 32,
