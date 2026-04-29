@@ -249,6 +249,34 @@ export async function getAdminInvites(adminUserId: string): Promise<SignupInvite
 }
 
 /**
+ * Get ALL invite codes in the system (admin only)
+ * Shows codes from all admins with their status
+ * @returns Array of all invite codes
+ */
+export async function getAllInvites(): Promise<SignupInvite[]> {
+  if (!isSupabaseEnabled) {
+    return [];
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from('signup_invites')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Error fetching all invites:', error);
+      return [];
+    }
+
+    return data || [];
+  } catch (error) {
+    console.error('Error fetching all invites:', error);
+    return [];
+  }
+}
+
+/**
  * Revoke a pending invite code
  * @param inviteId - The ID of the invite to revoke
  * @param adminUserId - The ID of the admin revoking the invite

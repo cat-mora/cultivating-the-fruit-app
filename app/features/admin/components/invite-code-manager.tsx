@@ -9,6 +9,7 @@ import { getCurrentUser } from '../../../lib/supabase/config';
 import {
   createSignupInvite,
   getAdminInvites,
+  getAllInvites,
   revokeInvite,
   isAdmin,
 } from '../../../lib/admin/admin-service';
@@ -49,8 +50,8 @@ export default function InviteCodeManager({ platform }: InviteCodeManagerProps) 
 
       setAdminUserId(user.id);
 
-      // Load invites
-      const invitesData = await getAdminInvites(user.id);
+      // Load ALL invites (not just ones created by this admin)
+      const invitesData = await getAllInvites();
       setInvites(invitesData);
     } catch (error) {
       console.error('Error loading invites:', error);
@@ -137,13 +138,16 @@ export default function InviteCodeManager({ platform }: InviteCodeManagerProps) 
   const renderInviteItem = ({ item }: { item: SignupInvite }) => {
     const isExpired = item.expires_at && new Date(item.expires_at) < new Date();
     const statusText = isExpired && item.status === 'pending' ? 'Expired' : item.status;
+    const isRedeemed = item.status === 'used';
 
     return (
       <View style={styles.inviteCard}>
         <View style={styles.inviteHeader}>
           <Text style={styles.inviteCode}>{item.invite_code}</Text>
           <View style={[styles.statusBadge, { backgroundColor: getStatusColor(statusText) }]}>
-            <Text style={styles.statusText}>{statusText.toUpperCase()}</Text>
+            <Text style={styles.statusText}>
+              {isRedeemed ? 'REDEEMED' : statusText.toUpperCase()}
+            </Text>
           </View>
         </View>
 
@@ -158,8 +162,18 @@ export default function InviteCodeManager({ platform }: InviteCodeManagerProps) 
           </View>
           {item.used_at && (
             <View style={styles.detailRow}>
-              <Text style={styles.detailLabel}>Used:</Text>
-              <Text style={styles.detailValue}>{formatDate(item.used_at)}</Text>
+              <Text style={styles.detailLabel}>Redeemed:</Text>
+              <Text style={[styles.detailValue, styles.redeemedText]}>
+                {formatDate(item.used_at)}
+              </Text>
+            </View>
+          )}
+          {item.used_by && isRedeemed && (
+            <View style={styles.detailRow}>
+              <Text style={styles.detailLabel}>Used By:</Text>
+              <Text style={styles.detailValue}>
+                {item.used_by.substring(0, 8)}...
+              </Text>
             </View>
           )}
         </View>
@@ -324,6 +338,10 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#333',
     fontWeight: '500',
+  },
+  redeemedText: {
+    color: '#2196F3',
+    fontWeight: '600',
   },
   revokeButton: {
     backgroundColor: '#F44336',
