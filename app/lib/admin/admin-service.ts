@@ -306,3 +306,101 @@ export async function revokeInvite(inviteId: string, adminUserId: string): Promi
     return false;
   }
 }
+
+/**
+ * User data for admin dashboard
+ */
+export interface AdminUserData {
+  id: string;
+  email: string | null;
+  created_at: string;
+  signup_code: string | null;
+  has_partner_link: boolean;
+  partner_count: number;
+}
+
+/**
+ * Get all users with their signup and partner information (admin only)
+ * @returns Array of users with signup code and partner link status
+ */
+export async function getAllUsers(): Promise<AdminUserData[]> {
+  if (!isSupabaseEnabled) {
+    return [];
+  }
+
+  try {
+    // Get all profiles
+    const { data: profiles, error: profilesError } = await supabase
+      .from('profiles')
+      .select('id, email, created_at')
+      .order('created_at', { ascending: false });
+
+    if (profilesError) {
+      console.error('Error fetching profiles:', profilesError);
+      return [];
+    }
+
+    if (!profiles || profiles.length === 0) {
+      return [];
+    }
+
+    // Get all signup invites that were used
+    const { data: usedInvites, error: invitesError } = await supabase
+      .from('signup_invites')
+      .select('used_by, invite_code')
+      .eq('status', 'used')
+      .not('used_by', 'is', null);
+
+    if (invitesError) {
+      console.error('Error fetching used invites:', invitesError);
+    }
+
+    // Create a map of user_id -> invite_code
+    const inviteMap = new Map<string, string>();
+    if (usedInvites) {
+      usedInvites.forEach((invite) => {
+        if (invite.used_by) {
+          inviteMap.set(invite.used_by, invite.invite_code);
+        }
+      });
+    }
+
+    // Get all partner links
+    const { data: partnerLinks, error: partnerError } = await supabase
+      .from('partner_links')
+      .select('creator_id, partner_id, status');
+
+    if (partnerError) {
+      console.error('Error fetching partner links:', partnerError);
+    }
+
+    // Create a map of user_id -> partner count
+    const partnerMap = new Map<string, number>();
+    if (partnerLinks) {
+      partnerLinks.forEach((link) => {
+        // Count for creator
+        if (link.status === 'accepted') {
+          partnerMap.set(link.creator_id, (partnerMap.get(link.creator_id) || 0) + 1);
+          if (link.partner_id) {
+            partnerMap.set(link.partner_id, (partnerMap.get(link.partner_id) || 0) + 1);
+          }
+        }
+      });
+    }
+
+    // Combine all data
+    const userData: AdminUserData[] = profiles.map((profile) => ({
+      id: profile.id,
+      email: profile.email,
+      created_at: profile.created_at,
+      signup_code: inviteMap.get(profile.id) || null,
+      has_partner_link: partnerMap.has(profile.id),
+      partner_count: partnerMap.get(profile.id) || 0,
+    }));
+
+    return userData;
+  } catch (error) {
+    console.error('Error fetching all users:', error);
+    return [];
+  }
+}

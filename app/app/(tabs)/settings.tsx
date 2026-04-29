@@ -9,6 +9,7 @@ import { usePartnerLinking } from '../../features/partner/hooks/use-partner-link
 import { useAuthStore } from '../../store/auth-store';
 import { isAdmin } from '../../lib/admin/admin-service';
 import InviteCodeManager from '../../features/admin/components/invite-code-manager';
+import UserDashboard from '../../features/admin/components/user-dashboard';
 import { supabase, isSupabaseEnabled } from '../../lib/supabase/config';
 
 const streams: { id: JourneyStream; label: string }[] = [
@@ -239,6 +240,13 @@ export default function SettingsScreen() {
       {!isCheckingAdmin && isUserAdmin && (
         <View className="mb-12">
           <Text className="text-lg font-bold text-charcoal mb-4">Admin Tools</Text>
+
+          {/* User Dashboard */}
+          <View className="bg-white rounded-[20px] border-2 border-wine/20 overflow-hidden mb-4">
+            <UserDashboard platform="native" />
+          </View>
+
+          {/* Invite Code Manager */}
           <View className="bg-white rounded-[20px] border-2 border-wine/20 overflow-hidden">
             <InviteCodeManager platform="native" />
           </View>
