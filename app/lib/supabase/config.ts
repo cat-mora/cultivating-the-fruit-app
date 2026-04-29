@@ -321,6 +321,82 @@ export type Database = {
           used_at?: string | null;
         };
       };
+      custom_verses: {
+        Row: {
+          id: string;
+          verse_reference: string;
+          niv_text: string;
+          esv_text: string;
+          kjv_text: string;
+          nlt_text: string;
+          nkjv_text: string;
+          stream: 'strengthen' | 'repair' | 'family' | null;
+          created_by: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          verse_reference: string;
+          niv_text: string;
+          esv_text: string;
+          kjv_text: string;
+          nlt_text: string;
+          nkjv_text: string;
+          stream?: 'strengthen' | 'repair' | 'family' | null;
+          created_by: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          verse_reference?: string;
+          niv_text?: string;
+          esv_text?: string;
+          kjv_text?: string;
+          nlt_text?: string;
+          nkjv_text?: string;
+          stream?: 'strengthen' | 'repair' | 'family' | null;
+          created_by?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      custom_activities: {
+        Row: {
+          id: string;
+          title: string;
+          description: string;
+          time_tier: 5 | 15 | 30 | 60 | 120;
+          category: 'reflection' | 'prayer' | 'action' | 'journaling' | 'scripture' | 'meditation';
+          stream: 'strengthen' | 'repair' | 'family' | null;
+          created_by: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          title: string;
+          description: string;
+          time_tier: 5 | 15 | 30 | 60 | 120;
+          category: 'reflection' | 'prayer' | 'action' | 'journaling' | 'scripture' | 'meditation';
+          stream?: 'strengthen' | 'repair' | 'family' | null;
+          created_by: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          title?: string;
+          description?: string;
+          time_tier?: 5 | 15 | 30 | 60 | 120;
+          category?: 'reflection' | 'prayer' | 'action' | 'journaling' | 'scripture' | 'meditation';
+          stream?: 'strengthen' | 'repair' | 'family' | null;
+          created_by?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
     };
   };
 };

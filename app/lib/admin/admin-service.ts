@@ -320,6 +320,14 @@ export interface AdminUserData {
 }
 
 /**
+ * Type definitions for custom content
+ */
+type CustomVerse = Database['public']['Tables']['custom_verses']['Row'];
+type CustomVerseInsert = Database['public']['Tables']['custom_verses']['Insert'];
+type CustomActivity = Database['public']['Tables']['custom_activities']['Row'];
+type CustomActivityInsert = Database['public']['Tables']['custom_activities']['Insert'];
+
+/**
  * Get all users with their signup and partner information (admin only)
  * @returns Array of users with signup code and partner link status
  */
@@ -402,5 +410,239 @@ export async function getAllUsers(): Promise<AdminUserData[]> {
   } catch (error) {
     console.error('Error fetching all users:', error);
     return [];
+  }
+}
+
+/**
+ * Add a custom Bible verse (admin only)
+ * @param verse - Verse data with all translations
+ * @param adminUserId - The ID of the admin creating the verse
+ * @returns The created verse or null if failed
+ */
+export async function addCustomVerse(
+  verse: Omit<CustomVerseInsert, 'created_by' | 'created_at' | 'updated_at'>,
+  adminUserId: string
+): Promise<CustomVerse | null> {
+  if (!isSupabaseEnabled) {
+    return null;
+  }
+
+  // Verify admin status
+  const adminStatus = await isAdmin(adminUserId);
+  if (!adminStatus) {
+    console.error('User is not an admin');
+    return null;
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from('custom_verses')
+      .insert({
+        ...verse,
+        created_by: adminUserId,
+      })
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error adding custom verse:', error);
+      return null;
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Error adding custom verse:', error);
+    return null;
+  }
+}
+
+/**
+ * Add a custom activity (admin only)
+ * @param activity - Activity data
+ * @param adminUserId - The ID of the admin creating the activity
+ * @returns The created activity or null if failed
+ */
+export async function addCustomActivity(
+  activity: Omit<CustomActivityInsert, 'created_by' | 'created_at' | 'updated_at'>,
+  adminUserId: string
+): Promise<CustomActivity | null> {
+  if (!isSupabaseEnabled) {
+    return null;
+  }
+
+  // Verify admin status
+  const adminStatus = await isAdmin(adminUserId);
+  if (!adminStatus) {
+    console.error('User is not an admin');
+    return null;
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from('custom_activities')
+      .insert({
+        ...activity,
+        created_by: adminUserId,
+      })
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error adding custom activity:', error);
+      return null;
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Error adding custom activity:', error);
+    return null;
+  }
+}
+
+/**
+ * Get all custom verses
+ * @param stream - Optional filter by stream
+ * @returns Array of custom verses
+ */
+export async function getCustomVerses(stream?: string): Promise<CustomVerse[]> {
+  if (!isSupabaseEnabled) {
+    return [];
+  }
+
+  try {
+    let query = supabase
+      .from('custom_verses')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (stream) {
+      query = query.or(`stream.eq.${stream},stream.is.null`);
+    }
+
+    const { data, error } = await query;
+
+    if (error) {
+      console.error('Error fetching custom verses:', error);
+      return [];
+    }
+
+    return data || [];
+  } catch (error) {
+    console.error('Error fetching custom verses:', error);
+    return [];
+  }
+}
+
+/**
+ * Get all custom activities
+ * @param stream - Optional filter by stream
+ * @param timeTier - Optional filter by time tier
+ * @returns Array of custom activities
+ */
+export async function getCustomActivities(
+  stream?: string,
+  timeTier?: number
+): Promise<CustomActivity[]> {
+  if (!isSupabaseEnabled) {
+    return [];
+  }
+
+  try {
+    let query = supabase
+      .from('custom_activities')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (stream) {
+      query = query.or(`stream.eq.${stream},stream.is.null`);
+    }
+
+    if (timeTier) {
+      query = query.eq('time_tier', timeTier);
+    }
+
+    const { data, error } = await query;
+
+    if (error) {
+      console.error('Error fetching custom activities:', error);
+      return [];
+    }
+
+    return data || [];
+  } catch (error) {
+    console.error('Error fetching custom activities:', error);
+    return [];
+  }
+}
+
+/**
+ * Delete a custom verse (admin only)
+ * @param verseId - The ID of the verse to delete
+ * @param adminUserId - The ID of the admin deleting the verse
+ * @returns true if successfully deleted
+ */
+export async function deleteCustomVerse(verseId: string, adminUserId: string): Promise<boolean> {
+  if (!isSupabaseEnabled) {
+    return false;
+  }
+
+  // Verify admin status
+  const adminStatus = await isAdmin(adminUserId);
+  if (!adminStatus) {
+    console.error('User is not an admin');
+    return false;
+  }
+
+  try {
+    const { error } = await supabase
+      .from('custom_verses')
+      .delete()
+      .eq('id', verseId);
+
+    if (error) {
+      console.error('Error deleting custom verse:', error);
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error('Error deleting custom verse:', error);
+    return false;
+  }
+}
+
+/**
+ * Delete a custom activity (admin only)
+ * @param activityId - The ID of the activity to delete
+ * @param adminUserId - The ID of the admin deleting the activity
+ * @returns true if successfully deleted
+ */
+export async function deleteCustomActivity(activityId: string, adminUserId: string): Promise<boolean> {
+  if (!isSupabaseEnabled) {
+    return false;
+  }
+
+  // Verify admin status
+  const adminStatus = await isAdmin(adminUserId);
+  if (!adminStatus) {
+    console.error('User is not an admin');
+    return false;
+  }
+
+  try {
+    const { error } = await supabase
+      .from('custom_activities')
+      .delete()
+      .eq('id', activityId);
+
+    if (error) {
+      console.error('Error deleting custom activity:', error);
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error('Error deleting custom activity:', error);
+    return false;
   }
 }
