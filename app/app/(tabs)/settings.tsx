@@ -1,5 +1,5 @@
 import { useCallback, useState, useEffect } from 'react';
-import { Text, View, Pressable, ScrollView } from 'react-native';
+import { Text, View, Pressable, ScrollView, TextInput, Modal } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
 import { useUserStore, JourneyStream, BibleTranslation } from '../../store/user-store';
@@ -22,6 +22,9 @@ export default function SettingsScreen() {
   const router = useRouter();
   const [isResetting, setIsResetting] = useState(false);
   const [isResettingPassword, setIsResettingPassword] = useState(false);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [isUserAdmin, setIsUserAdmin] = useState(false);
   const [isCheckingAdmin, setIsCheckingAdmin] = useState(true);
   const { selectedStream, selectedTranslation, setStream, setTranslation } = useUserStore();
@@ -90,17 +93,32 @@ export default function SettingsScreen() {
     }
   };
 
-  const handleResetPassword = async () => {
-    if (!isSupabaseEnabled) {
+  const handleChangePassword = async () => {
+    // Validation
+    if (!newPassword || !confirmPassword) {
       if (typeof window !== 'undefined') {
-        window.alert('Password reset is only available when using cloud authentication.');
+        window.alert('Please fill in both password fields.');
       }
       return;
     }
 
-    if (!userEmail) {
+    if (newPassword.length < 6) {
       if (typeof window !== 'undefined') {
-        window.alert('No email address found for your account. Please contact support.');
+        window.alert('Password must be at least 6 characters long.');
+      }
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      if (typeof window !== 'undefined') {
+        window.alert('Passwords do not match. Please try again.');
+      }
+      return;
+    }
+
+    if (!isSupabaseEnabled) {
+      if (typeof window !== 'undefined') {
+        window.alert('Password change is only available when using cloud authentication.');
       }
       return;
     }
@@ -108,40 +126,44 @@ export default function SettingsScreen() {
     try {
       setIsResettingPassword(true);
 
-      const { error } = await supabase.auth.resetPasswordForEmail(userEmail, {
-        redirectTo: `${typeof window !== 'undefined' ? window.location.origin : ''}/auth/reset-password`,
+      // Update password for currently authenticated user
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword,
       });
 
       if (error) {
         throw error;
       }
 
+      // Success - clear form and close modal
+      setNewPassword('');
+      setConfirmPassword('');
+      setShowPasswordModal(false);
+
       if (typeof window !== 'undefined') {
-        window.alert(
-          `Password reset email sent to ${userEmail}\n\nCheck your inbox and click the link to reset your password.`
-        );
+        window.alert('Password updated successfully!');
       }
     } catch (error) {
-      console.error('Error sending password reset email:', error);
+      console.error('Error updating password:', error);
       if (typeof window !== 'undefined') {
-        window.alert('Failed to send password reset email. Please try again later.');
+        const errorMessage = error instanceof Error ? error.message : 'Failed to update password';
+        window.alert(`Failed to update password: ${errorMessage}`);
       }
     } finally {
       setIsResettingPassword(false);
     }
   };
 
-  const confirmResetPassword = () => {
-    if (isResettingPassword) return;
+  const openPasswordModal = () => {
+    setNewPassword('');
+    setConfirmPassword('');
+    setShowPasswordModal(true);
+  };
 
-    if (typeof window !== 'undefined') {
-      const confirmed = window.confirm(
-        `Send a password reset link to ${userEmail}?\n\nYou'll receive an email with instructions to reset your password.`
-      );
-      if (confirmed) {
-        void handleResetPassword();
-      }
-    }
+  const closePasswordModal = () => {
+    setNewPassword('');
+    setConfirmPassword('');
+    setShowPasswordModal(false);
   };
 
   return (
@@ -199,28 +221,19 @@ export default function SettingsScreen() {
         </Pressable>
       </View>
 
-      {/* Password Reset - Only shown when user has email */}
-      {userEmail && (
-        <View className="mb-12">
-          <Text className="text-lg font-bold text-charcoal mb-4">Account Security</Text>
-          <Pressable
-            onPress={confirmResetPassword}
-            disabled={isResettingPassword}
-            className={`p-5 rounded-[20px] border-2 ${
-              isResettingPassword
-                ? 'border-wine/30 bg-wine/10'
-                : 'border-wine/50 bg-white'
-            }`}
-          >
-            <Text className="text-wine font-bold mb-1">
-              {isResettingPassword ? 'Sending Reset Link...' : 'Reset Password'}
-            </Text>
-            <Text className="text-charcoal/60 text-sm">
-              Send a password reset link to {userEmail}
-            </Text>
-          </Pressable>
-        </View>
-      )}
+      {/* Password Change - Available for all users */}
+      <View className="mb-12">
+        <Text className="text-lg font-bold text-charcoal mb-4">Account Security</Text>
+        <Pressable
+          onPress={openPasswordModal}
+          className="p-5 rounded-[20px] border-2 border-wine/50 bg-white"
+        >
+          <Text className="text-wine font-bold mb-1">Change Password</Text>
+          <Text className="text-charcoal/60 text-sm">
+            Update your account password
+          </Text>
+        </Pressable>
+      </View>
 
       {/* Admin Section - Only visible to admins */}
       {!isCheckingAdmin && isUserAdmin && (
@@ -259,6 +272,66 @@ export default function SettingsScreen() {
       </View>
 
       <View className="h-20" />
+
+      {/* Password Change Modal */}
+      <Modal
+        visible={showPasswordModal}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={closePasswordModal}
+      >
+        <View className="flex-1 justify-center items-center bg-black/50">
+          <View className="bg-white rounded-[24px] p-8 mx-6 w-full max-w-md">
+            <Text className="text-2xl font-bold text-wine mb-6">Change Password</Text>
+
+            <View className="mb-4">
+              <Text className="text-sm font-semibold text-charcoal mb-2">New Password</Text>
+              <TextInput
+                value={newPassword}
+                onChangeText={setNewPassword}
+                placeholder="Enter new password"
+                secureTextEntry
+                autoCapitalize="none"
+                className="border-2 border-cream-dark rounded-[12px] px-4 py-3 text-base"
+              />
+            </View>
+
+            <View className="mb-6">
+              <Text className="text-sm font-semibold text-charcoal mb-2">Confirm Password</Text>
+              <TextInput
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+                placeholder="Confirm new password"
+                secureTextEntry
+                autoCapitalize="none"
+                className="border-2 border-cream-dark rounded-[12px] px-4 py-3 text-base"
+              />
+            </View>
+
+            <View className="flex-row gap-3">
+              <Pressable
+                onPress={closePasswordModal}
+                disabled={isResettingPassword}
+                className="flex-1 p-4 rounded-[12px] border-2 border-cream-dark bg-white"
+              >
+                <Text className="text-charcoal font-semibold text-center">Cancel</Text>
+              </Pressable>
+
+              <Pressable
+                onPress={handleChangePassword}
+                disabled={isResettingPassword}
+                className={`flex-1 p-4 rounded-[12px] ${
+                  isResettingPassword ? 'bg-wine/50' : 'bg-wine'
+                }`}
+              >
+                <Text className="text-white font-semibold text-center">
+                  {isResettingPassword ? 'Updating...' : 'Update Password'}
+                </Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </ScrollView>
   );
 }
