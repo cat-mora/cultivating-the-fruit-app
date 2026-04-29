@@ -23,6 +23,7 @@ export default function SettingsScreen() {
   const router = useRouter();
   const [isResetting, setIsResetting] = useState(false);
   const [isResettingPassword, setIsResettingPassword] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -31,6 +32,7 @@ export default function SettingsScreen() {
   const { selectedStream, selectedTranslation, setStream, setTranslation } = useUserStore();
   const linkedPartners = usePartnerStore((state) => state.getLinkedPartners());
   const user = useAuthStore((state) => state.user);
+  const signOut = useAuthStore((state) => state.signOut);
   const userId = user?.id;
   const userEmail = user?.email;
   const { fetchLinkedPartners } = usePartnerLinking();
@@ -167,6 +169,35 @@ export default function SettingsScreen() {
     setShowPasswordModal(false);
   };
 
+  const handleLogout = async () => {
+    try {
+      setIsLoggingOut(true);
+      await signOut();
+      // Redirect to sign-in page after successful logout
+      router.replace('/auth/sign-in');
+    } catch (error) {
+      console.error('Error logging out:', error);
+      if (typeof window !== 'undefined') {
+        window.alert('Failed to log out. Please try again.');
+      }
+    } finally {
+      setIsLoggingOut(false);
+    }
+  };
+
+  const confirmLogout = () => {
+    if (isLoggingOut) return;
+
+    if (typeof window !== 'undefined') {
+      const confirmed = window.confirm(
+        'Are you sure you want to log out?\n\nYour data is saved and will be available when you sign back in.'
+      );
+      if (confirmed) {
+        void handleLogout();
+      }
+    }
+  };
+
   return (
     <ScrollView className="flex-1 bg-cream p-6">
       <View className="mt-14 mb-8">
@@ -269,6 +300,26 @@ export default function SettingsScreen() {
           </Text>
           <Text className="text-charcoal/60 text-sm">
             Clear this device's saved journey data and return to onboarding.
+          </Text>
+        </Pressable>
+      </View>
+
+      <View className="mb-12">
+        <Text className="text-lg font-bold text-charcoal mb-4">Account</Text>
+        <Pressable
+          onPress={confirmLogout}
+          disabled={isLoggingOut}
+          className={`p-5 rounded-[20px] border-2 ${
+            isLoggingOut
+              ? 'border-wine/30 bg-wine/10'
+              : 'border-wine/50 bg-white'
+          }`}
+        >
+          <Text className="text-wine font-bold mb-1">
+            {isLoggingOut ? 'Logging Out...' : 'Log Out'}
+          </Text>
+          <Text className="text-charcoal/60 text-sm">
+            Sign out of your account
           </Text>
         </Pressable>
       </View>
