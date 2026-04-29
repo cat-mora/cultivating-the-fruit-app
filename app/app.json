@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "app",
-    "slug": "app",
+    "name": "CultivateFruit",
+    "slug": "cultivate-fruit",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "app",
+    "scheme": "cultivatefruit",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "splash": {
@@ -28,6 +28,8 @@
       "bundler": "metro",
       "output": "single",
       "favicon": "./assets/images/favicon.png",
+      "name": "CultivateFruit",
+      "shortName": "Cultivate",
       "plugins": []
     },
     "plugins": [

@@ -2,16 +2,22 @@ import { useState, FormEvent } from 'react';
 import { Link, useRouter } from 'expo-router';
 import { signInWithEmail } from '../../../lib/auth/auth-service';
 
-/**
- * Sign In Page
- *
- * Email/password authentication for web users
- * Features:
- * - Email and password form
- * - Error handling
- * - Link to sign up
- * - Warm Bible app aesthetic
- */
+const logoImage = require('../../../assets/images/logo-full.png');
+
+function getWebAssetUri(asset: unknown): string | undefined {
+  if (typeof asset === 'string') return asset;
+  if (asset && typeof asset === 'object') {
+    const assetRecord = asset as { uri?: unknown; default?: unknown };
+    if (typeof assetRecord.uri === 'string') return assetRecord.uri;
+    if (typeof assetRecord.default === 'string') return assetRecord.default;
+    if (assetRecord.default && typeof assetRecord.default === 'object') {
+      const defaultAsset = assetRecord.default as { uri?: unknown };
+      if (typeof defaultAsset.uri === 'string') return defaultAsset.uri;
+    }
+  }
+  return undefined;
+}
+
 export default function SignIn() {
   const router = useRouter();
   const [email, setEmail] = useState('');
@@ -19,11 +25,12 @@ export default function SignIn() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
+  const logoSrc = getWebAssetUri(logoImage);
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError('');
     setIsLoading(true);
-
     try {
       await signInWithEmail(email, password);
       router.replace('/(tabs)');
@@ -46,21 +53,11 @@ export default function SignIn() {
         padding: '20px',
       }}
     >
-      {/* Logo/Header */}
-      <div
-        style={{
-          textAlign: 'center',
-          marginBottom: '32px',
-        }}
-      >
+      <div style={{ textAlign: 'center', marginBottom: '32px' }}>
         <img
-          src={require('../../../assets/images/logo-full.png')}
-          alt="Cultivating the Fruits"
-          style={{
-            maxWidth: '280px',
-            height: 'auto',
-            marginBottom: '12px',
-          }}
+          src={logoSrc}
+          alt="Cultivating the Fruit"
+          style={{ maxWidth: '280px', height: 'auto', marginBottom: '12px' }}
         />
         <p
           style={{
@@ -70,11 +67,10 @@ export default function SignIn() {
             fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
           }}
         >
-          Grow your spiritual life, one day at a time
+          Love renewed through daily action
         </p>
       </div>
 
-      {/* Auth Form Container */}
       <div
         style={{
           width: '100%',
@@ -108,163 +104,42 @@ export default function SignIn() {
         </p>
 
         <form onSubmit={handleSubmit}>
-        {/* Email Input */}
-        <div style={{ marginBottom: '20px' }}>
-          <label
-            htmlFor="email"
-            style={{
-              display: 'block',
-              fontSize: '14px',
-              fontWeight: '600',
-              color: '#6B2D3E',
-              marginBottom: '8px',
-              fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
-            }}
-          >
-            Email
-          </label>
-          <input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            autoComplete="email"
-            disabled={isLoading}
-            style={{
-              width: '100%',
-              padding: '12px 16px',
-              fontSize: '16px',
-              border: '2px solid #F5EDE0',
-              borderRadius: '8px',
-              outline: 'none',
-              fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
-              transition: 'border-color 0.2s',
-              boxSizing: 'border-box',
-            }}
-            onFocus={(e) => {
-              e.target.style.borderColor = '#DEB9C5';
-            }}
-            onBlur={(e) => {
-              e.target.style.borderColor = '#F5EDE0';
-            }}
-          />
-        </div>
-
-        {/* Password Input */}
-        <div style={{ marginBottom: '24px' }}>
-          <label
-            htmlFor="password"
-            style={{
-              display: 'block',
-              fontSize: '14px',
-              fontWeight: '600',
-              color: '#6B2D3E',
-              marginBottom: '8px',
-              fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
-            }}
-          >
-            Password
-          </label>
-          <input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            autoComplete="current-password"
-            disabled={isLoading}
-            style={{
-              width: '100%',
-              padding: '12px 16px',
-              fontSize: '16px',
-              border: '2px solid #F5EDE0',
-              borderRadius: '8px',
-              outline: 'none',
-              fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
-              transition: 'border-color 0.2s',
-              boxSizing: 'border-box',
-            }}
-            onFocus={(e) => {
-              e.target.style.borderColor = '#DEB9C5';
-            }}
-            onBlur={(e) => {
-              e.target.style.borderColor = '#F5EDE0';
-            }}
-          />
-        </div>
-
-        {/* Error Message */}
-        {error && (
-          <div
-            style={{
-              background: '#FEE',
-              border: '1px solid #FCC',
-              borderRadius: '8px',
-              padding: '12px',
-              marginBottom: '20px',
-              fontSize: '14px',
-              color: '#C00',
-              fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
-            }}
-          >
-            {error}
+          <div style={{ marginBottom: '20px' }}>
+            <label htmlFor="email" style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#6B2D3E', marginBottom: '8px', fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, sans-serif' }}>Email</label>
+            <input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" disabled={isLoading}
+              style={{ width: '100%', padding: '12px 16px', fontSize: '16px', border: '2px solid #F5EDE0', borderRadius: '8px', outline: 'none', fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, sans-serif', transition: 'border-color 0.2s', boxSizing: 'border-box' }}
+              onFocus={(e) => { e.target.style.borderColor = '#DEB9C5'; }}
+              onBlur={(e) => { e.target.style.borderColor = '#F5EDE0'; }}
+            />
           </div>
-        )}
 
-        {/* Submit Button */}
-        <button
-          type="submit"
-          disabled={isLoading}
-          style={{
-            width: '100%',
-            padding: '14px',
-            fontSize: '16px',
-            fontWeight: '600',
-            color: '#FFFFFF',
-            background: isLoading ? '#A67C89' : '#6B2D3E',
-            border: 'none',
-            borderRadius: '8px',
-            cursor: isLoading ? 'not-allowed' : 'pointer',
-            fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
-            transition: 'background 0.2s',
-          }}
-          onMouseOver={(e) => {
-            if (!isLoading) {
-              e.currentTarget.style.background = '#84364D';
-            }
-          }}
-          onMouseOut={(e) => {
-            if (!isLoading) {
-              e.currentTarget.style.background = '#6B2D3E';
-            }
-          }}
-        >
-          {isLoading ? 'Signing in...' : 'Sign In'}
-        </button>
-      </form>
+          <div style={{ marginBottom: '24px' }}>
+            <label htmlFor="password" style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#6B2D3E', marginBottom: '8px', fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, sans-serif' }}>Password</label>
+            <input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required autoComplete="current-password" disabled={isLoading}
+              style={{ width: '100%', padding: '12px 16px', fontSize: '16px', border: '2px solid #F5EDE0', borderRadius: '8px', outline: 'none', fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, sans-serif', transition: 'border-color 0.2s', boxSizing: 'border-box' }}
+              onFocus={(e) => { e.target.style.borderColor = '#DEB9C5'; }}
+              onBlur={(e) => { e.target.style.borderColor = '#F5EDE0'; }}
+            />
+          </div>
 
-        {/* Sign Up Link */}
-        <div
-          style={{
-            marginTop: '24px',
-            textAlign: 'center',
-            fontSize: '14px',
-            color: '#8B6F47',
-            fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
-          }}
-        >
-          Don't have an account?{' '}
-          <Link
-            href="/(web)/auth/sign-up"
-            style={{
-              color: '#6B2D3E',
-              fontWeight: '600',
-              textDecoration: 'none',
-            }}
+          {error && (
+            <div style={{ background: '#FEE', border: '1px solid #FCC', borderRadius: '8px', padding: '12px', marginBottom: '20px', fontSize: '14px', color: '#C00', fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, sans-serif' }}>
+              {error}
+            </div>
+          )}
+
+          <button type="submit" disabled={isLoading}
+            style={{ width: '100%', padding: '14px', fontSize: '16px', fontWeight: '600', color: '#FFFFFF', background: isLoading ? '#A67C89' : '#6B2D3E', border: 'none', borderRadius: '8px', cursor: isLoading ? 'not-allowed' : 'pointer', fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, sans-serif', transition: 'background 0.2s' }}
+            onMouseOver={(e) => { if (!isLoading) e.currentTarget.style.background = '#84364D'; }}
+            onMouseOut={(e) => { if (!isLoading) e.currentTarget.style.background = '#6B2D3E'; }}
           >
-            Sign Up
-          </Link>
+            {isLoading ? 'Signing in...' : 'Sign In'}
+          </button>
+        </form>
+
+        <div style={{ marginTop: '24px', textAlign: 'center', fontSize: '14px', color: '#8B6F47', fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, sans-serif' }}>
+          Don't have an account?{' '}
+          <Link href="/(web)/auth/sign-up" style={{ color: '#6B2D3E', fontWeight: '600', textDecoration: 'none' }}>Sign Up</Link>
         </div>
       </div>
     </div>
