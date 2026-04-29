@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import { Text, View, Pressable, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
@@ -7,6 +7,8 @@ import { usePartnerStore } from '../../store/partner-store';
 import { resetAppState } from '../../lib/reset-app-state';
 import { usePartnerLinking } from '../../features/partner/hooks/use-partner-linking';
 import { useAuthStore } from '../../store/auth-store';
+import { isAdmin } from '../../lib/admin/admin-service';
+import InviteCodeManager from '../../features/admin/components/invite-code-manager';
 
 const streams: { id: JourneyStream; label: string }[] = [
   { id: 'strengthen', label: 'Strengthen' },
@@ -18,10 +20,31 @@ const translations: BibleTranslation[] = ['NIV', 'ESV', 'KJV', 'NLT', 'NKJV'];
 export default function SettingsScreen() {
   const router = useRouter();
   const [isResetting, setIsResetting] = useState(false);
+  const [isUserAdmin, setIsUserAdmin] = useState(false);
+  const [isCheckingAdmin, setIsCheckingAdmin] = useState(true);
   const { selectedStream, selectedTranslation, setStream, setTranslation } = useUserStore();
   const linkedPartners = usePartnerStore((state) => state.getLinkedPartners());
   const userId = useAuthStore((state) => state.user?.id);
   const { fetchLinkedPartners } = usePartnerLinking();
+
+  useEffect(() => {
+    async function checkAdmin() {
+      if (!userId) {
+        setIsCheckingAdmin(false);
+        return;
+      }
+      try {
+        const adminStatus = await isAdmin(userId);
+        setIsUserAdmin(adminStatus);
+      } catch (error) {
+        console.error('Error checking admin status:', error);
+        setIsUserAdmin(false);
+      } finally {
+        setIsCheckingAdmin(false);
+      }
+    }
+    void checkAdmin();
+  }, [userId]);
 
   useFocusEffect(
     useCallback(() => {
@@ -117,6 +140,16 @@ export default function SettingsScreen() {
           </Text>
         </Pressable>
       </View>
+
+      {/* Admin Section - Only visible to admins */}
+      {!isCheckingAdmin && isUserAdmin && (
+        <View className="mb-12">
+          <Text className="text-lg font-bold text-charcoal mb-4">Admin Tools</Text>
+          <View className="bg-white rounded-[20px] border-2 border-wine/20 overflow-hidden">
+            <InviteCodeManager platform="native" />
+          </View>
+        </View>
+      )}
 
       <View className="mb-12">
         <Text className="text-lg font-bold text-charcoal mb-4">Reset App</Text>
