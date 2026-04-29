@@ -9,6 +9,7 @@ import { usePartnerLinking } from '../../features/partner/hooks/use-partner-link
 import { useAuthStore } from '../../store/auth-store';
 import { isAdmin } from '../../lib/admin/admin-service';
 import InviteCodeManager from '../../features/admin/components/invite-code-manager';
+import { supabase, isSupabaseEnabled } from '../../lib/supabase/config';
 
 const streams: { id: JourneyStream; label: string }[] = [
   { id: 'strengthen', label: 'Strengthen' },
@@ -20,11 +21,14 @@ const translations: BibleTranslation[] = ['NIV', 'ESV', 'KJV', 'NLT', 'NKJV'];
 export default function SettingsScreen() {
   const router = useRouter();
   const [isResetting, setIsResetting] = useState(false);
+  const [isResettingPassword, setIsResettingPassword] = useState(false);
   const [isUserAdmin, setIsUserAdmin] = useState(false);
   const [isCheckingAdmin, setIsCheckingAdmin] = useState(true);
   const { selectedStream, selectedTranslation, setStream, setTranslation } = useUserStore();
   const linkedPartners = usePartnerStore((state) => state.getLinkedPartners());
-  const userId = useAuthStore((state) => state.user?.id);
+  const user = useAuthStore((state) => state.user);
+  const userId = user?.id;
+  const userEmail = user?.email;
   const { fetchLinkedPartners } = usePartnerLinking();
 
   useEffect(() => {
@@ -86,6 +90,60 @@ export default function SettingsScreen() {
     }
   };
 
+  const handleResetPassword = async () => {
+    if (!isSupabaseEnabled) {
+      if (typeof window !== 'undefined') {
+        window.alert('Password reset is only available when using cloud authentication.');
+      }
+      return;
+    }
+
+    if (!userEmail) {
+      if (typeof window !== 'undefined') {
+        window.alert('No email address found for your account. Please contact support.');
+      }
+      return;
+    }
+
+    try {
+      setIsResettingPassword(true);
+
+      const { error } = await supabase.auth.resetPasswordForEmail(userEmail, {
+        redirectTo: `${typeof window !== 'undefined' ? window.location.origin : ''}/auth/reset-password`,
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      if (typeof window !== 'undefined') {
+        window.alert(
+          `Password reset email sent to ${userEmail}\n\nCheck your inbox and click the link to reset your password.`
+        );
+      }
+    } catch (error) {
+      console.error('Error sending password reset email:', error);
+      if (typeof window !== 'undefined') {
+        window.alert('Failed to send password reset email. Please try again later.');
+      }
+    } finally {
+      setIsResettingPassword(false);
+    }
+  };
+
+  const confirmResetPassword = () => {
+    if (isResettingPassword) return;
+
+    if (typeof window !== 'undefined') {
+      const confirmed = window.confirm(
+        `Send a password reset link to ${userEmail}?\n\nYou'll receive an email with instructions to reset your password.`
+      );
+      if (confirmed) {
+        void handleResetPassword();
+      }
+    }
+  };
+
   return (
     <ScrollView className="flex-1 bg-cream p-6">
       <View className="mt-14 mb-8">
@@ -140,6 +198,29 @@ export default function SettingsScreen() {
           </Text>
         </Pressable>
       </View>
+
+      {/* Password Reset - Only shown when user has email */}
+      {userEmail && (
+        <View className="mb-12">
+          <Text className="text-lg font-bold text-charcoal mb-4">Account Security</Text>
+          <Pressable
+            onPress={confirmResetPassword}
+            disabled={isResettingPassword}
+            className={`p-5 rounded-[20px] border-2 ${
+              isResettingPassword
+                ? 'border-wine/30 bg-wine/10'
+                : 'border-wine/50 bg-white'
+            }`}
+          >
+            <Text className="text-wine font-bold mb-1">
+              {isResettingPassword ? 'Sending Reset Link...' : 'Reset Password'}
+            </Text>
+            <Text className="text-charcoal/60 text-sm">
+              Send a password reset link to {userEmail}
+            </Text>
+          </Pressable>
+        </View>
+      )}
 
       {/* Admin Section - Only visible to admins */}
       {!isCheckingAdmin && isUserAdmin && (
