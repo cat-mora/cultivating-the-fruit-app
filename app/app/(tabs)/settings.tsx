@@ -10,7 +10,7 @@ import { useAuthStore } from '../../store/auth-store';
 import { isAdmin } from '../../lib/admin/admin-service';
 import InviteCodeManager from '../../features/admin/components/invite-code-manager';
 import UserDashboard from '../../features/admin/components/user-dashboard';
-import ContentManager from '../../features/admin/components/content-manager';
+// import ContentManager from '../../features/admin/components/content-manager'; // Scoped for later build
 import { supabase, isSupabaseEnabled } from '../../lib/supabase/config';
 
 const streams: { id: JourneyStream; label: string }[] = [
@@ -278,10 +278,10 @@ export default function SettingsScreen() {
             <UserDashboard platform="native" />
           </View>
 
-          {/* Content Manager */}
-          <View className="bg-white rounded-[20px] border-2 border-wine/20 overflow-hidden mb-4">
+          {/* Content Manager - Scoped for later build */}
+          {/* <View className="bg-white rounded-[20px] border-2 border-wine/20 overflow-hidden mb-4">
             <ContentManager platform="native" />
-          </View>
+          </View> */}
 
           {/* Invite Code Manager */}
           <View className="bg-white rounded-[20px] border-2 border-wine/20 overflow-hidden">
