@@ -59,8 +59,20 @@ export default function SignUp() {
     setIsLoading(true);
 
     try {
-      await signUpWithEmail(email, password, inviteCode.trim().toUpperCase());
-      router.replace('/onboarding');
+      const result = await signUpWithEmail(email, password, inviteCode.trim().toUpperCase());
+
+      // Check if email confirmation is required
+      if (result && !result.session) {
+        // Email confirmation required
+        setError('Account created! Please check your email to confirm your account before signing in.');
+        setEmail('');
+        setPassword('');
+        setConfirmPassword('');
+        setInviteCode('');
+      } else {
+        // Immediately authenticated, go to onboarding
+        router.replace('/onboarding');
+      }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Sign up failed';
 

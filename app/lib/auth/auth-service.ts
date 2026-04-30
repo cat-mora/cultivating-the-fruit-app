@@ -56,7 +56,7 @@ export async function signUpWithEmail(email: string, password: string, inviteCod
     useAuthStore.getState().setUser(data.user);
     useAuthStore.getState().setSession(data.session);
 
-    return data.user;
+    return data;
   } else {
     // No invite code provided - require it
     throw new Error('An invite code is required to sign up. Please contact an administrator for access.');
