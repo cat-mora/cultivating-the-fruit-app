@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useProfile } from '../../../lib/data/queries/use-profile';
-import { usePartner } from '../../../lib/data/queries/use-partner';
+import { usePartnerLinks } from '../../../lib/data/queries/use-partner';
 import { JourneyStream, BibleTranslation } from '../../../store/user-store';
 import { supabase } from '../../../lib/supabase/config';
 import { ChangePasswordForm } from '../../../features/auth/components/change-password-form';
@@ -17,11 +17,11 @@ const translations: BibleTranslation[] = ['NIV', 'NLT', 'ESV', 'KJV', 'NKJV'];
 export default function SettingsWeb() {
   const navigate = useNavigate();
   const { data: profile } = useProfile();
-  const { data: partners } = usePartner();
+  const { data: partners } = usePartnerLinks();
   const [isResetting, setIsResetting] = useState(false);
-  const [selectedStream, setSelectedStream] = useState<JourneyStream>(profile?.selected_stream || 'strengthen');
+  const [selectedStream, setSelectedStream] = useState<JourneyStream>(profile?.stream || 'strengthen');
   const [selectedTranslation, setSelectedTranslation] = useState<BibleTranslation>(
-    profile?.selected_translation || 'NIV'
+    profile?.translation || 'NIV'
   );
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
   const [showPasswordChange, setShowPasswordChange] = useState(false);

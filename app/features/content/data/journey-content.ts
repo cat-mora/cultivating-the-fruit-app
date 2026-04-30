@@ -11,7 +11,7 @@ export interface Activity {
 export interface DailyContent {
   day_number: number;
   fruit_theme: string;
-  tone: 'Gentle' | 'Encouraging' | 'Challenging';
+  tone: 'Gentle' | 'Encouraging' | 'Challenging' | 'Passionate' | 'Light Stretch';
   bible_reference: string;
   bible_text: Record<string, string>;
   activities: Activity[];

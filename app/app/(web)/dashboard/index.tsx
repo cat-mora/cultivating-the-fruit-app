@@ -14,8 +14,8 @@ export default function DashboardWeb() {
   const [selectedTier, setSelectedTier] = useState<number>(15);
   const [isCompleting, setIsCompleting] = useState(false);
 
-  // Check if redirected from onboarding
-  if (!profile?.has_onboarded) {
+  // Check if user has profile
+  if (!profile) {
     navigate('/auth/sign-in');
     return null;
   }

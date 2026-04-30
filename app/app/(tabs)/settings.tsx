@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import { Text, View, Pressable, ScrollView, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
@@ -7,6 +7,7 @@ import { usePartnerStore } from '../../store/partner-store';
 import { resetAppState } from '../../lib/reset-app-state';
 import { usePartnerLinking } from '../../features/partner/hooks/use-partner-linking';
 import { useAuthStore } from '../../store/auth-store';
+import { isAdmin } from '../../lib/admin/admin-service';
 
 const streams: { id: JourneyStream; label: string }[] = [
   { id: 'strengthen', label: 'Strengthen' },
@@ -19,10 +20,28 @@ const translations: BibleTranslation[] = ['NIV', 'ESV', 'KJV', 'NLT', 'NKJV'];
 export default function SettingsScreen() {
   const router = useRouter();
   const [isResetting, setIsResetting] = useState(false);
+  const [adminStatus, setAdminStatus] = useState(false);
   const { selectedStream, selectedTranslation, setStream, setTranslation } = useUserStore();
   const linkedPartners = usePartnerStore((state) => state.getLinkedPartners());
   const userId = useAuthStore((state) => state.user?.id);
   const { fetchLinkedPartners } = usePartnerLinking();
+
+  // Check admin status
+  useEffect(() => {
+    const checkAdmin = async () => {
+      if (userId) {
+        try {
+          const status = await isAdmin(userId);
+          setAdminStatus(status);
+        } catch (error) {
+          console.error('Error checking admin status:', error);
+          setAdminStatus(false);
+        }
+      }
+    };
+
+    void checkAdmin();
+  }, [userId]);
 
   useFocusEffect(
     useCallback(() => {
@@ -126,6 +145,21 @@ export default function SettingsScreen() {
           </Text>
         </Pressable>
       </View>
+
+      {adminStatus && (
+        <View className="mb-12">
+          <Text className="text-lg font-bold text-charcoal mb-4">Administration</Text>
+          <Pressable
+            onPress={() => router.push('/admin')}
+            className="p-5 rounded-[20px] border-2 border-wine bg-wine/10"
+          >
+            <Text className="text-wine font-bold mb-1">Admin Panel</Text>
+            <Text className="text-charcoal/60 text-sm">
+              Manage signup invite codes and system settings
+            </Text>
+          </Pressable>
+        </View>
+      )}
 
       <View className="mb-12">
         <Text className="text-lg font-bold text-charcoal mb-4">Reset App</Text>

@@ -23,29 +23,52 @@ const ANONYMOUS_USER_ID_KEY = '@cultivating_fruits:anonymous_user_id';
 /**
  * Sign up with email and password (Web only)
  */
-export async function signUpWithEmail(email: string, password: string) {
+export async function signUpWithEmail(email: string, password: string, inviteCode?: string) {
   if (!isSupabaseEnabled) {
     throw new Error('Supabase is not enabled. Check your .env configuration.');
   }
 
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-  });
+  // Validate invite code if provided
+  if (inviteCode) {
+    const { validateInviteCode, markInviteCodeAsUsed } = await import('../admin/admin-service');
 
-  if (error) {
-    throw new Error(error.message);
+    const isValid = await validateInviteCode(inviteCode);
+    if (!isValid) {
+      throw new Error('Invalid or expired invite code. Please check your code and try again.');
+    }
+
+    // Proceed with signup
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+    });
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    if (!data.user) {
+      throw new Error('Sign up failed - no user returned');
+    }
+
+    // Mark invite code as used
+    try {
+      await markInviteCodeAsUsed(inviteCode, data.user.id);
+    } catch (markError) {
+      console.error('Failed to mark invite code as used:', markError);
+      // Don't fail signup if marking fails
+    }
+
+    // Update auth store
+    useAuthStore.getState().setUser(data.user);
+    useAuthStore.getState().setSession(data.session);
+
+    return data;
+  } else {
+    // No invite code provided - check if invite codes are required
+    // For now, we'll require invite codes for all signups
+    throw new Error('An invite code is required to sign up. Please contact an administrator for access.');
   }
-
-  if (!data.user) {
-    throw new Error('Sign up failed - no user returned');
-  }
-
-  // Update auth store
-  useAuthStore.getState().setUser(data.user);
-  useAuthStore.getState().setSession(data.session);
-
-  return data;
 }
 
 /**

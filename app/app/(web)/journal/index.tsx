@@ -1,18 +1,20 @@
 import { useState, useEffect } from 'react';
-import { useJournal } from '../../../lib/data/queries/use-journal';
+import { useJournalEntries } from '../../../lib/data/queries/use-journal';
 import { useDailyContent } from '../../../features/content/hooks/use-daily-content';
 
 export default function JournalWeb() {
   const [note, setNote] = useState('');
-  const { data: journal, isLoading } = useJournal();
+  const { data: journal, isLoading } = useJournalEntries();
   const content = useDailyContent();
   const [isSaving, setIsSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
 
   useEffect(() => {
     if (content && journal) {
-      const entry = journal.find((e: any) => e.day_number === content.day_number);
-      if (entry) setNote(entry.content || '');
+      const today = new Date().toISOString().split('T')[0];
+      const entry = journal.find((e) => e.entry_date.startsWith(today));
+      // Note: In production, encrypted_content would need to be decrypted
+      if (entry) setNote(entry.encrypted_content || '');
     }
   }, [content, journal]);
 
