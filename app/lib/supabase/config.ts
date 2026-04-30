@@ -1,95 +1,90 @@
 import { createClient } from '@supabase/supabase-js';
-import { Platform } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SUPABASE_URL, SUPABASE_ANON_KEY, ENABLE_SUPABASE } from '../env';
 
 // Use environment variables from centralized env module
 const supabaseUrl = SUPABASE_URL;
 const supabaseAnonKey = SUPABASE_ANON_KEY;
 const enableSupabase = ENABLE_SUPABASE;
+const hasSupabaseCredentials = !!supabaseUrl && !!supabaseAnonKey;
+export const isSupabaseEnabled = enableSupabase && hasSupabaseCredentials;
 
-/**
- * Platform-specific storage adapter for Supabase Auth
- *
- * Web: Uses localStorage (default browser storage)
- * Native: Uses AsyncStorage for React Native
- */
-const platformStorage = Platform.OS === 'web'
-  ? undefined // Use default localStorage
-  : {
-      // AsyncStorage adapter for React Native
-      getItem: async (key: string) => {
-        try {
-          return await AsyncStorage.getItem(key);
-        } catch (error) {
-          console.error('AsyncStorage getItem error:', error);
-          return null;
-        }
-      },
-      setItem: async (key: string, value: string) => {
-        try {
-          await AsyncStorage.setItem(key, value);
-        } catch (error) {
-          console.error('AsyncStorage setItem error:', error);
-        }
-      },
-      removeItem: async (key: string) => {
-        try {
-          await AsyncStorage.removeItem(key);
-        } catch (error) {
-          console.error('AsyncStorage removeItem error:', error);
-        }
-      },
-    };
+const clientUrl = isSupabaseEnabled
+  ? supabaseUrl
+  : 'https://placeholder.supabase.co';
+const clientAnonKey = isSupabaseEnabled
+  ? supabaseAnonKey
+  : 'placeholder-anon-key';
 
 /**
  * Supabase client instance
  *
  * Configured with:
- * - Platform-specific auth storage
+ * - localStorage for auth storage (default web behavior)
  * - Auto refresh tokens
  * - Persistent sessions
  */
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+export const supabase = createClient(clientUrl, clientAnonKey, {
   auth: {
-    storage: platformStorage,
     autoRefreshToken: true,
     persistSession: true,
-    detectSessionInUrl: Platform.OS === 'web', // Only detect session in URL on web
+    detectSessionInUrl: true,
   },
 });
 
 /**
- * Feature flag to check if Supabase is enabled
- */
-export const isSupabaseEnabled = enableSupabase && !!supabaseUrl && !!supabaseAnonKey;
-
-/**
  * Get current authenticated user
+ * Returns null if no user is logged in (not an error state)
  */
 export async function getCurrentUser() {
-  const { data: { user }, error } = await supabase.auth.getUser();
-
-  if (error) {
-    console.error('Error getting current user:', error);
+  if (!isSupabaseEnabled) {
     return null;
   }
 
-  return user;
+  try {
+    const { data: { user }, error } = await supabase.auth.getUser();
+
+    // No session is a normal state (user not logged in), not an error
+    if (error) {
+      // Only log unexpected errors, not "no session" errors
+      if (!error.message?.includes('session') && !error.message?.includes('JWT')) {
+        console.error('Error getting current user:', error);
+      }
+      return null;
+    }
+
+    return user;
+  } catch (err) {
+    // Silently handle auth errors - user simply isn't logged in
+    return null;
+  }
 }
 
 /**
  * Get current session
+ * Returns null if no session exists (not an error state)
  */
 export async function getCurrentSession() {
-  const { data: { session }, error } = await supabase.auth.getSession();
-
-  if (error) {
-    console.error('Error getting current session:', error);
+  if (!isSupabaseEnabled) {
     return null;
   }
 
-  return session;
+  try {
+    const { data: { session }, error } = await supabase.auth.getSession();
+
+    // No session is a normal state (user not logged in), not an error
+    if (error) {
+      // Only log unexpected errors, not "no session" errors
+      if (!error.message?.includes('session') && !error.message?.includes('JWT')) {
+        console.error('Error getting current session:', error);
+      }
+      return null;
+    }
+
+    return session;
+  } catch (err) {
+    // Silently handle auth errors - user simply isn't logged in
+    return null;
+  }
 }
 
 /**
@@ -104,6 +99,10 @@ export async function isAuthenticated(): Promise<boolean> {
  * Sign out current user
  */
 export async function signOut() {
+  if (!isSupabaseEnabled) {
+    return;
+  }
+
   const { error } = await supabase.auth.signOut();
 
   if (error) {
@@ -293,31 +292,107 @@ export type Database = {
       signup_invites: {
         Row: {
           id: string;
-          code: string;
+          invite_code: string;
           created_by: string;
           used_by: string | null;
-          is_used: boolean;
+          status: 'pending' | 'used' | 'expired' | 'revoked';
           expires_at: string | null;
+          created_at: string;
+          used_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          invite_code: string;
+          created_by: string;
+          used_by?: string | null;
+          status?: 'pending' | 'used' | 'expired' | 'revoked';
+          expires_at?: string | null;
+          created_at?: string;
+          used_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          invite_code?: string;
+          created_by?: string;
+          used_by?: string | null;
+          status?: 'pending' | 'used' | 'expired' | 'revoked';
+          expires_at?: string | null;
+          created_at?: string;
+          used_at?: string | null;
+        };
+      };
+      custom_verses: {
+        Row: {
+          id: string;
+          verse_reference: string;
+          niv_text: string;
+          esv_text: string;
+          kjv_text: string;
+          nlt_text: string;
+          nkjv_text: string;
+          stream: 'strengthen' | 'repair' | 'family' | null;
+          created_by: string;
           created_at: string;
           updated_at: string;
         };
         Insert: {
           id?: string;
-          code: string;
+          verse_reference: string;
+          niv_text: string;
+          esv_text: string;
+          kjv_text: string;
+          nlt_text: string;
+          nkjv_text: string;
+          stream?: 'strengthen' | 'repair' | 'family' | null;
           created_by: string;
-          used_by?: string | null;
-          is_used?: boolean;
-          expires_at?: string | null;
           created_at?: string;
           updated_at?: string;
         };
         Update: {
           id?: string;
-          code?: string;
+          verse_reference?: string;
+          niv_text?: string;
+          esv_text?: string;
+          kjv_text?: string;
+          nlt_text?: string;
+          nkjv_text?: string;
+          stream?: 'strengthen' | 'repair' | 'family' | null;
           created_by?: string;
-          used_by?: string | null;
-          is_used?: boolean;
-          expires_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      custom_activities: {
+        Row: {
+          id: string;
+          title: string;
+          description: string;
+          time_tier: 5 | 15 | 30 | 60 | 120;
+          category: 'reflection' | 'prayer' | 'action' | 'journaling' | 'scripture' | 'meditation';
+          stream: 'strengthen' | 'repair' | 'family' | null;
+          created_by: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          title: string;
+          description: string;
+          time_tier: 5 | 15 | 30 | 60 | 120;
+          category: 'reflection' | 'prayer' | 'action' | 'journaling' | 'scripture' | 'meditation';
+          stream?: 'strengthen' | 'repair' | 'family' | null;
+          created_by: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          title?: string;
+          description?: string;
+          time_tier?: 5 | 15 | 30 | 60 | 120;
+          category?: 'reflection' | 'prayer' | 'action' | 'journaling' | 'scripture' | 'meditation';
+          stream?: 'strengthen' | 'repair' | 'family' | null;
+          created_by?: string;
           created_at?: string;
           updated_at?: string;
         };

@@ -1,6 +1,4 @@
 import { create } from 'zustand';
-import { Platform } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { User, Session } from '@supabase/supabase-js';
 
 interface AuthState {
@@ -56,11 +54,6 @@ export const useAuthStore = create<AuthState>((set) => ({
 
       // Clear local state
       set({ user: null, session: null, isLoading: false });
-
-      // Clear AsyncStorage on native
-      if (Platform.OS !== 'web') {
-        await AsyncStorage.clear();
-      }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Sign out failed';
       set({ error: errorMessage, isLoading: false });

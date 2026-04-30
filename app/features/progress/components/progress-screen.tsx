@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, ScrollView } from 'react-native';
 import { StreakCounter } from './streak-counter';
 import { FruitMap } from './fruit-map';
+import { PartnerProgressCard } from './partner-progress-card';
 
 /**
  * Main progress screen showing spiritual milestones
@@ -27,6 +28,13 @@ export function ProgressScreen() {
             Daily Consistency
           </Text>
           <StreakCounter />
+        </View>
+
+        <View className="mb-8">
+          <Text className="text-lg font-serif text-wine mb-4">
+            Partner Journey
+          </Text>
+          <PartnerProgressCard />
         </View>
 
         {/* Decorative Divider */}

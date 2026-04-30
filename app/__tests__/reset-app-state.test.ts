@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { act } from 'react-test-renderer';
 
 import { APP_STORAGE_KEYS, resetAppState } from '../lib/reset-app-state';
-import { supabase } from '../lib/supabase-client';
+import { supabase } from '../lib/supabase/config';
 import { useJournalStore } from '../store/journal-store';
 import { usePartnerStore } from '../store/partner-store';
 import { useProgressStore } from '../store/progress-store';
@@ -15,22 +15,13 @@ jest.mock('@react-native-async-storage/async-storage', () => ({
   multiRemove: jest.fn(() => Promise.resolve()),
 }));
 
-jest.mock('../lib/supabase-client', () => ({
-  supabase: {
-    auth: {
-      signOut: jest.fn(() => Promise.resolve({ error: null })),
-    },
-  },
-}));
-
 jest.mock('../lib/supabase/config', () => ({
   supabase: {
     auth: {
-      getUser: jest.fn(() => Promise.resolve({ data: { user: null } })),
       signOut: jest.fn(() => Promise.resolve({ error: null })),
     },
   },
-  isSupabaseEnabled: false,
+  isSupabaseEnabled: true,
 }));
 
 describe('resetAppState', () => {

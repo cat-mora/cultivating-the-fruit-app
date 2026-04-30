@@ -1,6 +1,9 @@
+import { useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../supabase/config';
 import { useAuthStore } from '../../../store/auth-store';
+import { partnerKeys } from './use-partner';
+import { profileKeys } from './use-profile';
 
 /**
  * React Query Hooks for Progress Data
@@ -130,6 +133,160 @@ export function useFruitProgressByDate(date: string) {
     enabled: !!user && !!date,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
+}
+
+/**
+ * Fetch a linked partner's streak data.
+ * Requires an authenticated viewer plus an accepted partner relationship in RLS.
+ */
+export function usePartnerProgress(partnerUserId: string | null | undefined) {
+  const user = useAuthStore((state) => state.user);
+
+  return useQuery({
+    queryKey: progressKeys.streak(partnerUserId || ''),
+    queryFn: async () => {
+      if (!partnerUserId) throw new Error('Missing partner user id');
+
+      const { data, error } = await supabase
+        .from('progress')
+        .select('*')
+        .eq('user_id', partnerUserId)
+        .single();
+
+      if (error && error.code !== 'PGRST116') {
+        throw error;
+      }
+
+      return data as ProgressData | null;
+    },
+    enabled: !!user && !!partnerUserId,
+    staleTime: 30 * 1000,
+  });
+}
+
+/**
+ * Fetch a linked partner's fruit progress rows.
+ * Requires an authenticated viewer plus an accepted partner relationship in RLS.
+ */
+export function usePartnerFruitProgress(partnerUserId: string | null | undefined) {
+  const user = useAuthStore((state) => state.user);
+
+  return useQuery({
+    queryKey: progressKeys.fruitProgress(partnerUserId || ''),
+    queryFn: async () => {
+      if (!partnerUserId) throw new Error('Missing partner user id');
+
+      const { data, error } = await supabase
+        .from('fruit_progress')
+        .select('*')
+        .eq('user_id', partnerUserId)
+        .order('entry_date', { ascending: false });
+
+      if (error) throw error;
+
+      return (data || []) as FruitProgressData[];
+    },
+    enabled: !!user && !!partnerUserId,
+    staleTime: 30 * 1000,
+  });
+}
+
+/**
+ * Keep partner progress queries fresh with Supabase realtime invalidation.
+ * This listens for partner progress/profile changes and the current user's link changes.
+ */
+export function usePartnerProgressRealtimeSync(
+  currentUserId: string | null | undefined,
+  partnerUserId: string | null | undefined
+) {
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    if (!currentUserId) {
+      return;
+    }
+
+    const channelName = partnerUserId
+      ? `partner-progress:${currentUserId}:${partnerUserId}`
+      : `partner-progress:${currentUserId}`;
+
+    const channel = supabase.channel(
+      `${channelName}:${Math.random().toString(36).slice(2, 10)}`
+    );
+
+    channel.on(
+      'postgres_changes',
+      {
+        event: '*',
+        schema: 'public',
+        table: 'partner_links',
+        filter: `creator_id=eq.${currentUserId}`,
+      },
+      () => {
+        queryClient.invalidateQueries({ queryKey: partnerKeys.links(currentUserId) });
+      }
+    );
+
+    channel.on(
+      'postgres_changes',
+      {
+        event: '*',
+        schema: 'public',
+        table: 'partner_links',
+        filter: `partner_id=eq.${currentUserId}`,
+      },
+      () => {
+        queryClient.invalidateQueries({ queryKey: partnerKeys.links(currentUserId) });
+      }
+    );
+
+    if (partnerUserId) {
+      channel.on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'progress',
+          filter: `user_id=eq.${partnerUserId}`,
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: progressKeys.streak(partnerUserId) });
+        }
+      );
+
+      channel.on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'fruit_progress',
+          filter: `user_id=eq.${partnerUserId}`,
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: progressKeys.fruitProgress(partnerUserId) });
+        }
+      );
+
+      channel.on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'profiles',
+          filter: `id=eq.${partnerUserId}`,
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: profileKeys.user(partnerUserId) });
+        }
+      );
+    }
+
+    channel.subscribe();
+
+    return () => {
+      void supabase.removeChannel(channel);
+    };
+  }, [currentUserId, partnerUserId, queryClient]);
 }
 
 // ============================================================================

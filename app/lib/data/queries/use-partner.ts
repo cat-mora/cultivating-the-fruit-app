@@ -36,6 +36,17 @@ export type PartnerLinkData = {
   updated_at: string;
 };
 
+export function getPartnerUserIdFromLink(
+  link: PartnerLinkData | null | undefined,
+  currentUserId: string | null | undefined
+) {
+  if (!link || !currentUserId) {
+    return null;
+  }
+
+  return link.creator_id === currentUserId ? link.partner_id : link.creator_id;
+}
+
 // ============================================================================
 // QUERIES
 // ============================================================================
@@ -108,8 +119,9 @@ export function useActivePartner() {
         .select('*')
         .or(`creator_id.eq.${user.id},partner_id.eq.${user.id}`)
         .eq('status', 'accepted')
+        .order('accepted_at', { ascending: false })
         .limit(1)
-        .single();
+        .maybeSingle();
 
       if (error && error.code !== 'PGRST116') {
         throw error;
@@ -161,6 +173,7 @@ export function useCreatePartnerInvite() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: partnerKeys.links(user?.id || '') });
+      queryClient.invalidateQueries({ queryKey: partnerKeys.all });
     },
   });
 }

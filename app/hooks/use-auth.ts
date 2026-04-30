@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { supabase } from '../lib/supabase/config';
+import { supabase, isSupabaseEnabled } from '../lib/supabase/config';
 
 interface AuthUser {
   userId: string | null;
@@ -19,6 +19,11 @@ export function useAuth(): AuthUser {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!isSupabaseEnabled) {
+      setIsLoading(false);
+      return;
+    }
+
     const getAuth = async () => {
       try {
         setIsLoading(true);

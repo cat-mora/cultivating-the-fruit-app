@@ -3,7 +3,6 @@ if (typeof (globalThis as any).import === 'undefined') {
   (globalThis as any).import = { meta: { env: {} } };
 }
 
-import '../../global.web.css';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useAuthStore } from '../../store/auth-store';
@@ -16,11 +15,11 @@ import AppLayout from './layouts/app-layout';
 import SignIn from './auth/sign-in';
 import SignUp from './auth/sign-up';
 
-// App Pages (to be implemented in Phase 5)
-// import Dashboard from './dashboard';
-// import Progress from './progress';
-// import Journal from './journal';
-// import Settings from './settings';
+// App Pages
+import Dashboard from './dashboard';
+import Progress from './progress';
+import Journal from './journal';
+import Settings from './settings';
 
 // Partner Pages
 import PartnerJoin from './partner/join';
@@ -141,44 +140,11 @@ export default function WebApp() {
               </ProtectedRoute>
             }
           >
-            {/* Placeholder routes - will implement in Phase 5 */}
             <Route index element={<Navigate to="/dashboard" replace />} />
-            <Route
-              path="dashboard"
-              element={
-                <div style={{ padding: 20 }}>
-                  <h1>Dashboard</h1>
-                  <p>Coming in Phase 5</p>
-                </div>
-              }
-            />
-            <Route
-              path="progress"
-              element={
-                <div style={{ padding: 20 }}>
-                  <h1>Progress</h1>
-                  <p>Coming in Phase 5</p>
-                </div>
-              }
-            />
-            <Route
-              path="journal"
-              element={
-                <div style={{ padding: 20 }}>
-                  <h1>Journal</h1>
-                  <p>Coming in Phase 5</p>
-                </div>
-              }
-            />
-            <Route
-              path="settings"
-              element={
-                <div style={{ padding: 20 }}>
-                  <h1>Settings</h1>
-                  <p>Coming in Phase 5</p>
-                </div>
-              }
-            />
+            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="progress" element={<Progress />} />
+            <Route path="journal" element={<Journal />} />
+            <Route path="settings" element={<Settings />} />
           </Route>
 
           {/* Partner Join Route - Public (auto-join via URL) */}

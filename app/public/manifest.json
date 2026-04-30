@@ -1,0 +1,42 @@
+{
+  "name": "Cultivating the Fruit",
+  "short_name": "CultivateFruit",
+  "description": "Love renewed through daily action",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FFFEFA",
+  "theme_color": "#6B2D3E",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/icon-192-cream-v2.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512-cream-v2.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-1024-cream-v2.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/maskable-icon-512-cream-v2.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/maskable-icon-1024-cream-v2.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

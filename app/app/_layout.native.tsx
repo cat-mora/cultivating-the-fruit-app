@@ -1,44 +1,31 @@
-// Load platform-specific styles
-if (typeof window === 'undefined') {
-  // Native only: load NativeWind
-  require("../global.css");
-} else {
-  // Web only: load web CSS
-  require("../global.web.css");
-}
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { QueryClientProvider } from '@tanstack/react-query';
 import { DarkTheme, DefaultTheme, ThemeProvider, Theme } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
-import { Stack, Redirect } from 'expo-router';
+import { Stack, Redirect, usePathname } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Platform } from 'react-native';
 import 'react-native-reanimated';
 
+// Load platform-specific styles using the actual Expo platform, not window presence.
+if (Platform.OS === 'web') {
+  require('../global.web.generated.css');
+  require('../global.web.css');
+} else {
+  require('../global.css');
+}
+
 import { useUserStore } from '../store/user-store';
-import { initializeAuth } from '../store/auth-store';
+import { initializeAuth, useAuthStore } from '../store/auth-store';
+import { queryClient } from '../lib/data/query-client';
 import { logFeatureFlags } from '../lib/feature-flags';
 import { startBackgroundSync } from '../lib/data/sync-service';
 import { promptMigrationIfNeeded } from '../lib/migration/migrate-to-supabase';
 import { PWAInstallPrompt } from '../components/pwa-install-prompt';
+import { isSupabaseEnabled } from '../lib/supabase/config';
 
 import { useColorScheme } from '@/components/useColorScheme';
-
-// Web debug: show errors on screen
-if (Platform.OS === 'web' && typeof window !== 'undefined') {
-  window.onerror = function(msg, src, line, col, err) {
-    const el = document.createElement('pre');
-    el.style.cssText = 'color:red;padding:20px;font-size:14px;white-space:pre-wrap;';
-    el.textContent = `ERROR: ${msg}\nSource: ${src}:${line}:${col}\n${err?.stack || ''}`;
-    document.body.prepend(el);
-  };
-  window.onunhandledrejection = function(e) {
-    const el = document.createElement('pre');
-    el.style.cssText = 'color:red;padding:20px;font-size:14px;white-space:pre-wrap;';
-    el.textContent = `UNHANDLED: ${e.reason?.message || e.reason}\n${e.reason?.stack || ''}`;
-    document.body.prepend(el);
-  };
-}
 
 const LogoTheme: Theme = {
   ...DefaultTheme,
@@ -52,6 +39,36 @@ const LogoTheme: Theme = {
     notification: '#D99BA6',   // Rose
   },
 };
+
+const logoImage = require('../assets/images/logo-full.png');
+
+function getWebAssetUri(asset: unknown): string | undefined {
+  if (typeof asset === 'string') {
+    return asset;
+  }
+
+  if (asset && typeof asset === 'object') {
+    const assetRecord = asset as { uri?: unknown; default?: unknown };
+
+    if (typeof assetRecord.uri === 'string') {
+      return assetRecord.uri;
+    }
+
+    if (typeof assetRecord.default === 'string') {
+      return assetRecord.default;
+    }
+
+    if (assetRecord.default && typeof assetRecord.default === 'object') {
+      const defaultAsset = assetRecord.default as { uri?: unknown };
+
+      if (typeof defaultAsset.uri === 'string') {
+        return defaultAsset.uri;
+      }
+    }
+  }
+
+  return undefined;
+}
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -104,46 +121,79 @@ export default function RootLayout() {
     return null;
   }
 
-  // Web: render logo banner
-  if (Platform.OS === 'web') {
-    return (
-      <>
-        <div className="logo-banner">
-          <img
-            src={require('../assets/images/logo-full.png')}
-            alt="Cultivating the Fruits - Love Renewed Through Daily Action"
-          />
-        </div>
-        <RootLayoutNav />
-      </>
-    );
-  }
-
   return <RootLayoutNav />;
 }
 
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
+  const pathname = usePathname();
   const hasOnboarded = useUserStore((state) => state.hasOnboarded);
+  const session = useAuthStore((state) => state.session);
+  const isLoading = useAuthStore((state) => state.isLoading);
+
+  // Check if user is on an auth page (sign-in, sign-up, etc.)
+  const isAuthPage = pathname?.includes('/auth/') || pathname?.includes('sign-in') || pathname?.includes('sign-up');
+
+  // Determine if we should redirect to auth
+  const shouldRedirectToAuth = !isLoading && !session && !isAuthPage && pathname !== null && pathname !== '/(web)/auth/sign-in';
+
+  // Debug logging
+  if (typeof window !== 'undefined') {
+    console.log('🔍 Auth Debug:', {
+      pathname,
+      isAuthPage,
+      session: !!session,
+      isLoading,
+      hasOnboarded,
+      shouldRedirectToAuth
+    });
+  }
+
+  const showWebLogoBanner =
+    Platform.OS === 'web' &&
+    pathname !== '/onboarding' &&
+    !(pathname === '/' && hasOnboarded === false) &&
+    !isAuthPage;
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : LogoTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="onboarding" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
-        <Stack.Screen
-          name="partner-linking"
-          options={{
-            title: 'Relational Handshake',
-            headerBackTitle: 'Settings',
-          }}
-        />
-      </Stack>
-      {hasOnboarded === false && <Redirect href="/onboarding" />}
+    <QueryClientProvider client={queryClient}>
+      <>
+        {showWebLogoBanner && (
+          <div className="logo-banner">
+            <img
+              src={getWebAssetUri(logoImage)}
+              alt="Cultivating the Fruits - Love Renewed Through Daily Action"
+            />
+          </div>
+        )}
+        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : LogoTheme}>
+          <Stack>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="onboarding" options={{ headerShown: false }} />
+            <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+            <Stack.Screen name="(web)" options={{ headerShown: false }} />
+            <Stack.Screen
+              name="partner-linking"
+              options={{
+                title: 'Relational Handshake',
+                headerBackTitle: 'Settings',
+              }}
+            />
+          </Stack>
 
-      {/* PWA Install Prompt - shows on first load for web users */}
-      <PWAInstallPrompt />
-    </ThemeProvider>
+          {/* Authentication Check - Redirect to sign-in if not authenticated */}
+          {shouldRedirectToAuth && (
+            <Redirect href="/(web)/auth/sign-in" />
+          )}
+
+          {/* Onboarding Check - Only if authenticated */}
+          {!isLoading && session && hasOnboarded === false && !isAuthPage && pathname !== '/onboarding' && (
+            <Redirect href="/onboarding" />
+          )}
+
+          <PWAInstallPrompt />
+        </ThemeProvider>
+      </>
+    </QueryClientProvider>
   );
 }

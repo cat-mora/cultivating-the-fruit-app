@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'expo-router';
 import { useDailyContent } from '../../../features/content/hooks/use-daily-content';
 import { useProgress } from '../../../lib/data/queries/use-progress';
 import { useProfile } from '../../../lib/data/queries/use-profile';
@@ -7,16 +7,16 @@ import { useProfile } from '../../../lib/data/queries/use-profile';
 const timeTiers = [5, 15, 30, 60, 120];
 
 export default function DashboardWeb() {
-  const navigate = useNavigate();
+  const router = useRouter();
   const { data: profile } = useProfile();
   const { data: progress } = useProgress();
   const content = useDailyContent();
   const [selectedTier, setSelectedTier] = useState<number>(15);
   const [isCompleting, setIsCompleting] = useState(false);
 
-  // Check if user has profile
+  // Check if user has profile (completed onboarding)
   if (!profile) {
-    navigate('/auth/sign-in');
+    router.replace('/(web)/auth/sign-in');
     return null;
   }
 
@@ -54,11 +54,8 @@ export default function DashboardWeb() {
       <div className="max-w-2xl mx-auto p-6 pb-8">
         {/* Header */}
         <header className="mt-14 mb-6">
-          <div className="flex items-center gap-3 mb-1">
-            <span className="text-3xl">🍇</span>
-            <h1 className="text-3xl font-serif text-wine">{content.fruit_theme}</h1>
-          </div>
-          <p className="text-charcoal/50 text-sm font-semibold ml-1">Day {content.day_number}</p>
+          <h1 className="text-3xl font-serif text-wine mb-1">{content.fruit_theme}</h1>
+          <p className="text-charcoal/50 text-sm font-semibold">Day {content.day_number}</p>
         </header>
 
         {/* Streak Badge */}

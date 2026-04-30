@@ -4,7 +4,7 @@ import { useJournalStore } from '../store/journal-store';
 import { FruitType, useProgressStore } from '../store/progress-store';
 import { usePartnerStore } from '../store/partner-store';
 import { useUserStore } from '../store/user-store';
-import { supabase } from './supabase-client';
+import { supabase, isSupabaseEnabled } from './supabase/config';
 
 export const APP_STORAGE_KEYS = [
   'user-storage',
@@ -49,6 +49,10 @@ const createDefaultFruitProgress = () =>
   );
 
 async function signOutSafely() {
+  if (!isSupabaseEnabled) {
+    return;
+  }
+
   try {
     const { error } = await supabase.auth.signOut();
 

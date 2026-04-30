@@ -3,7 +3,7 @@ import { View, Text, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuthStore } from '../../store/auth-store';
 import { isAdmin } from '../../lib/admin/admin-service';
-import { InviteCodeManager } from '../../features/admin/InviteCodeManager';
+import InviteCodeManager from '../../features/admin/components/invite-code-manager';
 
 export default function AdminPanel() {
   const router = useRouter();
@@ -64,7 +64,7 @@ export default function AdminPanel() {
         <Text className="text-3xl font-serif text-wine">Admin Panel</Text>
         <Text className="text-charcoal/60 mt-1">Manage signup invite codes</Text>
       </View>
-      <InviteCodeManager />
+      <InviteCodeManager platform="native" />
     </View>
   );
 }

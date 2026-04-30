@@ -116,6 +116,19 @@ CREATE POLICY "Users can view own profile"
   ON profiles FOR SELECT
   USING (auth.uid() = id);
 
+CREATE POLICY "Partners can view each other's profiles"
+  ON profiles FOR SELECT
+  USING (
+    EXISTS (
+      SELECT 1 FROM partner_links
+      WHERE status = 'accepted'
+        AND (
+          (creator_id = auth.uid() AND partner_id = id)
+          OR (partner_id = auth.uid() AND creator_id = id)
+        )
+    )
+  );
+
 CREATE POLICY "Users can insert own profile"
   ON profiles FOR INSERT
   WITH CHECK (auth.uid() = id);
