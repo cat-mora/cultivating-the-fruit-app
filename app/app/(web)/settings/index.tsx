@@ -1,10 +1,12 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useProfile } from '../../../lib/data/queries/use-profile';
 import { usePartnerLinks } from '../../../lib/data/queries/use-partner';
 import { JourneyStream, BibleTranslation } from '../../../store/user-store';
 import { supabase } from '../../../lib/supabase/config';
 import { ChangePasswordForm } from '../../../features/auth/components/change-password-form';
+import { useAuthStore } from '../../../store/auth-store';
+import { isAdmin } from '../../../lib/admin/admin-service';
 
 const streams: { id: JourneyStream; label: string; description: string }[] = [
   { id: 'strengthen', label: 'Strengthen', description: 'Deepen and strengthen your marriage bond' },
@@ -18,6 +20,7 @@ export default function SettingsWeb() {
   const navigate = useNavigate();
   const { data: profile } = useProfile();
   const { data: partners } = usePartnerLinks();
+  const userId = useAuthStore((state) => state.user?.id);
   const [isResetting, setIsResetting] = useState(false);
   const [selectedStream, setSelectedStream] = useState<JourneyStream>(profile?.stream || 'strengthen');
   const [selectedTranslation, setSelectedTranslation] = useState<BibleTranslation>(
@@ -25,6 +28,24 @@ export default function SettingsWeb() {
   );
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
   const [showPasswordChange, setShowPasswordChange] = useState(false);
+  const [adminStatus, setAdminStatus] = useState(false);
+
+  // Check admin status
+  useEffect(() => {
+    const checkAdmin = async () => {
+      if (userId) {
+        try {
+          const status = await isAdmin(userId);
+          setAdminStatus(status);
+        } catch (error) {
+          console.error('Error checking admin status:', error);
+          setAdminStatus(false);
+        }
+      }
+    };
+
+    void checkAdmin();
+  }, [userId]);
 
   const handleSavePreferences = async () => {
     try {
@@ -154,6 +175,22 @@ export default function SettingsWeb() {
             </p>
           </button>
         </section>
+
+        {/* Admin Panel */}
+        {adminStatus && (
+          <section className="mb-12">
+            <h2 className="text-lg font-bold text-charcoal mb-4">Administration</h2>
+            <button
+              onClick={() => navigate('/admin')}
+              className="w-full p-5 rounded-[20px] border-2 border-wine bg-wine/10 hover:bg-wine/20 transition-colors text-left"
+            >
+              <p className="text-wine font-bold mb-1">Admin Panel</p>
+              <p className="text-charcoal/60 text-sm">
+                Manage signup invite codes and system settings
+              </p>
+            </button>
+          </section>
+        )}
 
         {/* Account Actions */}
         <section className="mb-12">
