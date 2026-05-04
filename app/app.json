@@ -19,8 +19,8 @@
     "android": {
       "icon": "./assets/images/icon.png",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/icon-1024-cream-v2.png",
-        "backgroundColor": "#FFFEFA"
+        "foregroundImage": "./assets/images/maskable-icon-1024-cream-v2.png",
+        "backgroundColor": "#6B2D3E"
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false
