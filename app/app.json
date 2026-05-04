@@ -4,7 +4,7 @@
     "slug": "cultivate-fruit",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/icon-1024-cream-v2.png",
     "scheme": "cultivatefruit",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -17,7 +17,7 @@
       "supportsTablet": true
     },
     "android": {
-      "icon": "./assets/images/icon.png",
+      "icon": "./assets/images/icon-1024-cream-v2.png",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/maskable-icon-1024-cream-v2.png",
         "backgroundColor": "#6B2D3E"
