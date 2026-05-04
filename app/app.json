@@ -31,6 +31,32 @@
       "favicon": "./assets/images/favicon.png",
       "name": "CultivateFruit",
       "shortName": "Cultivate",
+      "themeColor": "#6B2D3E",
+      "backgroundColor": "#FFFEFA",
+      "icons": [
+        {
+          "src": "./assets/images/icon-192-cream-v2.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        },
+        {
+          "src": "./assets/images/icon-512-cream-v2.png",
+          "sizes": "512x512",
+          "type": "image/png"
+        },
+        {
+          "src": "./assets/images/maskable-icon-512-cream-v2.png",
+          "sizes": "512x512",
+          "type": "image/png",
+          "purpose": "maskable"
+        },
+        {
+          "src": "./assets/images/maskable-icon-1024-cream-v2.png",
+          "sizes": "1024x1024",
+          "type": "image/png",
+          "purpose": "maskable"
+        }
+      ],
       "plugins": []
     },
     "plugins": [
