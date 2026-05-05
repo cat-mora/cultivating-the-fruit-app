@@ -79,6 +79,12 @@ export default function DashboardScreen() {
   return (
     <View className="flex-1 bg-cream">
       <View style={{ flex: 1, paddingHorizontal: 20, paddingTop: 12, paddingBottom: 12 }}>
+        {/* DEBUG */}
+        <View style={{ backgroundColor: 'red', padding: 20, marginBottom: 20, zIndex: 9999 }}>
+          <Text style={{ color: 'white', fontSize: 20, fontWeight: 'bold' }}>
+            🚨 Dashboard Rendering! Day {currentDay}
+          </Text>
+        </View>
 
         {/* Header */}
         <View style={{ marginBottom: 8 }}>
