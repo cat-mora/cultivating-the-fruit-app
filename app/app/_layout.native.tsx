@@ -160,19 +160,21 @@ function RootLayoutNav() {
     });
   }
 
+  // TEMPORARILY DISABLED - Testing without redirects
   // Handle redirects in useEffect to prevent render loops
   useEffect(() => {
-    if (isLoading || hasRedirected.current) return;
-
-    if (shouldRedirectToAuth) {
-      console.log('🔥 Redirecting to auth');
-      hasRedirected.current = true;
-      router.replace('/(web)/auth/sign-in');
-    } else if (session && hasOnboarded === false && !isAuthPage && pathname !== '/onboarding') {
-      console.log('🔥 Redirecting to onboarding');
-      hasRedirected.current = true;
-      router.replace('/onboarding');
-    }
+    console.log('🔥 Redirect check:', { isLoading, hasRedirected: hasRedirected.current, shouldRedirectToAuth, session: !!session, hasOnboarded });
+    // Disabled for testing
+    // if (isLoading || hasRedirected.current) return;
+    // if (shouldRedirectToAuth) {
+    //   console.log('🔥 Redirecting to auth');
+    //   hasRedirected.current = true;
+    //   router.replace('/(web)/auth/sign-in');
+    // } else if (session && hasOnboarded === false && !isAuthPage && pathname !== '/onboarding') {
+    //   console.log('🔥 Redirecting to onboarding');
+    //   hasRedirected.current = true;
+    //   router.replace('/onboarding');
+    // }
   }, [isLoading, session, hasOnboarded, shouldRedirectToAuth, isAuthPage, pathname, router]);
 
   const showWebLogoBanner =
