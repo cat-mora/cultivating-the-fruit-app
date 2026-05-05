@@ -38,6 +38,8 @@ export default function DashboardScreen() {
   const scriptureText = content?.bible_text[selectedTranslation] || content?.bible_text['NIV'];
   const displayContent = content ? { ...content, scriptureText } : null;
 
+  console.log('🎯 Dashboard Debug:', { selectedStream, currentDay, viewingDay, hasContent: !!content, contentListLength: contentList.length });
+
   const maxDays = getMaxJourneyDay(selectedStream);
   const canGoPrev = viewingDay > 1;
   const canGoNext = viewingDay < maxDays;
