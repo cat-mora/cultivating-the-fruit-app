@@ -16,6 +16,20 @@ const timeTiers = [
 ];
 
 export default function DashboardScreen() {
+  // TEMPORARY: Return simple content to test rendering
+  return (
+    <View style={{ flex: 1, padding: 20, backgroundColor: '#FFF9F0' }}>
+      <Text style={{ fontSize: 24, fontWeight: 'bold', color: '#000', marginBottom: 20 }}>
+        ✅ Dashboard is Working!
+      </Text>
+      <Text style={{ fontSize: 16, color: '#000' }}>
+        If you can see this, the app is rendering correctly.
+      </Text>
+    </View>
+  );
+
+  // Original code below (temporarily disabled):
+  /*
   const { completeActivityToday, hasCompletedToday, getStreakInfo } = useStreak();
   const advanceToNextDay = useUserStore((state) => state.advanceToNextDay);
   const currentDay = useUserStore((state) => state.currentDay);
@@ -178,4 +192,5 @@ export default function DashboardScreen() {
         )}
     </ScrollView>
   );
+  */
 }
