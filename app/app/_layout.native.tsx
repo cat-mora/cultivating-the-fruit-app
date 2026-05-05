@@ -84,14 +84,19 @@ export const unstable_settings = {
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+  console.log('🔥 RootLayout rendering');
   const [loaded, error] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
     ...FontAwesome.font,
   });
+  console.log('🔥 Fonts loaded:', loaded, 'Error:', error);
 
   // Expo Router uses Error Boundaries to catch errors in the navigation tree.
   useEffect(() => {
-    if (error) throw error;
+    if (error) {
+      console.error('🔥 Font loading error:', error);
+      throw error;
+    }
   }, [error]);
 
   useEffect(() => {
@@ -118,18 +123,22 @@ export default function RootLayout() {
   }, []);
 
   if (!loaded && Platform.OS !== 'web') {
+    console.log('🔥 Returning null - fonts not loaded on native');
     return null;
   }
 
+  console.log('🔥 Rendering RootLayoutNav');
   return <RootLayoutNav />;
 }
 
 function RootLayoutNav() {
+  console.log('🔥 RootLayoutNav rendering');
   const colorScheme = useColorScheme();
   const pathname = usePathname();
   const hasOnboarded = useUserStore((state) => state.hasOnboarded);
   const session = useAuthStore((state) => state.session);
   const isLoading = useAuthStore((state) => state.isLoading);
+  console.log('🔥 RootLayoutNav state:', { pathname, hasOnboarded, hasSession: !!session, isLoading });
 
   // Check if user is on an auth page (sign-in, sign-up, etc.)
   const isAuthPage = pathname?.includes('/auth/') || pathname?.includes('sign-in') || pathname?.includes('sign-up');
