@@ -181,13 +181,13 @@ function RootLayoutNav() {
             />
           </Stack>
 
-          {/* Authentication Check - DISABLED to allow app to work without login */}
-          {/* {shouldRedirectToAuth && (
+          {/* Authentication Check - Redirect to sign-in if not authenticated */}
+          {shouldRedirectToAuth && (
             <Redirect href="/(web)/auth/sign-in" />
-          )} */}
+          )}
 
-          {/* Onboarding Check */}
-          {hasOnboarded === false && pathname !== '/onboarding' && !isAuthPage && (
+          {/* Onboarding Check - Only if authenticated */}
+          {!isLoading && session && hasOnboarded === false && !isAuthPage && pathname !== '/onboarding' && (
             <Redirect href="/onboarding" />
           )}
 
