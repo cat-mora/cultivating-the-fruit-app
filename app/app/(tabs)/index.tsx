@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Text, View, Pressable, Alert as RNAlert, Platform } from 'react-native';
+import { Text, View, Pressable, ScrollView, Alert as RNAlert, Platform } from 'react-native';
 import { useStreak } from '../../features/progress/hooks/use-streak';
 import { useUserStore } from '../../store/user-store';
 import { getJourneyContent, getMaxJourneyDay } from '../../features/content/utils/journey-metrics';
