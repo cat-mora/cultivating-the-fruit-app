@@ -2,9 +2,9 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { DarkTheme, DefaultTheme, ThemeProvider, Theme } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
-import { Stack, Redirect, usePathname } from 'expo-router';
+import { Stack, usePathname, useRouter } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { Platform } from 'react-native';
 import 'react-native-reanimated';
 
@@ -135,9 +135,11 @@ function RootLayoutNav() {
   console.log('🔥 RootLayoutNav rendering');
   const colorScheme = useColorScheme();
   const pathname = usePathname();
+  const router = useRouter();
   const hasOnboarded = useUserStore((state) => state.hasOnboarded);
   const session = useAuthStore((state) => state.session);
   const isLoading = useAuthStore((state) => state.isLoading);
+  const hasRedirected = useRef(false);
   console.log('🔥 RootLayoutNav state:', { pathname, hasOnboarded, hasSession: !!session, isLoading });
 
   // Check if user is on an auth page (sign-in, sign-up, etc.)
@@ -157,6 +159,21 @@ function RootLayoutNav() {
       shouldRedirectToAuth
     });
   }
+
+  // Handle redirects in useEffect to prevent render loops
+  useEffect(() => {
+    if (isLoading || hasRedirected.current) return;
+
+    if (shouldRedirectToAuth) {
+      console.log('🔥 Redirecting to auth');
+      hasRedirected.current = true;
+      router.replace('/(web)/auth/sign-in');
+    } else if (session && hasOnboarded === false && !isAuthPage && pathname !== '/onboarding') {
+      console.log('🔥 Redirecting to onboarding');
+      hasRedirected.current = true;
+      router.replace('/onboarding');
+    }
+  }, [isLoading, session, hasOnboarded, shouldRedirectToAuth, isAuthPage, pathname, router]);
 
   const showWebLogoBanner =
     Platform.OS === 'web' &&
@@ -190,15 +207,7 @@ function RootLayoutNav() {
             />
           </Stack>
 
-          {/* Authentication Check - Redirect to sign-in if not authenticated */}
-          {shouldRedirectToAuth && (
-            <Redirect href="/(web)/auth/sign-in" />
-          )}
-
-          {/* Onboarding Check - Only if authenticated */}
-          {!isLoading && session && hasOnboarded === false && !isAuthPage && pathname !== '/onboarding' && (
-            <Redirect href="/onboarding" />
-          )}
+          {/* Redirects handled in useEffect above to prevent render loops */}
 
           <PWAInstallPrompt />
         </ThemeProvider>
