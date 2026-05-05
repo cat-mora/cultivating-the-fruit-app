@@ -19,6 +19,12 @@ interface UserState {
   completeOnboarding: () => void;
   advanceToNextDay: () => void; // Move to the next day after completing an activity
   setCurrentDay: (day: number) => void; // For navigation (viewing different days)
+  hydrateFromProfile: (profile: {
+    stream: JourneyStream;
+    translation: BibleTranslation;
+    onboarding_date: string;
+    current_day: number;
+  }) => void;
   syncToSupabase: () => Promise<void>;
 }
 
@@ -81,6 +87,16 @@ export const useUserStore = create<UserState>()(
         const validDay = clampJourneyDay(day, get().selectedStream);
         set({ currentDay: validDay });
         // Note: We don't sync navigation to Supabase - only actual progression (advanceToNextDay)
+      },
+
+      hydrateFromProfile: (profile) => {
+        set({
+          hasOnboarded: true,
+          selectedStream: profile.stream,
+          selectedTranslation: profile.translation || 'NIV',
+          onboardingDate: profile.onboarding_date,
+          currentDay: clampJourneyDay(profile.current_day || 1, profile.stream),
+        });
       },
 
       syncToSupabase: async () => {

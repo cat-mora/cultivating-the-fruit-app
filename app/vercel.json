@@ -46,7 +46,7 @@
   "env": {
     "EXPO_PUBLIC_SUPABASE_URL": "https://onwijddzljigbizsnrpo.supabase.co",
     "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ud2lqZGR6bGppZ2JpenNucnBvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1NDA3MTEsImV4cCI6MjA5MjExNjcxMX0.UrJBGCrlWp3ADORy6BnYJuWovConIyU_MUzHHdiIEUU",
-    "EXPO_PUBLIC_WEB_URL": "https://app.cultivatingthefruits.com",
+    "EXPO_PUBLIC_WEB_URL": "https://app.cultivatingthefruit.com",
     "EXPO_PUBLIC_ENABLE_SUPABASE": "true",
     "EXPO_PUBLIC_ENABLE_WEB_PLATFORM": "true",
     "EXPO_PUBLIC_ENABLE_PARTNER_SHARING": "true"

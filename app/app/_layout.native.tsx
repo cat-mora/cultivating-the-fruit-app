@@ -4,7 +4,7 @@ import { DarkTheme, DefaultTheme, ThemeProvider, Theme } from '@react-navigation
 import { useFonts } from 'expo-font';
 import { Stack, usePathname, useRouter } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Platform } from 'react-native';
 import 'react-native-reanimated';
 
@@ -23,7 +23,7 @@ import { logFeatureFlags } from '../lib/feature-flags';
 import { startBackgroundSync } from '../lib/data/sync-service';
 import { promptMigrationIfNeeded } from '../lib/migration/migrate-to-supabase';
 import { PWAInstallPrompt } from '../components/pwa-install-prompt';
-import { isSupabaseEnabled } from '../lib/supabase/config';
+import { supabase, isSupabaseEnabled } from '../lib/supabase/config';
 
 import { useColorScheme } from '@/components/useColorScheme';
 
@@ -137,10 +137,22 @@ function RootLayoutNav() {
   const pathname = usePathname();
   const router = useRouter();
   const hasOnboarded = useUserStore((state) => state.hasOnboarded);
+  const selectedStream = useUserStore((state) => state.selectedStream);
+  const hydrateFromProfile = useUserStore((state) => state.hydrateFromProfile);
+  const user = useAuthStore((state) => state.user);
   const session = useAuthStore((state) => state.session);
   const isLoading = useAuthStore((state) => state.isLoading);
+  const [isHydratingProfile, setIsHydratingProfile] = useState(false);
   const hasRedirected = useRef(false);
-  console.log('🔥 RootLayoutNav state:', { pathname, hasOnboarded, hasSession: !!session, isLoading });
+  const hydratedProfileUserId = useRef<string | null>(null);
+  console.log('🔥 RootLayoutNav state:', {
+    pathname,
+    hasOnboarded,
+    selectedStream,
+    hasSession: !!session,
+    isLoading,
+    isHydratingProfile,
+  });
 
   // Check if user is on an auth page (sign-in, sign-up, etc.)
   const isAuthPage = pathname?.includes('/auth/') || pathname?.includes('sign-in') || pathname?.includes('sign-up');
@@ -156,28 +168,94 @@ function RootLayoutNav() {
       session: !!session,
       isLoading,
       hasOnboarded,
+      selectedStream,
+      isHydratingProfile,
       shouldRedirectToAuth
     });
   }
 
   useEffect(() => {
-    console.log('🔥 Redirect check:', { isLoading, hasRedirected: hasRedirected.current, shouldRedirectToAuth, session: !!session, hasOnboarded });
-    if (isLoading || hasRedirected.current) return;
+    if (!session || !user) {
+      hydratedProfileUserId.current = null;
+      setIsHydratingProfile(false);
+      hasRedirected.current = false;
+      return;
+    }
+
+    if (!isSupabaseEnabled || hydratedProfileUserId.current === user.id) {
+      return;
+    }
+
+    if (hasOnboarded && selectedStream) {
+      hydratedProfileUserId.current = user.id;
+      return;
+    }
+
+    let cancelled = false;
+    setIsHydratingProfile(true);
+
+    void (async () => {
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('stream, translation, onboarding_date, current_day')
+          .eq('id', user.id)
+          .maybeSingle();
+
+        if (cancelled) {
+          return;
+        }
+
+        if (error) {
+          console.error('🔥 Failed to hydrate profile:', error);
+          return;
+        }
+
+        if (data) {
+          console.log('🔥 Hydrating local journey state from Supabase profile');
+          hydrateFromProfile(data);
+        }
+      } catch (error) {
+        console.error('🔥 Unexpected profile hydration error:', error);
+      } finally {
+        if (!cancelled) {
+          hydratedProfileUserId.current = user.id;
+          setIsHydratingProfile(false);
+        }
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [session, user, hasOnboarded, selectedStream, hydrateFromProfile]);
+
+  useEffect(() => {
+    console.log('🔥 Redirect check:', {
+      isLoading,
+      isHydratingProfile,
+      hasRedirected: hasRedirected.current,
+      shouldRedirectToAuth,
+      session: !!session,
+      hasOnboarded,
+      selectedStream,
+    });
+    if (isLoading || isHydratingProfile || hasRedirected.current) return;
     if (shouldRedirectToAuth) {
       console.log('🔥 Redirecting to auth');
       hasRedirected.current = true;
       router.replace('/auth/sign-in');
-    } else if (session && hasOnboarded === false && !isAuthPage && pathname !== '/onboarding') {
+    } else if (session && (!hasOnboarded || !selectedStream) && !isAuthPage && pathname !== '/onboarding') {
       console.log('🔥 Redirecting to onboarding');
       hasRedirected.current = true;
       router.replace('/onboarding');
     }
-  }, [isLoading, session, hasOnboarded, shouldRedirectToAuth, isAuthPage, pathname, router]);
+  }, [isLoading, isHydratingProfile, session, hasOnboarded, selectedStream, shouldRedirectToAuth, isAuthPage, pathname, router]);
 
   const showWebLogoBanner =
     Platform.OS === 'web' &&
     pathname !== '/onboarding' &&
-    !(pathname === '/' && hasOnboarded === false) &&
+    !(pathname === '/' && (!hasOnboarded || !selectedStream)) &&
     !isAuthPage;
 
   return (
