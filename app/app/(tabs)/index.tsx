@@ -77,8 +77,11 @@ export default function DashboardScreen() {
   const selectedActivity = displayContent.activities[selectedIndex] || displayContent.activities[0];
 
   return (
-    <View className="flex-1 bg-cream">
-      <View style={{ flex: 1, paddingHorizontal: 20, paddingTop: 12, paddingBottom: 12 }}>
+    <ScrollView
+      className="flex-1 bg-cream"
+      contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 12, paddingBottom: 100 }}
+      style={{ flex: 1, width: '100%', height: '100%' }}
+    >
         {/* DEBUG */}
         <View style={{ backgroundColor: 'red', padding: 20, marginBottom: 20, zIndex: 9999 }}>
           <Text style={{ color: 'white', fontSize: 20, fontWeight: 'bold' }}>
@@ -173,8 +176,6 @@ export default function DashboardScreen() {
             </Pressable>
           </View>
         )}
-
-      </View>
-    </View>
+    </ScrollView>
   );
 }
