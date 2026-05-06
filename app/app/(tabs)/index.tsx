@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Text, View, Pressable, Alert as RNAlert, Platform } from 'react-native';
+import DashboardWeb from '../(web)/dashboard';
 import { useStreak } from '../../features/progress/hooks/use-streak';
 import { useUserStore } from '../../store/user-store';
 import { clampJourneyDay, getJourneyContentForDay, getMaxJourneyDay } from '../../features/content/utils/journey-metrics';
@@ -16,6 +17,14 @@ const timeTiers = [
 ];
 
 export default function DashboardScreen() {
+  if (Platform.OS === 'web') {
+    return <DashboardWeb />;
+  }
+
+  return <DashboardScreenNative />;
+}
+
+function DashboardScreenNative() {
   const { completeActivityToday, hasCompletedToday, getStreakInfo } = useStreak();
   const advanceToNextDay = useUserStore((state) => state.advanceToNextDay);
   const currentDay = useUserStore((state) => state.currentDay);
