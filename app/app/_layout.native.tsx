@@ -186,11 +186,6 @@ function RootLayoutNav() {
       return;
     }
 
-    if (hasOnboarded && selectedStream) {
-      hydratedProfileUserId.current = user.id;
-      return;
-    }
-
     let cancelled = false;
     setIsHydratingProfile(true);
 
@@ -228,7 +223,7 @@ function RootLayoutNav() {
     return () => {
       cancelled = true;
     };
-  }, [session, user, hasOnboarded, selectedStream, hydrateFromProfile]);
+  }, [session, user, hydrateFromProfile]);
 
   useEffect(() => {
     console.log('🔥 Redirect check:', {

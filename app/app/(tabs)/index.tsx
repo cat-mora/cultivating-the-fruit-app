@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Text, View, Pressable, Alert as RNAlert, Platform } from 'react-native';
 import { useStreak } from '../../features/progress/hooks/use-streak';
 import { useUserStore } from '../../store/user-store';
-import { getJourneyContent, getMaxJourneyDay } from '../../features/content/utils/journey-metrics';
+import { clampJourneyDay, getJourneyContentForDay, getMaxJourneyDay } from '../../features/content/utils/journey-metrics';
 import { Alert as WebAlert } from '../../lib/alert-web';
 
 const Alert = Platform.OS === 'web' ? WebAlert : RNAlert;
@@ -25,23 +25,24 @@ export default function DashboardScreen() {
   const [viewingDay, setViewingDay] = useState(currentDay);
   const [selectedIndex, setSelectedIndex] = useState<number>(2);
   const [isCompleting, setIsCompleting] = useState(false);
+  const safeCurrentDay = clampJourneyDay(currentDay, selectedStream);
+  const safeViewingDay = clampJourneyDay(viewingDay, selectedStream);
 
   useEffect(() => {
-    setViewingDay(currentDay);
-  }, [currentDay]);
+    setViewingDay(safeCurrentDay);
+  }, [safeCurrentDay]);
 
   const streak = getStreakInfo();
   const completedToday = hasCompletedToday();
 
-  const contentList = getJourneyContent(selectedStream);
-  const content = contentList.find((c) => c.day_number === viewingDay);
+  const content = getJourneyContentForDay(selectedStream, safeViewingDay);
   const scriptureText = content?.bible_text[selectedTranslation] || content?.bible_text['NIV'];
   const displayContent = content ? { ...content, scriptureText } : null;
 
   const maxDays = getMaxJourneyDay(selectedStream);
-  const canGoPrev = viewingDay > 1;
-  const canGoNext = viewingDay < maxDays;
-  const isPreviewing = viewingDay !== currentDay;
+  const canGoPrev = safeViewingDay > 1;
+  const canGoNext = safeViewingDay < maxDays;
+  const isPreviewing = safeViewingDay !== safeCurrentDay;
 
   const handleMarkComplete = async () => {
     if (!displayContent || completedToday || isPreviewing) return;
@@ -85,14 +86,14 @@ export default function DashboardScreen() {
             </View>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
               <Pressable
-                onPress={() => canGoPrev && setViewingDay(viewingDay - 1)}
+                onPress={() => canGoPrev && setViewingDay(safeViewingDay - 1)}
                 style={{ width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center', backgroundColor: canGoPrev ? '#6B2D3E' : '#EDE8E0' }}
               >
                 <Text style={{ color: canGoPrev ? 'white' : 'rgba(47,47,47,0.2)', fontWeight: 'bold', fontSize: 16 }}>‹</Text>
               </Pressable>
               <Text className="text-wine font-bold text-sm">Day {displayContent.day_number}</Text>
               <Pressable
-                onPress={() => canGoNext && setViewingDay(viewingDay + 1)}
+                onPress={() => canGoNext && setViewingDay(safeViewingDay + 1)}
                 style={{ width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center', backgroundColor: canGoNext ? '#6B2D3E' : '#EDE8E0' }}
               >
                 <Text style={{ color: canGoNext ? 'white' : 'rgba(47,47,47,0.2)', fontWeight: 'bold', fontSize: 16 }}>›</Text>
