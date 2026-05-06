@@ -161,6 +161,12 @@ function RootLayoutNav() {
 
   // Determine if we should redirect to auth
   const shouldRedirectToAuth = !isLoading && !session && !isAuthPage && pathname !== null;
+  const shouldRedirectToWebDashboard =
+    Platform.OS === 'web' &&
+    pathname === '/' &&
+    !!session &&
+    hasOnboarded &&
+    !!selectedStream;
 
   // Debug logging
   if (typeof window !== 'undefined') {
@@ -239,6 +245,7 @@ function RootLayoutNav() {
       isHydratingProfile,
       hasRedirected: hasRedirected.current,
       shouldRedirectToAuth,
+      shouldRedirectToWebDashboard,
       session: !!session,
       hasOnboarded,
       selectedStream,
@@ -252,8 +259,12 @@ function RootLayoutNav() {
       console.log('🔥 Redirecting to onboarding');
       hasRedirected.current = true;
       router.replace('/onboarding');
+    } else if (shouldRedirectToWebDashboard) {
+      console.log('🔥 Redirecting to web dashboard');
+      hasRedirected.current = true;
+      router.replace('/dashboard');
     }
-  }, [isLoading, hasHydrated, isHydratingProfile, session, hasOnboarded, selectedStream, shouldRedirectToAuth, isAuthPage, pathname, router]);
+  }, [isLoading, hasHydrated, isHydratingProfile, session, hasOnboarded, selectedStream, shouldRedirectToAuth, shouldRedirectToWebDashboard, isAuthPage, pathname, router]);
 
   const showWebLogoBanner =
     Platform.OS === 'web' &&

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Text, View, Pressable, ScrollView, Image } from 'react-native';
+import { Text, View, Pressable, ScrollView, Image, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useUserStore, JourneyStream, BibleTranslation } from '../store/user-store';
 
@@ -29,7 +29,7 @@ export default function OnboardingScreen() {
       setStream(selectedStream);
       setTranslation(selectedTranslation);
       completeOnboarding();
-      router.replace('/(tabs)');
+      router.replace(Platform.OS === 'web' ? '/dashboard' : '/(tabs)');
     }
   };
 
