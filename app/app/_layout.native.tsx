@@ -136,6 +136,7 @@ function RootLayoutNav() {
   const colorScheme = useColorScheme();
   const pathname = usePathname();
   const router = useRouter();
+  const hasHydrated = useUserStore((state) => state.hasHydrated);
   const hasOnboarded = useUserStore((state) => state.hasOnboarded);
   const selectedStream = useUserStore((state) => state.selectedStream);
   const hydrateFromProfile = useUserStore((state) => state.hydrateFromProfile);
@@ -147,6 +148,7 @@ function RootLayoutNav() {
   const hydratedProfileUserId = useRef<string | null>(null);
   console.log('🔥 RootLayoutNav state:', {
     pathname,
+    hasHydrated,
     hasOnboarded,
     selectedStream,
     hasSession: !!session,
@@ -167,6 +169,7 @@ function RootLayoutNav() {
       isAuthPage,
       session: !!session,
       isLoading,
+      hasHydrated,
       hasOnboarded,
       selectedStream,
       isHydratingProfile,
@@ -175,6 +178,10 @@ function RootLayoutNav() {
   }
 
   useEffect(() => {
+    if (!hasHydrated) {
+      return;
+    }
+
     if (!session || !user) {
       hydratedProfileUserId.current = null;
       setIsHydratingProfile(false);
@@ -223,11 +230,12 @@ function RootLayoutNav() {
     return () => {
       cancelled = true;
     };
-  }, [session, user, hydrateFromProfile]);
+  }, [hasHydrated, session, user, hydrateFromProfile]);
 
   useEffect(() => {
     console.log('🔥 Redirect check:', {
       isLoading,
+      hasHydrated,
       isHydratingProfile,
       hasRedirected: hasRedirected.current,
       shouldRedirectToAuth,
@@ -235,7 +243,7 @@ function RootLayoutNav() {
       hasOnboarded,
       selectedStream,
     });
-    if (isLoading || isHydratingProfile || hasRedirected.current) return;
+    if (isLoading || !hasHydrated || isHydratingProfile || hasRedirected.current) return;
     if (shouldRedirectToAuth) {
       console.log('🔥 Redirecting to auth');
       hasRedirected.current = true;
@@ -245,7 +253,7 @@ function RootLayoutNav() {
       hasRedirected.current = true;
       router.replace('/onboarding');
     }
-  }, [isLoading, isHydratingProfile, session, hasOnboarded, selectedStream, shouldRedirectToAuth, isAuthPage, pathname, router]);
+  }, [isLoading, hasHydrated, isHydratingProfile, session, hasOnboarded, selectedStream, shouldRedirectToAuth, isAuthPage, pathname, router]);
 
   const showWebLogoBanner =
     Platform.OS === 'web' &&

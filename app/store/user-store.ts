@@ -9,6 +9,7 @@ export type JourneyStream = 'strengthen' | 'repair' | 'family';
 export type BibleTranslation = 'NIV' | 'ESV' | 'KJV' | 'NLT' | 'NKJV';
 
 interface UserState {
+  hasHydrated: boolean;
   hasOnboarded: boolean;
   selectedStream: JourneyStream | null;
   selectedTranslation: BibleTranslation;
@@ -19,6 +20,7 @@ interface UserState {
   completeOnboarding: () => void;
   advanceToNextDay: () => void; // Move to the next day after completing an activity
   setCurrentDay: (day: number) => void; // For navigation (viewing different days)
+  setHasHydrated: (hydrated: boolean) => void;
   hydrateFromProfile: (profile: {
     stream: JourneyStream;
     translation: BibleTranslation;
@@ -31,11 +33,14 @@ interface UserState {
 export const useUserStore = create<UserState>()(
   persist(
     (set, get) => ({
+      hasHydrated: false,
       hasOnboarded: false,
       selectedStream: null,
       selectedTranslation: 'NIV',
       onboardingDate: null,
       currentDay: 1,
+
+      setHasHydrated: (hydrated) => set({ hasHydrated: hydrated }),
 
       setStream: (stream) => {
         const currentDay = get().currentDay;
@@ -125,6 +130,9 @@ export const useUserStore = create<UserState>()(
     {
       name: 'user-storage',
       storage: createJSONStorage(() => AsyncStorage),
+      onRehydrateStorage: () => (state) => {
+        state?.setHasHydrated(true);
+      },
     }
   )
 );
