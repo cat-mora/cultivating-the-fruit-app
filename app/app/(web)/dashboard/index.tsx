@@ -1,23 +1,43 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'expo-router';
 import { useDailyContent } from '../../../features/content/hooks/use-daily-content';
 import { useProgress } from '../../../lib/data/queries/use-progress';
 import { useProfile } from '../../../lib/data/queries/use-profile';
+import { useAuthStore } from '../../../store/auth-store';
 
 const timeTiers = [5, 15, 30, 60, 120];
 
 export default function DashboardWeb() {
   const router = useRouter();
-  const { data: profile } = useProfile();
+  const session = useAuthStore((state) => state.session);
+  const isAuthLoading = useAuthStore((state) => state.isLoading);
+  const { data: profile, isLoading: isProfileLoading } = useProfile();
   const { data: progress } = useProgress();
   const content = useDailyContent();
   const [selectedTier, setSelectedTier] = useState<number>(15);
   const [isCompleting, setIsCompleting] = useState(false);
 
-  // Check if user has profile (completed onboarding)
-  if (!profile) {
-    router.replace('/(web)/auth/sign-in');
-    return null;
+  useEffect(() => {
+    if (isAuthLoading) {
+      return;
+    }
+
+    if (!session) {
+      router.replace('/auth/sign-in');
+      return;
+    }
+
+    if (!isProfileLoading && !profile) {
+      router.replace('/onboarding');
+    }
+  }, [isAuthLoading, session, isProfileLoading, profile, router]);
+
+  if (isAuthLoading || (session && isProfileLoading) || !session || !profile) {
+    return (
+      <div className="flex flex-1 items-center justify-center bg-cream min-h-screen">
+        <p className="text-charcoal/60">Loading your daily ritual...</p>
+      </div>
+    );
   }
 
   const streak = progress?.current_streak || 0;
