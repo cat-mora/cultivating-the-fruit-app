@@ -209,6 +209,10 @@ function RootLayoutNav() {
     } else if (session && (!hasOnboarded || !selectedStream) && !isAuthPage && pathname !== '/onboarding') {
       hasRedirected.current = true;
       router.replace('/onboarding');
+    } else if (Platform.OS === 'web' && session && hasOnboarded && selectedStream && !isAuthPage && pathname !== '/(web)/dashboard' && !pathname?.includes('/(web)/')) {
+      // Redirect authenticated web users to web dashboard
+      hasRedirected.current = true;
+      router.replace('/(web)/dashboard');
     }
   }, [isLoading, hasHydrated, isHydratingProfile, session, hasOnboarded, selectedStream, shouldRedirectToAuth, isAuthPage, pathname, router]);
 
