@@ -77,7 +77,7 @@ export {
 
 export const unstable_settings = {
   // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: '(tabs)',
+  initialRouteName: 'index',
 };
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -248,16 +248,6 @@ function RootLayoutNav() {
       console.log('🔥 Redirecting to auth');
       hasRedirected.current = true;
       router.replace('/auth/sign-in');
-    } else if (
-      Platform.OS === 'web' &&
-      session &&
-      hasOnboarded &&
-      selectedStream &&
-      pathname === '/'
-    ) {
-      console.log('🔥 Redirecting authenticated web user to dashboard');
-      hasRedirected.current = true;
-      router.replace('/dashboard');
     } else if (session && (!hasOnboarded || !selectedStream) && !isAuthPage && pathname !== '/onboarding') {
       console.log('🔥 Redirecting to onboarding');
       hasRedirected.current = true;
@@ -284,6 +274,7 @@ function RootLayoutNav() {
         )}
         <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : LogoTheme}>
           <Stack>
+            <Stack.Screen name="index" options={{ headerShown: false }} />
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen name="onboarding" options={{ headerShown: false }} />
             <Stack.Screen name="modal" options={{ presentation: 'modal' }} />

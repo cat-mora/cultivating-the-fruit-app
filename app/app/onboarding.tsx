@@ -29,7 +29,7 @@ export default function OnboardingScreen() {
       setStream(selectedStream);
       setTranslation(selectedTranslation);
       completeOnboarding();
-      router.replace(Platform.OS === 'web' ? '/dashboard' : '/(tabs)');
+      router.replace(Platform.OS === 'web' ? '/' : '/(tabs)');
     }
   };
 
