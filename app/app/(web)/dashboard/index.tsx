@@ -1,11 +1,9 @@
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuthStore } from '../../../store/auth-store';
 import { useProfile } from '../../../lib/data/queries/use-profile';
 import { useStreak } from '../../../features/progress/hooks/use-streak';
 import { useUserStore } from '../../../store/user-store';
-import { Alert as WebAlert } from '../../../lib/alert-web';
 import {
   clampJourneyDay,
   getJourneyContentForDay,
@@ -59,10 +57,9 @@ export default function DashboardWeb() {
 
   if (isAuthLoading || (session && isProfileLoading) || !session || !profile) {
     return (
-      <View style={{ flex: 1, minHeight: 420, alignItems: 'center', justifyContent: 'center', backgroundColor: '#FFF9F0' }}>
-        <ActivityIndicator size="large" color="#6B2D3E" />
-        <Text style={{ marginTop: 12, color: 'rgba(47,47,47,0.6)' }}>Loading your daily ritual...</Text>
-      </View>
+      <div className="flex flex-1 items-center justify-center bg-cream min-h-screen">
+        <p className="text-charcoal/60">Loading your daily ritual...</p>
+      </div>
     );
   }
 
@@ -85,17 +82,11 @@ export default function DashboardWeb() {
       setIsCompleting(true);
       await completeActivityToday(displayContent.fruit_theme, displayContent.day_number);
       advanceToNextDay();
-      WebAlert.alert(
-        'Activity Complete',
-        `Your streak is now ${streak.currentStreak + 1} days.`,
-        [{ text: 'OK', onPress: () => {} }]
+      window.alert(
+        `Activity complete. Your streak is now ${streak.currentStreak + 1} days.`
       );
     } catch (_error) {
-      WebAlert.alert(
-        'Error',
-        'Failed to record completion. Please try again.',
-        [{ text: 'OK', onPress: () => {} }]
-      );
+      window.alert('Failed to record completion. Please try again.');
     } finally {
       setIsCompleting(false);
     }
@@ -103,9 +94,9 @@ export default function DashboardWeb() {
 
   if (!displayContent) {
     return (
-      <View style={{ flex: 1, minHeight: 420, alignItems: 'center', justifyContent: 'center', backgroundColor: '#FFF9F0' }}>
-        <Text style={{ color: 'rgba(47,47,47,0.6)' }}>Loading your daily ritual...</Text>
-      </View>
+      <div className="flex flex-1 items-center justify-center bg-cream min-h-screen">
+        <p className="text-charcoal/60">Loading your daily ritual...</p>
+      </div>
     );
   }
 
@@ -113,114 +104,100 @@ export default function DashboardWeb() {
     displayContent.activities[selectedIndex] || displayContent.activities[0];
 
   return (
-    <ScrollView
-      style={{ flex: 1, backgroundColor: '#FFF9F0' }}
-      contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 32 }}
-      showsVerticalScrollIndicator={false}
-    >
-      <View style={{ width: '100%', maxWidth: 760, alignSelf: 'center' }}>
-        <View style={{ marginBottom: 10 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-              <Text style={{ fontSize: 22 }}>🍇</Text>
-              <Text style={{ fontSize: 26, color: '#3D7A9A', fontFamily: 'Georgia', fontWeight: '700' }}>
-                {displayContent.fruit_theme}
-              </Text>
-            </View>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-              <Pressable
-                onPress={() => canGoPrev && setViewingDay(safeViewingDay - 1)}
-                style={{
-                  width: 34,
-                  height: 34,
-                  borderRadius: 17,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  backgroundColor: canGoPrev ? '#6B2D3E' : '#EDE8E0',
-                }}
+    <div className="flex-1 bg-cream min-h-screen overflow-y-auto">
+      <div className="max-w-2xl mx-auto px-6 pt-10 pb-8">
+        <header className="mb-6">
+          <div className="flex items-center justify-between gap-4 mb-3">
+            <div className="flex items-center gap-3">
+              <span className="text-2xl">🍇</span>
+              <h1 className="text-4xl font-serif text-wine">{displayContent.fruit_theme}</h1>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => canGoPrev && setViewingDay(safeViewingDay - 1)}
+                disabled={!canGoPrev}
+                className={`w-9 h-9 rounded-full flex items-center justify-center text-lg font-bold ${
+                  canGoPrev ? 'bg-wine text-white' : 'bg-cream-dark text-charcoal/20'
+                }`}
               >
-                <Text style={{ color: canGoPrev ? 'white' : 'rgba(47,47,47,0.2)', fontWeight: '700', fontSize: 16 }}>‹</Text>
-              </Pressable>
-              <Text style={{ color: '#6B2D3E', fontWeight: '700', fontSize: 14 }}>Day {displayContent.day_number}</Text>
-              <Pressable
-                onPress={() => canGoNext && setViewingDay(safeViewingDay + 1)}
-                style={{
-                  width: 34,
-                  height: 34,
-                  borderRadius: 17,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  backgroundColor: canGoNext ? '#6B2D3E' : '#EDE8E0',
-                }}
+                ‹
+              </button>
+              <span className="text-wine font-bold text-sm">Day {displayContent.day_number}</span>
+              <button
+                type="button"
+                onClick={() => canGoNext && setViewingDay(safeViewingDay + 1)}
+                disabled={!canGoNext}
+                className={`w-9 h-9 rounded-full flex items-center justify-center text-lg font-bold ${
+                  canGoNext ? 'bg-wine text-white' : 'bg-cream-dark text-charcoal/20'
+                }`}
               >
-                <Text style={{ color: canGoNext ? 'white' : 'rgba(47,47,47,0.2)', fontWeight: '700', fontSize: 16 }}>›</Text>
-              </Pressable>
-            </View>
-          </View>
-        </View>
+                ›
+              </button>
+            </div>
+          </div>
+        </header>
 
         {streak.currentStreak > 0 && (
-          <View style={{ marginBottom: 12, flexDirection: 'row', alignItems: 'center', gap: 6, alignSelf: 'flex-start', backgroundColor: 'rgba(184,142,48,0.15)', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20 }}>
-            <Text style={{ fontSize: 13 }}>🔥</Text>
-            <Text style={{ color: '#B88E30', fontWeight: '700', fontSize: 12 }}>{streak.currentStreak} Day Streak</Text>
-          </View>
+          <div className="mb-5 flex items-center gap-2 self-start bg-gold/15 px-4 py-2 rounded-full">
+            <span className="text-lg">🔥</span>
+            <span className="text-gold font-bold text-sm">
+              {streak.currentStreak} Day Streak
+            </span>
+          </div>
         )}
 
-        <View style={{ backgroundColor: '#C98A9B', borderRadius: 28, padding: 22, marginBottom: 14, shadowColor: '#2F2F2F', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.08, shadowRadius: 18 }}>
-          <Text style={{ color: 'rgba(255,255,255,0.45)', fontSize: 30, fontFamily: 'Georgia', position: 'absolute', top: 8, left: 18 }}>"</Text>
-          <Text style={{ color: 'white', fontSize: 17, lineHeight: 28, textAlign: 'center', marginTop: 18, marginBottom: 10, fontFamily: 'Georgia' }}>
+        <article className="bg-rose-dark p-7 rounded-[28px] shadow-lg mb-5 relative">
+          <span className="text-white/40 text-5xl font-serif absolute top-4 left-5">"</span>
+          <blockquote className="text-white text-xl font-serif text-center leading-8 mt-6 mb-4">
             {displayContent.scriptureText}
-          </Text>
-          <Text style={{ color: 'rgba(255,255,255,0.82)', textAlign: 'center', fontWeight: '700', fontSize: 13 }}>
+          </blockquote>
+          <cite className="text-white/70 text-center font-bold text-sm block not-italic">
             {displayContent.bible_reference}
-          </Text>
-        </View>
+          </cite>
+        </article>
 
-        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, marginBottom: 14, flexWrap: 'wrap' }}>
+        <nav className="flex items-center justify-center gap-2 mb-5 py-3" role="group" aria-label="Activity duration">
           {timeTiers.map((tier) => (
-            <Pressable
+            <button
               key={tier.index}
-              onPress={() => setSelectedIndex(tier.index)}
-              style={{
-                paddingHorizontal: 14,
-                paddingVertical: 8,
-                borderRadius: 20,
-                backgroundColor: selectedIndex === tier.index ? '#3D7A9A' : '#EFE6D7',
-              }}
+              type="button"
+              onClick={() => setSelectedIndex(tier.index)}
+              className={`px-4 py-2 rounded-full transition-colors ${
+                selectedIndex === tier.index ? 'bg-wine' : 'bg-cream-dark'
+              }`}
+              aria-pressed={selectedIndex === tier.index}
             >
-              <Text style={{ fontSize: 12, fontWeight: '700', color: selectedIndex === tier.index ? 'white' : 'rgba(47,47,47,0.45)' }}>
+              <span className={`text-xs font-bold ${selectedIndex === tier.index ? 'text-white' : 'text-charcoal/40'}`}>
                 {tier.label}
-              </Text>
-            </Pressable>
+              </span>
+            </button>
           ))}
-        </View>
+        </nav>
 
         {selectedActivity && (
-          <View style={{ backgroundColor: '#F4DDE4', borderRadius: 28, padding: 20 }}>
-            <Text style={{ fontSize: 25, color: '#6B2D3E', fontFamily: 'Georgia', marginBottom: 8 }}>
-              {selectedActivity.title}
-            </Text>
-            <Text style={{ color: 'rgba(47,47,47,0.72)', fontSize: 15, lineHeight: 24, marginBottom: 18 }}>
+          <section className="bg-blush p-6 rounded-[28px] mb-6">
+            <h2 className="text-2xl font-serif text-wine mb-2">{selectedActivity.title}</h2>
+            <p className="text-charcoal/70 text-base leading-relaxed mb-6">
               {selectedActivity.description}
-            </Text>
-            <Pressable
-              onPress={handleMarkComplete}
+            </p>
+
+            <button
+              type="button"
+              onClick={handleMarkComplete}
               disabled={isCompleting || completedToday || isPreviewing}
-              style={{
-                paddingVertical: 15,
-                paddingHorizontal: 16,
-                borderRadius: 999,
-                alignItems: 'center',
-                backgroundColor: isPreviewing
-                  ? '#EDE8E0'
+              className={`w-full p-4 rounded-full items-center shadow-md transition-colors ${
+                isPreviewing
+                  ? 'bg-cream-dark cursor-not-allowed'
                   : completedToday
-                  ? 'rgba(100,140,100,0.5)'
+                  ? 'bg-sage/50 cursor-not-allowed'
                   : isCompleting
-                  ? 'rgba(100,140,100,0.7)'
-                  : '#7A9E7E',
-              }}
+                  ? 'bg-sage/70'
+                  : 'bg-sage hover:bg-sage/90'
+              }`}
             >
-              <Text style={{ color: isPreviewing ? 'rgba(47,47,47,0.4)' : 'white', fontSize: 15, fontWeight: '700' }}>
+              <span className={`text-lg font-bold ${isPreviewing ? 'text-charcoal/40' : 'text-white'}`}>
                 {isPreviewing
                   ? 'Preview Only'
                   : completedToday
@@ -228,11 +205,11 @@ export default function DashboardWeb() {
                   : isCompleting
                   ? 'Recording...'
                   : 'Mark Complete'}
-              </Text>
-            </Pressable>
-          </View>
+              </span>
+            </button>
+          </section>
         )}
-      </View>
-    </ScrollView>
+      </div>
+    </div>
   );
 }
