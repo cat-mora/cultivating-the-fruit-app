@@ -13,7 +13,7 @@ import { useAuthStore } from '@/store/auth-store';
  * 2. Fetch invite details from Supabase
  * 3. Show invite info to user
  * 4. Accept on confirmation
- * 5. Redirect to dashboard
+ * 5. Redirect to the app home
  */
 export default function PartnerJoin() {
   const { code } = useParams<{ code: string }>();
@@ -88,9 +88,9 @@ export default function PartnerJoin() {
       await acceptMutation.mutateAsync(code);
       setStatus('success');
 
-      // Redirect to dashboard after 2 seconds
+      // Redirect to the stable app root after 2 seconds
       setTimeout(() => {
-        navigate('/dashboard');
+        navigate('/');
       }, 2000);
     } catch (error) {
       setStatus('error');
@@ -99,7 +99,7 @@ export default function PartnerJoin() {
   };
 
   const handleDecline = () => {
-    navigate('/dashboard');
+    navigate('/');
   };
 
   // Loading state
@@ -194,7 +194,7 @@ export default function PartnerJoin() {
             {errorMessage}
           </p>
           <button
-            onClick={() => navigate('/dashboard')}
+            onClick={() => navigate('/')}
             style={{
               width: '100%',
               padding: '14px',
@@ -208,7 +208,7 @@ export default function PartnerJoin() {
               fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
             }}
           >
-            Go to Dashboard
+            Go to App
           </button>
         </div>
       </div>

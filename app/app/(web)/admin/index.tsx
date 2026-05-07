@@ -25,7 +25,7 @@ export default function AdminPage() {
 
       if (!user) {
         // Not authenticated, redirect to sign in
-        router.replace('/(web)/auth/sign-in');
+        router.replace('/auth/sign-in');
         return;
       }
 
@@ -34,12 +34,12 @@ export default function AdminPage() {
 
       if (!status) {
         // Not an admin, redirect to dashboard
-        router.replace('/(web)/dashboard');
+        router.replace('/');
         return;
       }
     } catch (error) {
       console.error('Error checking admin status:', error);
-      router.replace('/(web)/dashboard');
+      router.replace('/');
     } finally {
       setLoading(false);
     }

@@ -1,5 +1,5 @@
-import { useState, FormEvent } from 'react';
-import { Link, useRouter } from 'expo-router';
+import { useEffect, useState, FormEvent } from 'react';
+import { Link, useLocalSearchParams, useRouter } from 'expo-router';
 import { signUpWithEmail } from '../../../lib/auth/auth-service';
 
 const logoImage = require('../../../assets/images/logo-full.png');
@@ -20,6 +20,7 @@ function getWebAssetUri(asset: unknown): string | undefined {
 
 export default function SignUp() {
   const router = useRouter();
+  const params = useLocalSearchParams<{ email?: string | string[]; code?: string | string[] }>();
   const [email, setEmail] = useState('');
   const [inviteCode, setInviteCode] = useState('');
   const [password, setPassword] = useState('');
@@ -29,6 +30,19 @@ export default function SignUp() {
   const [isLoading, setIsLoading] = useState(false);
 
   const logoSrc = getWebAssetUri(logoImage);
+
+  useEffect(() => {
+    const emailParam = Array.isArray(params.email) ? params.email[0] : params.email;
+    const codeParam = Array.isArray(params.code) ? params.code[0] : params.code;
+
+    if (emailParam) {
+      setEmail((currentEmail) => currentEmail || emailParam);
+    }
+
+    if (codeParam) {
+      setInviteCode((currentCode) => currentCode || codeParam.toUpperCase());
+    }
+  }, [params.code, params.email]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -200,7 +214,7 @@ export default function SignUp() {
 
         <div style={{ marginTop: '24px', textAlign: 'center', fontSize: '14px', color: '#8B6F47', fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, sans-serif' }}>
           Already have an account?{' '}
-          <Link href="/(web)/auth/sign-in" style={{ color: '#6B2D3E', fontWeight: '600', textDecoration: 'none' } as any}>Sign In</Link>
+          <Link href="/auth/sign-in" style={{ color: '#6B2D3E', fontWeight: '600', textDecoration: 'none' } as any}>Sign In</Link>
         </div>
       </div>
     </div>

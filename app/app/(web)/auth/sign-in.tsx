@@ -139,7 +139,7 @@ export default function SignIn() {
 
         <div style={{ marginTop: '24px', textAlign: 'center', fontSize: '14px', color: '#8B6F47', fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, sans-serif' }}>
           Don't have an account?{' '}
-          <Link href="/(web)/auth/sign-up" style={{ color: '#6B2D3E', fontWeight: '600', textDecoration: 'none' } as any}>Sign Up</Link>
+          <Link href="/auth/sign-up" style={{ color: '#6B2D3E', fontWeight: '600', textDecoration: 'none' } as any}>Sign Up</Link>
         </div>
       </div>
     </div>
