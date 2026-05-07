@@ -77,24 +77,21 @@ export {
 
 export const unstable_settings = {
   // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: 'index',
+  initialRouteName: '(tabs)',
 };
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  console.log('🔥 RootLayout rendering');
   const [loaded, error] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
     ...FontAwesome.font,
   });
-  console.log('🔥 Fonts loaded:', loaded, 'Error:', error);
 
   // Expo Router uses Error Boundaries to catch errors in the navigation tree.
   useEffect(() => {
     if (error) {
-      console.error('🔥 Font loading error:', error);
       throw error;
     }
   }, [error]);
@@ -123,16 +120,13 @@ export default function RootLayout() {
   }, []);
 
   if (!loaded && Platform.OS !== 'web') {
-    console.log('🔥 Returning null - fonts not loaded on native');
     return null;
   }
 
-  console.log('🔥 Rendering RootLayoutNav');
   return <RootLayoutNav />;
 }
 
 function RootLayoutNav() {
-  console.log('🔥 RootLayoutNav rendering');
   const colorScheme = useColorScheme();
   const pathname = usePathname();
   const router = useRouter();
@@ -146,36 +140,12 @@ function RootLayoutNav() {
   const [isHydratingProfile, setIsHydratingProfile] = useState(false);
   const hasRedirected = useRef(false);
   const hydratedProfileUserId = useRef<string | null>(null);
-  console.log('🔥 RootLayoutNav state:', {
-    pathname,
-    hasHydrated,
-    hasOnboarded,
-    selectedStream,
-    hasSession: !!session,
-    isLoading,
-    isHydratingProfile,
-  });
 
   // Check if user is on an auth page (sign-in, sign-up, etc.)
   const isAuthPage = pathname?.includes('/auth/') || pathname?.includes('sign-in') || pathname?.includes('sign-up');
 
   // Determine if we should redirect to auth
   const shouldRedirectToAuth = !isLoading && !session && !isAuthPage && pathname !== null;
-
-  // Debug logging
-  if (typeof window !== 'undefined') {
-    console.log('🔍 Auth Debug:', {
-      pathname,
-      isAuthPage,
-      session: !!session,
-      isLoading,
-      hasHydrated,
-      hasOnboarded,
-      selectedStream,
-      isHydratingProfile,
-      shouldRedirectToAuth
-    });
-  }
 
   useEffect(() => {
     if (!hasHydrated) {
@@ -209,16 +179,15 @@ function RootLayoutNav() {
         }
 
         if (error) {
-          console.error('🔥 Failed to hydrate profile:', error);
+          console.error('Failed to hydrate profile:', error);
           return;
         }
 
         if (data) {
-          console.log('🔥 Hydrating local journey state from Supabase profile');
           hydrateFromProfile(data);
         }
       } catch (error) {
-        console.error('🔥 Unexpected profile hydration error:', error);
+        console.error('Unexpected profile hydration error:', error);
       } finally {
         if (!cancelled) {
           hydratedProfileUserId.current = user.id;
@@ -233,23 +202,11 @@ function RootLayoutNav() {
   }, [hasHydrated, session, user, hydrateFromProfile]);
 
   useEffect(() => {
-    console.log('🔥 Redirect check:', {
-      isLoading,
-      hasHydrated,
-      isHydratingProfile,
-      hasRedirected: hasRedirected.current,
-      shouldRedirectToAuth,
-      session: !!session,
-      hasOnboarded,
-      selectedStream,
-    });
     if (isLoading || !hasHydrated || isHydratingProfile || hasRedirected.current) return;
     if (shouldRedirectToAuth) {
-      console.log('🔥 Redirecting to auth');
       hasRedirected.current = true;
       router.replace('/auth/sign-in');
     } else if (session && (!hasOnboarded || !selectedStream) && !isAuthPage && pathname !== '/onboarding') {
-      console.log('🔥 Redirecting to onboarding');
       hasRedirected.current = true;
       router.replace('/onboarding');
     }
@@ -274,7 +231,6 @@ function RootLayoutNav() {
         )}
         <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : LogoTheme}>
           <Stack>
-            <Stack.Screen name="index" options={{ headerShown: false }} />
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen name="onboarding" options={{ headerShown: false }} />
             <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
