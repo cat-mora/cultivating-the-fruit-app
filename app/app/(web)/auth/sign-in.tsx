@@ -33,7 +33,7 @@ export default function SignIn() {
     setIsLoading(true);
     try {
       await signInWithEmail(email, password);
-      router.replace('/');
+      router.replace('/dashboard');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Sign in failed');
     } finally {
