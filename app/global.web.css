@@ -234,6 +234,8 @@ button,
 #root {
   min-height: 100vh;
   background: #fff9f0;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Logo banner styling */
