@@ -34,31 +34,31 @@ export const JOURNEY_CONTENT: Record<string, DailyContent[]> = {
       },
       activities: [
         { id: 's1001-5', duration_minutes: 5, title: 'Reflect', description: 'Do you still long for closeness with your spouse, or have you let routine dull that desire? What would it look like to lean back into affection and passion?', category: 'self-reflection' },
-        { id: 's1001-5b', duration_minutes: 5, title: 'Express desire for closeness', description: 'Tell your spouse: “I miss feeling really close to you. I’d love for us to have more time together, just us.” Say it gently and with genuine affection.', category: 'self-reflection' },
-        { id: 's1001-10', duration_minutes: 10, title: 'Send a flirty message', description: 'Send your spouse a short message like, “I’ve been thinking it would be nice to bring back a bit of our spark ... also, you still look pretty amazing to me.” Keep it light and genuine.', category: 'action-for-partner' },
-        { id: 's1001-20', duration_minutes: 20, title: 'Share one thing you appreciate', description: 'At some point, take turns sharing one thing you’ve appreciated about each other lately. Keep it simple and receive it without brushing it off.', category: 'action-with-partner' },
-        { id: 's1001-60', duration_minutes: 60, title: 'Recreate your first spark', description: 'Say, “I’ve been thinking I miss how we used to feel.” Recreate an early date at home with music and drinks. Ask a few “first date” questions, then sit closer, hold eye contact and let it shift into touch and kissing.', category: 'action-with-partner' },
+        { id: 's1001-5b', duration_minutes: 5, title: 'Express desire for closeness', description: 'Tell your spouse: "I miss feeling really close to you." Say it gently and with genuine affection, not like an accusation.', category: 'self-reflection' },
+        { id: 's1001-10', duration_minutes: 10, title: 'Send a cute message', description: 'Send your spouse a short message like, "I\'ve been thinking it would be nice to bring back a bit of our spark ... also, you still look pretty amazing to me." Keep it light and genuine.', category: 'action-for-partner' },
+        { id: 's1001-20', duration_minutes: 20, title: 'Share one thing you appreciate', description: 'At some point, take turns sharing one thing you\'ve appreciated about each other lately. Keep it simple and receive it without brushing it off.', category: 'action-with-partner' },
+        { id: 's1001-60', duration_minutes: 60, title: 'Recreate your first spark', description: 'Say, "I\'ve been thinking I miss how we used to feel." Recreate an early date at home with music and drinks. Ask a few "first date" questions, then sit closer, hold eye contact and if you feel comfortable, let it shift into touch and kissing.', category: 'action-with-partner' },
       ]
     },
-    // Day 2: Admiration
+    // Day 2: Kindness
     {
       day_number: 2,
-      fruit_theme: 'Admiration',
+      fruit_theme: 'Kindness',
       tone: 'Passionate',
-      bible_reference: 'Song of Solomon 1:9',
+      bible_reference: 'Song of Solomon 1:16',
       bible_text: {
-        NIV: 'I liken you, my darling, to a mare among Pharaoh’s chariot horses.',
-        ESV: 'I compare you, my love, to a mare among Pharaoh’s chariots.',
-        KJV: 'I have compared thee, O my love, to a company of horses in Pharaoh\'s chariots.',
-        NLT: 'You are as exciting, my darling, as a mare among Pharaoh’s stallions.',
-        NKJV: 'I have compared you, my love, to my filly among Pharaoh’s chariots.',
+        NIV: 'How handsome you are, my beloved! Oh, how charming! And our bed is verdant.',
+        ESV: 'Behold, you are beautiful, my beloved, truly delightful. Our couch is green;',
+        KJV: 'Behold, thou art fair, my beloved, yea, pleasant: also our bed is green.',
+        NLT: 'How handsome you are, my lover, how charming! The soft grass is our bed.',
+        NKJV: 'Behold, you are handsome, my beloved! Yes, pleasant! Also our bed is green.',
       },
       activities: [
         { id: 's1002-5', duration_minutes: 5, title: 'Journal', description: 'When was the last time your spouse truly stood out to you? What makes them different from everyone else in your eyes?', category: 'self-reflection' },
         { id: 's1002-5b', duration_minutes: 5, title: 'Let them know what sets them apart', description: 'Think of one thing that makes your spouse different from everyone else, and share it with them in a natural moment today. Keep it specific so they can really feel it.', category: 'self-reflection' },
-        { id: 's1002-10', duration_minutes: 10, title: 'Do the thing you said you would', description: 'Complete one thing you told your spouse you would do. Then just do it.', category: 'action-for-partner' },
-        { id: 's1002-20', duration_minutes: 20, title: 'Do a “remember when” moment', description: 'Take a few minutes to each share one memory from earlier in your relationship that you enjoyed. Keep it light and positive.', category: 'action-with-partner' },
-        { id: 's1002-60', duration_minutes: 60, title: 'Admire and move closer', description: 'Say, “I want to be more intentional with us.” Over dessert or drinks, take turns sharing 3 things you admire and find attractive. Move physically closer after each round and stay there as the night continues.', category: 'action-with-partner' },
+        { id: 's1002-10', duration_minutes: 10, title: 'Do the thing you said you would', description: 'Think of one thing you told your spouse you would do. Then just do it.', category: 'action-for-partner' },
+        { id: 's1002-20', duration_minutes: 20, title: 'Do a "remember when" moment', description: 'Take a few minutes to each share one memory from earlier in your relationship that you enjoyed. Keep it light and positive.', category: 'action-with-partner' },
+        { id: 's1002-60', duration_minutes: 60, title: 'Admire and move closer', description: 'Say, "I want to feel closer than we have been for a while." Over dessert or drinks, take turns sharing 3 things you admire and find attractive. Move physically closer after each round and see where it leads you.', category: 'action-with-partner' },
       ]
     },
     // Day 3: Joy
@@ -77,15 +77,15 @@ export const JOURNEY_CONTENT: Record<string, DailyContent[]> = {
       activities: [
         { id: 's1003-5', duration_minutes: 5, title: 'Pray', description: 'Pray that God would renew your heart toward your spouse, softening any distance in you. Pray that your spouse would feel loved, desired and valued. Pray that your marriage would grow in closeness, affection and connection.', category: 'self-reflection' },
         { id: 's1003-5b', duration_minutes: 5, title: 'Bring back something you love about them', description: 'Think back to earlier in your relationship and share one thing you loved about your spouse then that you still see now. Keep it simple and real.', category: 'self-reflection' },
-        { id: 's1003-10', duration_minutes: 10, title: 'Bring home or make a small treat', description: 'Bring home or make something small your spouse enjoys and say something like, “I feel like we haven’t had enough fun lately, so I thought I’d grab this.” Keep it light.', category: 'action-for-partner' },
-        { id: 's1003-20', duration_minutes: 20, title: 'Share what makes you feel valued', description: 'Take turns finishing this sentence: “I feel most valued when…” Keep it short and practical.', category: 'action-with-partner' },
-        { id: 's1003-60', duration_minutes: 60, title: 'Choose joy together', description: 'Say, “I want us to enjoy each other more again.” Go for ice cream, a walk or play a fun quiz. Laugh, tease and stay out longer than usual or continue the night together at home.', category: 'action-with-partner' },
+        { id: 's1003-10', duration_minutes: 10, title: 'Bring home or make a small treat', description: 'Bring home or make something small your spouse enjoys and say something like, "I was thinking of you today, so I thought I\'d grab this." Keep it light.', category: 'action-for-partner' },
+        { id: 's1003-20', duration_minutes: 20, title: 'Share what makes you feel valued', description: 'Take turns finishing this sentence: "I feel most valued when…"', category: 'action-with-partner' },
+        { id: 's1003-60', duration_minutes: 60, title: 'Choose joy together', description: 'Say, "I want us to enjoy each other more again." Go for ice cream, a walk or play a fun quiz. Laugh, tease and stay out longer than usual or continue the night together at home.', category: 'action-with-partner' },
       ]
     },
-    // Day 4: Admiration
+    // Day 4: Kindness
     {
       day_number: 4,
-      fruit_theme: 'Admiration',
+      fruit_theme: 'Kindness',
       tone: 'Encouraging',
       bible_reference: 'Song of Solomon 1:15',
       bible_text: {
@@ -93,14 +93,14 @@ export const JOURNEY_CONTENT: Record<string, DailyContent[]> = {
         ESV: 'Behold, you are beautiful, my love; behold, you are beautiful; your eyes are doves.',
         KJV: 'Behold, thou art fair, my love; behold, thou art fair; thou hast doves\' eyes.',
         NLT: 'How beautiful you are, my darling, how beautiful! Your eyes are like doves.',
-        NKJV: 'Behold, you are fair, my love! Behold, you are fair! You have dove’s eyes.',
+        NKJV: 'Behold, you are fair, my love! Behold, you are fair! You have dove\'s eyes.',
       },
       activities: [
-        { id: 's1004-5', duration_minutes: 5, title: 'Reflect', description: 'Do you still notice your spouse’s beauty, both outwardly and inwardly? When was the last time you paused to really see them?', category: 'self-reflection' },
-        { id: 's1004-5b', duration_minutes: 5, title: 'Put words to what you see', description: 'Notice something about your spouse’s character or presence today and express it to them. Keep it honest and specific.', category: 'self-reflection' },
-        { id: 's1004-10', duration_minutes: 10, title: 'Give a genuine compliment out loud', description: 'Say one clear compliment about how your spouse looks and add something like, “I realised I don’t say this enough.” Then leave it there.', category: 'action-for-partner' },
-        { id: 's1004-20', duration_minutes: 20, title: 'Try a “two-minute chat”', description: 'Take turns sharing something about your day for two minutes each while the other just listens. Keep it contained and easy.', category: 'action-with-partner' },
-        { id: 's1004-60', duration_minutes: 60, title: 'See and say beauty', description: 'Say, “I don’t say this enough, but I find you really attractive.” Sit facing each other with a drink or dessert. Hold eye contact while talking, then move closer and let the moment build into touch.', category: 'action-with-partner' },
+        { id: 's1004-5', duration_minutes: 5, title: 'Reflect', description: 'Do you still notice your spouse\'s beauty, both outwardly and inwardly? When was the last time you paused to really see them?', category: 'self-reflection' },
+        { id: 's1004-5b', duration_minutes: 5, title: 'Put words to what you see', description: 'Notice something about your spouse\'s character or presence today and express it to them. Keep it honest and specific.', category: 'self-reflection' },
+        { id: 's1004-10', duration_minutes: 10, title: 'Give a genuine compliment out loud', description: 'Say one clear compliment about how your spouse looks and add something like, "I realised I don\'t say this enough."', category: 'action-for-partner' },
+        { id: 's1004-20', duration_minutes: 20, title: 'Try a "catch-up chat"', description: 'Each take turns sharing something about your day while the other just listens without trying to fix things.', category: 'action-with-partner' },
+        { id: 's1004-60', duration_minutes: 60, title: 'See and say beauty', description: 'Say, "I don\'t say this enough, but I find you really attractive." Sit facing each other and hold eye contact while talking, then move closer and let the moment build into touch.', category: 'action-with-partner' },
       ]
     },
     // Day 5: Love
@@ -119,20 +119,20 @@ export const JOURNEY_CONTENT: Record<string, DailyContent[]> = {
       activities: [
         { id: 's1005-5', duration_minutes: 5, title: 'Journal', description: 'Does your spouse feel like a place of delight, comfort and sweetness to you? If that has faded, what may have crowded it out?', category: 'self-reflection' },
         { id: 's1005-5b', duration_minutes: 5, title: 'Let them know you enjoy them', description: 'Notice something about being with your spouse that you genuinely enjoy and share it in a natural way today. Keep it light and sincere.', category: 'self-reflection' },
-        { id: 's1005-10', duration_minutes: 10, title: 'Sit close for a minute', description: 'Go and sit next to your spouse and say something simple like, “I feel like we’ve been a bit busy lately, I just wanted to sit with you for a minute.”', category: 'action-for-partner' },
+        { id: 's1005-10', duration_minutes: 10, title: 'Sit close for a minute', description: 'Go and sit next to your spouse and say something simple like, "I feel like we\'ve been a bit busy lately, I just wanted to sit with you for a minute."', category: 'action-for-partner' },
         { id: 's1005-20', duration_minutes: 20, title: 'Share something you admire', description: 'Take turns sharing one quality you admire in each other. Keep it genuine and simple.', category: 'action-with-partner' },
-        { id: 's1005-60', duration_minutes: 60, title: 'Create a delight night', description: 'Say, “I miss properly enjoying time with you.” Go out for coffee or dessert and stay longer. At home, stay in one space, share one thing you enjoyed about each other and keep the connection going.', category: 'action-with-partner' },
+        { id: 's1005-60', duration_minutes: 60, title: 'Create a delight night', description: 'Say, "I miss properly enjoying time with you." Go out for coffee or dessert and stay longer. At home, stay in one space, share one thing you enjoyed about each other and keep the connection going.', category: 'action-with-partner' },
       ]
     },
-    // Day 6: Love
+    // Day 6: Kindness
     {
       day_number: 6,
-      fruit_theme: 'Love',
+      fruit_theme: 'Kindness',
       tone: 'Gentle',
       bible_reference: 'Colossians 3:12',
       bible_text: {
-        NIV: 'Therefore, as God’s chosen people, holy and dearly loved, clothe yourselves with compassion, kindness, humility, gentleness and patience.',
-        ESV: 'Put on then, as God’s chosen ones, holy and beloved, compassionate hearts, kindness, humility, meekness, and patience,',
+        NIV: 'Therefore, as God\'s chosen people, holy and dearly loved, clothe yourselves with compassion, kindness, humility, gentleness and patience.',
+        ESV: 'Put on then, as God\'s chosen ones, holy and beloved, compassionate hearts, kindness, humility, meekness, and patience,',
         KJV: 'Put on therefore, as the elect of God, holy and beloved, bowels of mercies, kindness, humbleness of mind, meekness, longsuffering;',
         NLT: 'Since God chose you to be the holy people he loves, you must clothe yourselves with tenderhearted mercy, kindness, humility, gentleness, and patience.',
         NKJV: 'Therefore, as the elect of God, holy and beloved, put on tender mercies, kindness, humility, meekness, longsuffering;',
@@ -141,7 +141,7 @@ export const JOURNEY_CONTENT: Record<string, DailyContent[]> = {
         { id: 's1006-5', duration_minutes: 5, title: 'Pray', description: 'Pray that God would reveal anything in your heart that has hardened or closed off. Pray that your spouse would feel safe, cherished and at peace with you. Pray that your marriage would become a place of comfort, delight and emotional rest.', category: 'self-reflection' },
         { id: 's1006-5b', duration_minutes: 5, title: 'Take a moment to reset your posture', description: 'Take a few minutes to reflect on your attitude toward your spouse today and ask God to help you respond with more patience, kindness and humility.', category: 'self-reflection' },
         { id: 's1006-10', duration_minutes: 10, title: 'Do one kind thing quietly', description: 'Do one small helpful task for your spouse without pointing it out.', category: 'action-for-partner' },
-        { id: 's1006-20', duration_minutes: 20, title: 'Talk about what’s been going well', description: 'Spend a few minutes sharing what has felt good in your relationship lately. Keep the focus positive.', category: 'action-with-partner' },
+        { id: 's1006-20', duration_minutes: 20, title: 'Talk about what\'s been going well', description: 'Spend a few minutes sharing what has felt good in your relationship lately. Keep the focus positive.', category: 'action-with-partner' },
         { id: 's1006-60', duration_minutes: 60, title: 'Kindness in action night', description: 'Plan a simple evening where you actively do small kind things for your spouse. Cook, tidy or help, then sit together and tell them what you appreciate about them. Keep your tone gentle and honouring throughout.', category: 'action-with-partner' },
       ]
     },
@@ -152,18 +152,18 @@ export const JOURNEY_CONTENT: Record<string, DailyContent[]> = {
       tone: 'Passionate',
       bible_reference: 'Song of Solomon 2:10',
       bible_text: {
-        NIV: 'My beloved spoke and said to me, “Arise, my darling, my beautiful one, come with me.”',
-        ESV: 'My beloved speaks and says to me: “Arise, my love, my beautiful one, and come away,”',
+        NIV: 'My beloved spoke and said to me, "Arise, my darling, my beautiful one, come with me."',
+        ESV: 'My beloved speaks and says to me: "Arise, my love, my beautiful one, and come away,"',
         KJV: 'My beloved spake, and said unto me, Rise up, my love, my fair one, and come away.',
-        NLT: 'My lover said to me, “Rise up, my darling! Come away with me, my fair one!”',
-        NKJV: 'My beloved spoke, and said to me: “Rise up, my love, my fair one, and come away.',
+        NLT: 'My lover said to me, "Rise up, my darling! Come away with me, my fair one!"',
+        NKJV: 'My beloved spoke, and said to me: "Rise up, my love, my fair one, and come away.',
       },
       activities: [
         { id: 's1007-5', duration_minutes: 5, title: 'Reflect', description: 'When was the last time you invited your spouse into a moment of connection, fun or closeness? Are you still creating space for the two of you to step away from routine together?', category: 'self-reflection' },
-        { id: 's1007-5b', duration_minutes: 5, title: 'Invite them into a moment', description: 'At some point today, invite your spouse to step into a small moment with you, whether it’s sitting together, stepping outside or taking a short break. Keep it simple.', category: 'self-reflection' },
+        { id: 's1007-5b', duration_minutes: 5, title: 'Invite them into a moment', description: 'At some point today, invite your spouse to step into a small moment with you, whether it\'s sitting together, stepping outside or taking a short break. Keep it simple.', category: 'self-reflection' },
         { id: 's1007-10', duration_minutes: 10, title: 'Invite them to join you', description: 'Ask your spouse to come do something simple with you, like sitting outside or watching something.', category: 'action-for-partner' },
-        { id: 's1007-20', duration_minutes: 20, title: 'Ask one easy question', description: 'Ask: “What’s something you’ve enjoyed this week?” and let the conversation flow naturally from there.', category: 'action-with-partner' },
-        { id: 's1007-60', duration_minutes: 60, title: 'Come away together', description: 'Say, “come with me,” and take a short drive, walk or coffee outing. Stay present and unhurried, then return home and continue the night sitting close and connected.', category: 'action-with-partner' },
+        { id: 's1007-20', duration_minutes: 20, title: 'Ask one easy question', description: 'Ask: "What\'s something you\'ve enjoyed this week?" and let the conversation flow naturally from there.', category: 'action-with-partner' },
+        { id: 's1007-60', duration_minutes: 60, title: 'Come away together', description: 'Say, "come with me," and take a short drive, walk or coffee outing. Stay present and unhurried, then return home and continue the night sitting close and connected.', category: 'action-with-partner' },
       ]
     },
     // Day 8: Love
@@ -181,10 +181,10 @@ export const JOURNEY_CONTENT: Record<string, DailyContent[]> = {
       },
       activities: [
         { id: 's1008-5', duration_minutes: 5, title: 'Journal', description: 'What does love mean to you in practice? What are all the ways you feel love, and show love, for your spouse?', category: 'self-reflection' },
-        { id: 's1008-5b', duration_minutes: 5, title: 'Put your version of love into words', description: 'Take a moment today to express what love looks like to you in action, either in a message or in person. Keep it grounded in real behaviour.', category: 'self-reflection' },
-        { id: 's1008-10', duration_minutes: 10, title: 'Finish something together', description: 'Say, “let’s quickly do this together,” and complete one small task side by side.', category: 'action-for-partner' },
+        { id: 's1008-5b', duration_minutes: 5, title: 'Put your version of love into words', description: 'Take a moment today to express to your spouse what love looks like to you in action, either in a message or in person. For example, "I love it when…"', category: 'self-reflection' },
+        { id: 's1008-10', duration_minutes: 10, title: 'Finish something together', description: 'Say, "let\'s quickly do this together," and complete one small task side by side.', category: 'action-for-partner' },
         { id: 's1008-20', duration_minutes: 20, title: 'Share a small win', description: 'Take turns sharing one small win from your day or week. Keep it light and encouraging.', category: 'action-with-partner' },
-        { id: 's1008-60', duration_minutes: 60, title: 'Practice patient connection', description: 'Play a game, watch something light or take a walk. Stay relaxed, patient and kind with each other. Let the calm energy carry into sitting close and enjoying the night together.', category: 'action-with-partner' },
+        { id: 's1008-60', duration_minutes: 60, title: 'Play a cheeky game together', description: 'Find a YouTube music quiz, movie trivia, or lyric challenge and add a twist: one item of clothing off for every wrong answer. Keep it fun, keep it fair, and see where the night takes you!', category: 'action-with-partner' },
       ]
     },
     // Day 9: Love
@@ -218,21 +218,21 @@ export const JOURNEY_CONTENT: Record<string, DailyContent[]> = {
         NIV: 'Scarcely had I passed them when I found the one my heart loves. I held him and would not let him go.',
         ESV: 'Scarcely had I passed them when I found him whom my soul loves. I held him, and would not let him go.',
         KJV: 'It was but a little that I passed from them, but I found him whom my soul loveth: I held him, and would not let him go.',
-        NLT: 'Soon I found the one I love. I caught and held him tightly, then I brought him to my mother’s house.',
+        NLT: 'Soon I found the one I love. I caught and held him tightly, then I brought him to my mother\'s house.',
         NKJV: 'Scarcely had I passed by them, when I found the one I love. I held him and would not let him go.',
       },
       activities: [
         { id: 's1010-5', duration_minutes: 5, title: 'Reflect', description: 'Do you reach for your spouse and hold onto connection when you have the chance, or do you let those moments pass? What helps you stay emotionally and physically close?', category: 'self-reflection' },
         { id: 's1010-5b', duration_minutes: 5, title: 'Reach for connection today', description: 'Make a conscious choice today to reach for your spouse, whether through a message, touch or shared moment, instead of letting the opportunity pass.', category: 'self-reflection' },
-        { id: 's1010-10', duration_minutes: 10, title: 'Create a 10-minute “us” moment', description: 'Say, “come sit with me for a minute,” and spend 10 minutes together.', category: 'action-for-partner' },
-        { id: 's1010-20', duration_minutes: 20, title: 'Create a short “us moment”', description: 'Set aside 10–15 minutes just to sit together and check in lightly on your day.', category: 'action-with-partner' },
-        { id: 's1010-60', duration_minutes: 60, title: 'Hold onto each other', description: 'Create a night where you don’t drift apart. Sit, talk or lie together and stay physically connected for longer than usual, letting closeness build naturally.', category: 'action-with-partner' },
+        { id: 's1010-10', duration_minutes: 10, title: 'Send a mid-day message', description: 'Send your spouse a message today that says something like, "Just thinking about you. I don\'t tell you enough... I love that you\'re mine. x" No need for a response. Just let them feel reached for.', category: 'action-for-partner' },
+        { id: 's1010-20', duration_minutes: 20, title: 'Create a short "us moment"', description: 'Set aside 20 minutes just to sit together and check in lightly on your day.', category: 'action-with-partner' },
+        { id: 's1010-60', duration_minutes: 60, title: 'Hold onto each other', description: 'Create a night where you don\'t drift apart. Sit, talk or lie together and stay physically connected for longer than usual, letting closeness build naturally.', category: 'action-with-partner' },
       ]
     },
-    // Day 11: Admiration
+    // Day 11: Gentleness
     {
       day_number: 11,
-      fruit_theme: 'Admiration',
+      fruit_theme: 'Gentleness',
       tone: 'Encouraging',
       bible_reference: 'Song of Solomon 4:1',
       bible_text: {
@@ -240,20 +240,20 @@ export const JOURNEY_CONTENT: Record<string, DailyContent[]> = {
         ESV: 'Behold, you are beautiful, my love, behold, you are beautiful! Your eyes are doves behind your veil.',
         KJV: 'Behold, thou art fair, my love; behold, thou art fair; thou hast doves\' eyes within thy locks.',
         NLT: 'You are beautiful, my darling, beautiful beyond words. Your eyes are like doves behind your veil.',
-        NKJV: 'Behold, you are fair, my love! Behold, you are fair! You have dove’s eyes behind your veil.',
+        NKJV: 'Behold, you are fair, my love! Behold, you are fair! You have dove\'s eyes behind your veil.',
       },
       activities: [
-        { id: 's1011-5', duration_minutes: 5, title: 'Journal', description: 'When was the last time you truly noticed your spouse and told them what you see in them? Not just generally, but specifically?', category: 'self-reflection' },
-        { id: 's1011-5b', duration_minutes: 5, title: 'Call out something specific you notice', description: 'Notice one specific detail about your spouse today and point it out to them in a natural way. Make it something real rather than generic.', category: 'self-reflection' },
-        { id: 's1011-10', duration_minutes: 10, title: 'Say something appreciative in the moment', description: 'When you notice something, say it straight away like “that looks really good” or “I like that.”', category: 'action-for-partner' },
-        { id: 's1011-20', duration_minutes: 20, title: 'Share something you’re grateful for', description: 'Take turns sharing one thing you’re grateful for about each other today. Keep it simple and receive it well.', category: 'action-with-partner' },
+        { id: 's1011-5', duration_minutes: 5, title: 'Journal', description: 'When was the last time you truly noticed your spouse and told them what you see in them? If not, what\'s holding you back?', category: 'self-reflection' },
+        { id: 's1011-5b', duration_minutes: 5, title: 'Call out something specific you notice', description: 'Notice one specific detail about your spouse today and point it out to them in a natural way. Make it something personal rather than generic.', category: 'self-reflection' },
+        { id: 's1011-10', duration_minutes: 10, title: 'Say something appreciative in the moment', description: 'When you notice something positive about your spouse, or something they have done, tell them not only "thank you" but also why you\'re thankful and how it makes you feel.', category: 'action-for-partner' },
+        { id: 's1011-20', duration_minutes: 20, title: 'Share something you\'re grateful for', description: 'Take turns sharing one or things you\'re grateful for about each other today. If you\'re not comfortable giving or receiving compliments, try to be generous in giving, and to also accept what you receive.', category: 'action-with-partner' },
         { id: 's1011-60', duration_minutes: 60, title: 'Give focused touch time', description: 'Sit together and take turns giving a slow back scratch or shoulder rub for at least 10 minutes each. Stay close afterward, talking or relaxing, letting physical closeness rebuild naturally.', category: 'action-with-partner' },
       ]
     },
-    // Day 12: Admiration
+    // Day 12: Goodness
     {
       day_number: 12,
-      fruit_theme: 'Admiration',
+      fruit_theme: 'Goodness',
       tone: 'Passionate',
       bible_reference: 'Song of Solomon 4:7',
       bible_text: {
@@ -265,10 +265,10 @@ export const JOURNEY_CONTENT: Record<string, DailyContent[]> = {
       },
       activities: [
         { id: 's1012-5', duration_minutes: 5, title: 'Pray', description: 'Pray that God would help you see your spouse through a lens of love and admiration. Pray that your spouse would feel seen, appreciated and affirmed. Pray that your marriage would be filled with encouragement and emotional closeness.', category: 'self-reflection' },
-        { id: 's1012-5b', duration_minutes: 5, title: 'Shift what you focus on', description: 'Make a conscious effort today to focus on your spouse’s strengths rather than their flaws, and express one of those strengths to them.', category: 'self-reflection' },
-        { id: 's1012-10', duration_minutes: 10, title: 'Do one small loving action', description: 'Make them a drink, bring them something, or help them with something right in front of you.', category: 'action-for-partner' },
-        { id: 's1012-20', duration_minutes: 20, title: 'Notice something out loud', description: 'Say something you’ve noticed about your spouse lately that you appreciate. Let it be simple and genuine.', category: 'action-with-partner' },
-        { id: 's1012-60', duration_minutes: 60, title: 'Notice and touch gently', description: 'Sit facing each other and name one thing you notice about your spouse’s face or expression. Then move beside them and stay physically close, adding gentle touch throughout the evening.', category: 'action-with-partner' },
+        { id: 's1012-5b', duration_minutes: 5, title: 'Shift what you focus on', description: 'Make a conscious effort today to focus on your spouse\'s strengths rather than their flaws, and express one of those strengths to them.', category: 'self-reflection' },
+        { id: 's1012-10', duration_minutes: 10, title: 'Do one small loving action', description: 'Do something thoughtful that will also be good for your spouse. You could make them a drink they like or help them with something they have been meaning to do.', category: 'action-for-partner' },
+        { id: 's1012-20', duration_minutes: 20, title: 'Notice something out loud', description: 'Say something you\'ve noticed about your spouse that they do really well, and praise them for it. Include why it\'s such a good quality.', category: 'action-with-partner' },
+        { id: 's1012-60', duration_minutes: 60, title: 'Notice and touch gently', description: 'Sit facing each other and name one good thing you notice about your spouse\'s face or expression. Then move beside them and stay physically close, adding gentle touch throughout the evening.', category: 'action-with-partner' },
       ]
     },
     // Day 13: Love
@@ -281,14 +281,14 @@ export const JOURNEY_CONTENT: Record<string, DailyContent[]> = {
         NIV: 'Dear children, let us not love with words or speech but with actions and in truth.',
         ESV: 'Little children, let us not love in word or talk but in deed and in truth.',
         KJV: 'My little children, let us not love in word, neither in tongue; but in deed and in truth.',
-        NLT: 'Dear children, let’s not merely say that we love each other; let us show the truth by our actions.',
+        NLT: 'Dear children, let\'s not merely say that we love each other; let us show the truth by our actions.',
         NKJV: 'My little children, let us not love in word or in tongue, but in deed and in truth.',
       },
       activities: [
-        { id: 's1013-5', duration_minutes: 5, title: 'Reflect', description: 'Are there ways you say “I love you” out of habit, but don’t always back it up with action? What could that look like today?', category: 'self-reflection' },
-        { id: 's1013-5b', duration_minutes: 5, title: 'Back up your words with action', description: 'Think about something you often say but don’t always show, and take one step today to act on it. Keep it simple and real.', category: 'self-reflection' },
-        { id: 's1013-10', duration_minutes: 10, title: 'Mention something you noticed', description: 'Say something like “I noticed you did that earlier, thank you.”', category: 'action-for-partner' },
-        { id: 's1013-20', duration_minutes: 20, title: 'Share what you’ve been enjoying', description: 'Take turns sharing something you’ve been enjoying recently, whether big or small. Keep it light and open.', category: 'action-with-partner' },
+        { id: 's1013-5', duration_minutes: 5, title: 'Reflect', description: 'Are there ways you say "I love you" out of habit, but don\'t always back it up with action? What could that look like today?', category: 'self-reflection' },
+        { id: 's1013-5b', duration_minutes: 5, title: 'Back up your words with action', description: 'Think about something you often say but don\'t always show, and take one step today to act on it. Keep it simple and real.', category: 'self-reflection' },
+        { id: 's1013-10', duration_minutes: 10, title: 'Mention something you noticed', description: 'Say something like "I really feel loved when you - insert the thing - , thank you so much." Feel free to add a kiss and a cuddle.', category: 'action-for-partner' },
+        { id: 's1013-20', duration_minutes: 20, title: 'Share what you\'ve been enjoying', description: 'Take turns sharing something you\'ve been enjoying recently, whether big or small. Keep it light and open.', category: 'action-with-partner' },
         { id: 's1013-60', duration_minutes: 60, title: 'Let actions show love', description: 'Do one practical thing for your spouse that makes their night easier. Then sit together and follow it with something physical like a head rub or holding each other.', category: 'action-with-partner' },
       ]
     },
@@ -307,10 +307,10 @@ export const JOURNEY_CONTENT: Record<string, DailyContent[]> = {
       },
       activities: [
         { id: 's1014-5', duration_minutes: 5, title: 'Journal', description: 'When was the last time you felt drawn to your spouse in a strong, emotional or physical way? What sparked that feeling?', category: 'self-reflection' },
-        { id: 's1014-5b', duration_minutes: 5, title: 'Let attraction show', description: 'Notice a moment today where you feel drawn to your spouse and allow that to show through your words or tone. Don’t overthink it.', category: 'self-reflection' },
-        { id: 's1014-10', duration_minutes: 10, title: 'Send an encouraging message', description: 'Send a message saying something like “you’ve got this today” or “thinking of you.”', category: 'action-for-partner' },
-        { id: 's1014-20', duration_minutes: 20, title: 'Ask a future-focused question', description: 'Ask: “What’s something you’re looking forward to?” and let the conversation grow naturally.', category: 'action-with-partner' },
-        { id: 's1014-60', duration_minutes: 60, title: 'Hold and don’t rush', description: 'Sit or lie together and stay physically close for at least 10 minutes without distraction. Let your bodies relax before doing anything else together.', category: 'action-with-partner' },
+        { id: 's1014-5b', duration_minutes: 5, title: 'Let attraction show', description: 'Notice a moment today where you feel drawn to your spouse and allow that to show through your words or tone. Don\'t overthink it.', category: 'self-reflection' },
+        { id: 's1014-10', duration_minutes: 10, title: 'Send an encouraging message', description: 'Send a message saying something like "you\'ve got this today" or "thinking of you."', category: 'action-for-partner' },
+        { id: 's1014-20', duration_minutes: 20, title: 'Ask a future-focused question', description: 'Ask: "What\'s something you\'re looking forward to?" and let the conversation grow naturally.', category: 'action-with-partner' },
+        { id: 's1014-60', duration_minutes: 60, title: 'Hold and don\'t rush', description: 'Sit or lie together and stay physically close for at least 10 minutes without distraction. Let your bodies relax before doing anything else together.', category: 'action-with-partner' },
       ]
     },
     // Day 15: Love
@@ -329,8 +329,8 @@ export const JOURNEY_CONTENT: Record<string, DailyContent[]> = {
       activities: [
         { id: 's1015-5', duration_minutes: 5, title: 'Pray', description: 'Pray that God would renew your desire and enjoyment of your spouse. Pray that your spouse would feel wanted and valued by you. Pray that your marriage would be marked by joy, attraction and intentional time together.', category: 'self-reflection' },
         { id: 's1015-5b', duration_minutes: 5, title: 'Express enjoyment in the moment', description: 'When you notice yourself enjoying your spouse today, say it out loud rather than keeping it to yourself. Keep it simple and natural.', category: 'self-reflection' },
-        { id: 's1015-10', duration_minutes: 10, title: 'Make their next hour easier', description: 'Ask, “what’s one thing I can take off you right now?” and do it.', category: 'action-for-partner' },
-        { id: 's1015-20', duration_minutes: 20, title: 'Check in on energy', description: 'Ask: “How are you feeling today?” and listen with interest, without trying to change anything.', category: 'action-with-partner' },
+        { id: 's1015-10', duration_minutes: 10, title: 'Make their day easier', description: 'Ask, "what\'s one thing I can take off you right now?" and do it.', category: 'action-for-partner' },
+        { id: 's1015-20', duration_minutes: 20, title: 'Check in on energy', description: 'Ask: "How are you feeling today?" and listen with interest, without trying to change anything.', category: 'action-with-partner' },
         { id: 's1015-60', duration_minutes: 60, title: 'Slow enjoyment together', description: 'Share a drink, music or a simple treat. Sit close, touch often and move slowly through the evening, letting connection build through presence and physical closeness.', category: 'action-with-partner' },
       ]
     },
@@ -341,45 +341,45 @@ export const JOURNEY_CONTENT: Record<string, DailyContent[]> = {
       tone: 'Gentle',
       bible_reference: 'Galatians 6:2',
       bible_text: {
-        NIV: 'Carry each other’s burdens, and in this way you will fulfill the law of Christ.',
-        ESV: 'Bear one another’s burdens, and so fulfill the law of Christ.',
+        NIV: 'Carry each other\'s burdens, and in this way you will fulfill the law of Christ.',
+        ESV: 'Bear one another\'s burdens, and so fulfill the law of Christ.',
         KJV: 'Bear ye one another\'s burdens, and so fulfil the law of Christ.',
-        NLT: 'Share each other’s burdens, and in this way obey the law of Christ.',
-        NKJV: 'Bear one another’s burdens, and so fulfill the law of Christ.',
+        NLT: 'Share each other\'s burdens, and in this way obey the law of Christ.',
+        NKJV: 'Bear one another\'s burdens, and so fulfill the law of Christ.',
       },
       activities: [
         { id: 's1016-5', duration_minutes: 5, title: 'Reflect', description: 'Is your spouse carrying something right now that you could step into and support them with? What might that look like in a simple, practical way?', category: 'self-reflection' },
         { id: 's1016-5b', duration_minutes: 5, title: 'Ask what they need most', description: 'At a natural moment today, ask your spouse what would help them most right now, and listen without interrupting or jumping in with solutions.', category: 'self-reflection' },
-        { id: 's1016-10', duration_minutes: 10, title: 'Say “let’s do this together”', description: 'Pick something small and say it out loud, then do it side by side.', category: 'action-for-partner' },
-        { id: 's1016-20', duration_minutes: 20, title: 'Share how you’ve worked well together', description: 'Talk briefly about something that has worked well between you recently.', category: 'action-with-partner' },
-        { id: 's1016-60', duration_minutes: 60, title: 'Carry each other gently', description: 'Start the night by asking, “What would help you unwind right now?” Take turns giving a proper 10-minute shoulder and neck massage each. Sit close afterward and stay physically connected while you talk or relax together.', category: 'action-with-partner' },
+        { id: 's1016-10', duration_minutes: 10, title: 'Say "let\'s do this together"', description: 'Pick something small that needs to be done, then do it side by side.', category: 'action-for-partner' },
+        { id: 's1016-20', duration_minutes: 20, title: 'Share how you\'ve worked well together', description: 'Talk about something that has worked well between you recently, and ask your spouse if they\'d like to share the same.', category: 'action-with-partner' },
+        { id: 's1016-60', duration_minutes: 60, title: 'Carry each other gently', description: 'Start the night by asking, "What would help you unwind right now?" Then take turns doing whatever that is, making sure you are both comfortable with it.', category: 'action-with-partner' },
       ]
     },
-    // Day 17: Admiration
+    // Day 17: Patience
     {
       day_number: 17,
-      fruit_theme: 'Admiration',
-      tone: 'Passionate',
-      bible_reference: 'Song of Solomon 5:10',
+      fruit_theme: 'Patience',
+      tone: 'Light Stretch',
+      bible_reference: 'Ephesians 4:2',
       bible_text: {
-        NIV: 'My beloved is radiant and ruddy, outstanding among ten thousand.',
-        ESV: 'My beloved is radiant and ruddy, distinguished among ten thousand.',
-        KJV: 'My beloved is white and ruddy, the chiefest among ten thousand.',
-        NLT: 'My lover is dark and dazzling, better than ten thousand others!',
-        NKJV: 'My beloved is white and ruddy, chief among ten thousand.',
+        NIV: 'Be completely humble and gentle; be patient, bearing with one another in love.',
+        ESV: 'with all humility and gentleness, with patience, bearing with one another in love,',
+        KJV: 'With all lowliness and meekness, with longsuffering, forbearing one another in love;',
+        NLT: 'Always be humble and gentle. Be patient with each other, making allowance for each other\'s faults because of your love.',
+        NKJV: 'with all lowliness and gentleness, with longsuffering, bearing with one another in love,',
       },
       activities: [
-        { id: 's1017-5', duration_minutes: 5, title: 'Journal', description: 'What makes your spouse stand out to you above everyone else? When was the last time you told them that?', category: 'self-reflection' },
-        { id: 's1017-5b', duration_minutes: 5, title: 'Put it into words clearly', description: 'Tell your spouse what makes them stand out to you above everyone else, using your own words rather than something general.', category: 'self-reflection' },
-        { id: 's1017-10', duration_minutes: 10, title: 'Bring something fun into the moment', description: 'Play a song, show a funny video, or do something that shifts the mood slightly.', category: 'action-for-partner' },
-        { id: 's1017-20', duration_minutes: 20, title: 'Share something fun', description: 'Take turns sharing something that made you smile recently. Keep it easy and relaxed.', category: 'action-with-partner' },
-        { id: 's1017-60', duration_minutes: 60, title: 'Notice what stands out', description: 'Sit facing each other and take a minute to really look. Say one thing you find attractive, then move beside them and slowly trace your hand along their arm, back or neck while you stay close.', category: 'action-with-partner' },
+        { id: 's1017-5', duration_minutes: 5, title: 'Journal', description: 'What are things that annoy or frustrate you about your spouse, and how could you change the way you think about it so that you are bearing with them in love?', category: 'self-reflection' },
+        { id: 's1017-5b', duration_minutes: 5, title: 'Apologise', description: 'Say sorry to your spouse about something you get annoyed with them about, which is something inconsequential (eg. eating loudly). Don\'t add "but…" onto the end.', category: 'self-reflection' },
+        { id: 's1017-10', duration_minutes: 10, title: 'Choose something of service', description: 'Think of something you can do that shows gentleness and patience. Not just a task around the house.', category: 'action-for-partner' },
+        { id: 's1017-20', duration_minutes: 20, title: 'Ask for feedback', description: 'Ask your spouse to tell you one situation in which you could be more gentle and patient with them.', category: 'action-with-partner' },
+        { id: 's1017-60', duration_minutes: 60, title: 'Spend a gentle evening', description: 'Set up the lounge room with a foot washing station, and invite your spouse to sit and enjoy a gentle foot wash and massage.', category: 'action-with-partner' },
       ]
     },
-    // Day 18: Love
+    // Day 18: Faithfulness
     {
       day_number: 18,
-      fruit_theme: 'Love',
+      fruit_theme: 'Faithfulness',
       tone: 'Passionate',
       bible_reference: 'Song of Solomon 5:16',
       bible_text: {
@@ -390,10 +390,10 @@ export const JOURNEY_CONTENT: Record<string, DailyContent[]> = {
         NKJV: 'His mouth is most sweet, yes, he is altogether lovely. This is my beloved, and this is my friend.',
       },
       activities: [
-        { id: 's1018-5', duration_minutes: 5, title: 'Pray', description: 'Pray that God would make you more aware of your spouse’s needs. Pray that your spouse would feel supported, strengthened and cared for. Pray that your marriage would grow in teamwork and mutual support.', category: 'self-reflection' },
-        { id: 's1018-5b', duration_minutes: 5, title: 'Acknowledge the friendship side', description: 'Let your spouse know something you appreciate about them as a friend, not just as a partner. Keep it natural and unforced.', category: 'self-reflection' },
-        { id: 's1018-10', duration_minutes: 10, title: 'Follow through immediately', description: 'If something comes up that you can do straight away, do it without delaying.', category: 'action-for-partner' },
-        { id: 's1018-20', duration_minutes: 20, title: 'Reflect on what’s been steady', description: 'Take a moment to share what has felt steady or dependable in your relationship.', category: 'action-with-partner' },
+        { id: 's1018-5', duration_minutes: 5, title: 'Pray', description: 'Pray that God would make you more aware of your spouse\'s needs. Pray that your spouse would feel supported, strengthened and cared for. Pray that your marriage would grow in teamwork and mutual support.', category: 'self-reflection' },
+        { id: 's1018-5b', duration_minutes: 5, title: 'Acknowledge the friendship side', description: 'Let your spouse know something you appreciate about them as a friend, not just as a partner.', category: 'self-reflection' },
+        { id: 's1018-10', duration_minutes: 10, title: 'Be supportive', description: 'Find something you can support and encourage your spouse with, the way you would your best friend.', category: 'action-for-partner' },
+        { id: 's1018-20', duration_minutes: 20, title: 'Reflect on what\'s been steady', description: 'Take a moment to share what has felt steady or dependable in your relationship.', category: 'action-with-partner' },
         { id: 's1018-60', duration_minutes: 60, title: 'Speak and show desire', description: 'Say one thing you genuinely desire about your spouse. Sit close and run your hands slowly over their arms, shoulders or back while talking, letting touch become natural and unhurried.', category: 'action-with-partner' },
       ]
     },
@@ -414,7 +414,7 @@ export const JOURNEY_CONTENT: Record<string, DailyContent[]> = {
         { id: 's1019-5', duration_minutes: 5, title: 'Reflect', description: 'Do you still see your spouse as both your partner and your friend? How do you nurture both parts of that relationship?', category: 'self-reflection' },
         { id: 's1019-5b', duration_minutes: 5, title: 'Say something that lifts them up', description: 'Notice something about your spouse today and say something that genuinely builds them up. Keep it specific and real.', category: 'self-reflection' },
         { id: 's1019-10', duration_minutes: 10, title: 'Do one thoughtful thing in their space', description: 'Tidy, set up, or prepare something in a space they use often.', category: 'action-for-partner' },
-        { id: 's1019-20', duration_minutes: 20, title: 'Share one thoughtful observation', description: 'Take turns sharing something thoughtful you’ve noticed about each other.', category: 'action-with-partner' },
+        { id: 's1019-20', duration_minutes: 20, title: 'Share one thoughtful observation', description: 'Take turns sharing something thoughtful you\'ve noticed about each other.', category: 'action-with-partner' },
         { id: 's1019-60', duration_minutes: 60, title: 'Build each other up', description: 'Spend the evening sharing specific things you appreciate, respect or admire about each other. Sit together and say them out loud, one at a time, letting your spouse fully receive each one before relaxing together.', category: 'action-with-partner' },
       ]
     },
@@ -425,17 +425,17 @@ export const JOURNEY_CONTENT: Record<string, DailyContent[]> = {
       tone: 'Passionate',
       bible_reference: 'Song of Solomon 6:3',
       bible_text: {
-        NIV: 'I am my beloved’s and my beloved is mine; he browses among the lilies.',
-        ESV: 'I am my beloved’s and my beloved is mine; he grazes among the lilies.',
+        NIV: 'I am my beloved\'s and my beloved is mine; he browses among the lilies.',
+        ESV: 'I am my beloved\'s and my beloved is mine; he grazes among the lilies.',
         KJV: 'I am my beloved\'s, and my beloved is mine: he feedeth among the lilies.',
-        NLT: 'I am my lover’s, and he claims me as his own. He feeds among the lilies.',
-        NKJV: 'I am my beloved’s, and my beloved is mine. He feeds his flock among the lilies.',
+        NLT: 'I am my lover\'s, and he claims me as his own. He feeds among the lilies.',
+        NKJV: 'I am my beloved\'s, and my beloved is mine. He feeds his flock among the lilies.',
       },
       activities: [
         { id: 's1020-5', duration_minutes: 5, title: 'Journal', description: 'When did you last intentionally build your spouse up with your words or actions? What impact did that have?', category: 'self-reflection' },
-        { id: 's1020-5b', duration_minutes: 5, title: 'Reinforce your connection in words', description: 'Let your spouse know something you value about being together as a couple and what “us” means to you right now.', category: 'self-reflection' },
-        { id: 's1020-10', duration_minutes: 10, title: 'Sit with them while they’re doing something', description: 'Join them where they already are and just be there with them.', category: 'action-for-partner' },
-        { id: 's1020-20', duration_minutes: 20, title: 'Create a short “us” reset', description: 'Take 10–15 minutes to reconnect briefly on your day and your energy.', category: 'action-with-partner' },
+        { id: 's1020-5b', duration_minutes: 5, title: 'Reinforce your connection in words', description: 'Let your spouse know something you value about being together as a couple and what "us" means to you right now.', category: 'self-reflection' },
+        { id: 's1020-10', duration_minutes: 10, title: 'Sit with them while they\'re doing something', description: 'Join them where they already are and just be there with them.', category: 'action-for-partner' },
+        { id: 's1020-20', duration_minutes: 20, title: 'Create a short "us" reset', description: 'Take 10–15 minutes to reconnect briefly on your day and your energy.', category: 'action-with-partner' },
         { id: 's1020-60', duration_minutes: 60, title: 'Stay close and responsive', description: 'Sit or lie together and stay touching for at least 15 minutes. Focus on slow, intentional touch like hands, arms, shoulders or back, noticing what your spouse responds to and following that.', category: 'action-with-partner' },
       ]
     },
@@ -467,7 +467,7 @@ export const JOURNEY_CONTENT: Record<string, DailyContent[]> = {
       tone: 'Gentle',
       bible_reference: 'Proverbs 19:11',
       bible_text: {
-        NIV: 'A person’s wisdom yields patience; it is to one’s glory to overlook an offense.',
+        NIV: 'A person\'s wisdom yields patience; it is to one\'s glory to overlook an offense.',
         ESV: 'Good sense makes one slow to anger, and it is his glory to overlook an offense.',
         KJV: 'The discretion of a man deferreth his anger; and it is his glory to pass over a transgression.',
         NLT: 'Sensible people control their temper; they earn respect by overlooking wrongs.',
@@ -477,8 +477,8 @@ export const JOURNEY_CONTENT: Record<string, DailyContent[]> = {
         { id: 's1022-5', duration_minutes: 5, title: 'Reflect', description: 'Where do you tend to react quickly or take offence before you\'ve thought it through? What would one steadier, wiser response look like today?', category: 'self-reflection' },
         { id: 's1022-5b', duration_minutes: 5, title: 'Choose to let something go', description: 'Notice a moment today where you could take offense and consciously choose to let it pass without reacting.', category: 'self-reflection' },
         { id: 's1022-10', duration_minutes: 10, title: 'Make them smile on purpose', description: 'Say or do something playful, cheeky or light to get a smile.', category: 'action-for-partner' },
-        { id: 's1022-20', duration_minutes: 20, title: 'Share something playful', description: 'Take a few minutes to be playful together, whether that’s joking, reminiscing or light conversation.', category: 'action-with-partner' },
-        { id: 's1022-60', duration_minutes: 60, title: 'Practice patience together', description: 'Choose a calm setting like a walk or tea. Speak slowly, don’t interrupt and give each other space to finish thoughts. Notice how patience in tone and response changes the feeling between you.', category: 'action-with-partner' },
+        { id: 's1022-20', duration_minutes: 20, title: 'Share something playful', description: 'Take a few minutes to be playful together, whether that\'s joking, reminiscing or light conversation.', category: 'action-with-partner' },
+        { id: 's1022-60', duration_minutes: 60, title: 'Practice patience together', description: 'Choose a calm setting like a walk or tea. Speak slowly, don\'t interrupt and give each other space to finish thoughts. Notice how patience in tone and response changes the feeling between you.', category: 'action-with-partner' },
       ]
     },
     // Day 23: Love
@@ -489,15 +489,15 @@ export const JOURNEY_CONTENT: Record<string, DailyContent[]> = {
       bible_reference: 'Song of Solomon 7:10',
       bible_text: {
         NIV: 'I belong to my beloved, and his desire is for me.',
-        ESV: 'I am my beloved’s, and his desire is for me.',
+        ESV: 'I am my beloved\'s, and his desire is for me.',
         KJV: 'I am my beloved\'s, and his desire is toward me.',
-        NLT: 'I am my lover’s, and he claims me as his own.',
-        NKJV: 'I am my beloved’s, and his desire is toward me.',
+        NLT: 'I am my lover\'s, and he claims me as his own.',
+        NKJV: 'I am my beloved\'s, and his desire is toward me.',
       },
       activities: [
         { id: 's1023-5', duration_minutes: 5, title: 'Journal', description: 'Are there moments where you hold onto frustration or take offense more quickly than you need to? What would it look like to let that go more often?', category: 'self-reflection' },
         { id: 's1023-5b', duration_minutes: 5, title: 'Express desire directly', description: 'Tell your spouse in a simple and natural way that you desire them or enjoy being close to them. Keep it real rather than overthought.', category: 'self-reflection' },
-        { id: 's1023-10', duration_minutes: 10, title: 'Pause and give them your full attention', description: 'Stop what you’re doing and give them your full attention for a minute when they speak.', category: 'action-for-partner' },
+        { id: 's1023-10', duration_minutes: 10, title: 'Pause and give them your full attention', description: 'Stop what you\'re doing and give them your full attention for a minute when they speak.', category: 'action-for-partner' },
         { id: 's1023-20', duration_minutes: 20, title: 'Talk about what helps you feel close', description: 'Take turns sharing what helps you feel connected in everyday life. Keep it simple and positive.', category: 'action-with-partner' },
         { id: 's1023-60', duration_minutes: 60, title: 'Share desire and openness', description: 'Sit facing each other and share one thing you desire more of in your relationship, emotionally or physically. Listen without reacting, then stay close and let that openness create deeper connection.', category: 'action-with-partner' },
       ]
@@ -518,8 +518,8 @@ export const JOURNEY_CONTENT: Record<string, DailyContent[]> = {
       activities: [
         { id: 's1024-5', duration_minutes: 5, title: 'Pray', description: 'Pray that God would give you patience and self-control in your responses. Pray that your spouse would feel safe and respected, even in difficult moments. Pray that your marriage would be marked by grace, understanding and peace.', category: 'self-reflection' },
         { id: 's1024-5b', duration_minutes: 5, title: 'Pause before reacting', description: 'When you feel frustration rise today, take a breath and choose your response rather than reacting immediately.', category: 'self-reflection' },
-        { id: 's1024-10', duration_minutes: 10, title: 'Suggest doing something different', description: 'Say, “let’s do something different for a bit,” and change the activity or setting.', category: 'action-for-partner' },
-        { id: 's1024-20', duration_minutes: 20, title: 'Share something new about yourself', description: 'Take a few minutes to share something your spouse may not know or hasn’t heard in a while.', category: 'action-with-partner' },
+        { id: 's1024-10', duration_minutes: 10, title: 'Suggest doing something different', description: 'Say, "let\'s do something different for a bit," and change the activity or setting.', category: 'action-for-partner' },
+        { id: 's1024-20', duration_minutes: 20, title: 'Share something new about yourself', description: 'Take a few minutes to share something your spouse may not know or hasn\'t heard in a while.', category: 'action-with-partner' },
         { id: 's1024-60', duration_minutes: 60, title: 'Release tension gently', description: 'Start with a quiet walk or sit together calmly. Talk through anything lingering with a gentle tone, then shift into something soothing like music or sitting close to reset the mood.', category: 'action-with-partner' },
       ]
     },
@@ -539,7 +539,7 @@ export const JOURNEY_CONTENT: Record<string, DailyContent[]> = {
       activities: [
         { id: 's1025-5', duration_minutes: 5, title: 'Reflect', description: 'Do you feel desired by your spouse, and do they feel desired by you? If that has faded, what part have you played in that shift?', category: 'self-reflection' },
         { id: 's1025-5b', duration_minutes: 5, title: 'Express enjoyment of your time together', description: 'Take a moment today to tell your spouse something you genuinely enjoy about the time you spend together. Keep it simple and in-the-moment.', category: 'self-reflection' },
-        { id: 's1025-10', duration_minutes: 10, title: 'Use “we” language once', description: 'Say something like “we’ll figure it out” or “we’ve got this.”', category: 'action-for-partner' },
+        { id: 's1025-10', duration_minutes: 10, title: 'Use "we" language once', description: 'Say something like "we\'ll figure it out" or "we\'ve got this."', category: 'action-for-partner' },
         { id: 's1025-20', duration_minutes: 20, title: 'Share what being a team means', description: 'Take a few minutes to talk about what teamwork looks like for you. Keep it practical and grounded.', category: 'action-with-partner' },
         { id: 's1025-60', duration_minutes: 60, title: 'Create a shared experience together', description: 'Go somewhere simple like a lookout, walk or café. Stay longer than usual, then return home and continue the night sitting or lying close, letting the connection carry through both settings.', category: 'action-with-partner' },
       ]
@@ -602,9 +602,9 @@ export const JOURNEY_CONTENT: Record<string, DailyContent[]> = {
       activities: [
         { id: 's1028-5', duration_minutes: 5, title: 'Reflect', description: 'Has there been a time recently where you said something negative about your spouse to somebody else? If so, what could you have said instead, to have integrity in your speech about them?', category: 'self-reflection' },
         { id: 's1028-5b', duration_minutes: 5, title: 'Put loyalty into words', description: 'Express to your spouse in a simple way that you are with them, on their side, and committed to walking life alongside them.', category: 'self-reflection' },
-        { id: 's1028-10', duration_minutes: 10, title: 'Suggest something to look forward to', description: 'Say, “let’s do ___ this week” and suggest something simple and enjoyable.', category: 'action-for-partner' },
+        { id: 's1028-10', duration_minutes: 10, title: 'Suggest something to look forward to', description: 'Say, "let\'s do ___ this week" and suggest something simple and enjoyable.', category: 'action-for-partner' },
         { id: 's1028-20', duration_minutes: 20, title: 'Talk about what you enjoy most', description: 'Take turns sharing what you enjoy most in your time together.', category: 'action-with-partner' },
-        { id: 's1028-60', duration_minutes: 60, title: 'Move together, stay together', description: 'Go for a walk or short drive, staying side by side. When you return, continue the night close together, sitting or lying in contact, keeping that sense of “we” through both movement and stillness.', category: 'action-with-partner' },
+        { id: 's1028-60', duration_minutes: 60, title: 'Move together, stay together', description: 'Go for a walk or short drive, staying side by side. When you return, continue the night close together, sitting or lying in contact, keeping that sense of "we" through both movement and stillness.', category: 'action-with-partner' },
       ]
     },
     // Day 29: Love
@@ -622,8 +622,8 @@ export const JOURNEY_CONTENT: Record<string, DailyContent[]> = {
       },
       activities: [
         { id: 's1029-5', duration_minutes: 5, title: 'Journal', description: 'How deeply committed do you feel to your spouse right now, not just in words but in your actions and focus? Where might your attention be divided?', category: 'self-reflection' },
-        { id: 's1029-5b', duration_minutes: 5, title: 'Be intentional in how you show love', description: 'Choose one way today to actively “put on love” in your behaviour, whether through patience, kindness or gentleness, and express that to your spouse.', category: 'self-reflection' },
-        { id: 's1029-10', duration_minutes: 10, title: 'Create a quick shared moment', description: 'Say, “come here for a second,” and share a quick moment together.', category: 'action-for-partner' },
+        { id: 's1029-5b', duration_minutes: 5, title: 'Be intentional in how you show love', description: 'Choose one way today to actively "put on love" in your behaviour, whether through patience, kindness or gentleness, and express that to your spouse.', category: 'self-reflection' },
+        { id: 's1029-10', duration_minutes: 10, title: 'Create a quick shared moment', description: 'Say, "come here for a second," and share a quick moment together.', category: 'action-for-partner' },
         { id: 's1029-20', duration_minutes: 20, title: 'Share how your relationship has grown', description: 'Take a moment to reflect on how things have grown or improved. Keep it positive.', category: 'action-with-partner' },
         { id: 's1029-60', duration_minutes: 60, title: 'Create unity together', description: 'Do something side by side like cooking or organising a space. When finished, sit together and acknowledge what you created as a team, reinforcing unity and shared life.', category: 'action-with-partner' },
       ]
@@ -645,7 +645,7 @@ export const JOURNEY_CONTENT: Record<string, DailyContent[]> = {
         { id: 's1030-5', duration_minutes: 5, title: 'Pray', description: 'Pray that God would strengthen your commitment and focus toward your spouse. Pray that your spouse would feel secure and prioritised in your life. Pray that your marriage would be marked by faithfulness, loyalty and intentional love.', category: 'self-reflection' },
         { id: 's1030-5b', duration_minutes: 5, title: 'Say something that shows depth of love', description: 'Share something meaningful with your spouse that reflects the depth of your love for them. Let it go beyond surface-level words.', category: 'self-reflection' },
         { id: 's1030-10', duration_minutes: 10, title: 'Choose one clear act of love', description: 'Pick one simple action like making a drink, sitting close or helping, and do it straight away.', category: 'action-for-partner' },
-        { id: 's1030-20', duration_minutes: 20, title: 'Share one thing you’ll carry forward', description: 'Take turns sharing one thing you want to continue beyond this experience.', category: 'action-with-partner' },
+        { id: 's1030-20', duration_minutes: 20, title: 'Share one thing you\'ll carry forward', description: 'Take turns sharing one thing you want to continue beyond this experience.', category: 'action-with-partner' },
         { id: 's1030-60', duration_minutes: 60, title: 'Love with intention tonight', description: 'Set aside the night fully. Sit close, talk, touch and stay present without distractions. Let connection, affection and physical closeness all be part of the same intentional space.', category: 'action-with-partner' },
       ]
     },
