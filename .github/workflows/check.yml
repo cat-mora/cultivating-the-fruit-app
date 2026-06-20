@@ -1,0 +1,36 @@
+name: Code Check
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: TypeScript type check
+        run: npx tsc --noEmit
+        continue-on-error: false
+
+      - name: Lint check
+        run: npx eslint . --ext .ts,.tsx --max-warnings 0
+        continue-on-error: true
+
+      - name: Build check
+        run: npm run build
+        continue-on-error: false
+
+      - name: Check for common issues
+        run: |
+          echo "Checking for console.log/TODO/FIXME markers..."
+          grep -rn --include="*.ts" --include="*.tsx" "console\.log" src/ && echo "WARNING: console.log found" || echo "No console.log found"
+          grep -rn --include="*.ts" --include="*.tsx" "TODO\|FIXME\|HACK" src/ && echo "WARNING: TODO/FIXME/HACK markers found" || echo "No markers found"
+          echo "All checks complete."
