@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
-import { useJournalEntries } from '../../../lib/data/queries/use-journal';
-import { useDailyContent } from '../../../features/content/hooks/use-daily-content';
+import { useState, useEffect } from "react";
+import { useJournalEntries } from "../../../lib/data/queries/use-journal";
+import { useDailyContent } from "../../../features/content/hooks/use-daily-content";
 
 export default function JournalWeb() {
-  const [note, setNote] = useState('');
+  const [note, setNote] = useState("");
   const { data: journal, isLoading } = useJournalEntries();
   const content = useDailyContent();
   const [isSaving, setIsSaving] = useState(false);
@@ -11,10 +11,10 @@ export default function JournalWeb() {
 
   useEffect(() => {
     if (content && journal) {
-      const today = new Date().toISOString().split('T')[0];
+      const today = new Date().toISOString().split("T")[0];
       const entry = journal.find((e) => e.entry_date.startsWith(today));
       // Note: In production, encrypted_content would need to be decrypted
-      if (entry) setNote(entry.encrypted_content || '');
+      if (entry) setNote(entry.encrypted_content || "");
     }
   }, [content, journal]);
 
@@ -26,12 +26,12 @@ export default function JournalWeb() {
       setSaveMessage(null);
 
       // Save journal entry logic will go here
-      await new Promise(resolve => setTimeout(resolve, 500)); // Placeholder
+      await new Promise((resolve) => setTimeout(resolve, 500)); // Placeholder
 
-      setSaveMessage('✓ Journal saved safely');
+      setSaveMessage("✓ Journal saved safely");
       setTimeout(() => setSaveMessage(null), 3000);
     } catch (error) {
-      setSaveMessage('✗ Failed to save. Please try again.');
+      setSaveMessage("✗ Failed to save. Please try again.");
     } finally {
       setIsSaving(false);
     }
@@ -77,8 +77,8 @@ export default function JournalWeb() {
         {/* Info Banner */}
         <div className="bg-mint-light border border-mint p-4 rounded-[16px] mb-6">
           <p className="text-charcoal text-sm">
-            <span className="font-semibold">🔒 Private & Encrypted:</span> Your reflections are
-            securely stored and only you can access them.
+            <span className="font-semibold">🔒 Private & Encrypted:</span> Your
+            reflections are securely stored and only you can access them.
           </p>
         </div>
 
@@ -99,12 +99,12 @@ export default function JournalWeb() {
           disabled={isSaving}
           className={`w-full mt-8 p-5 rounded-full shadow-md transition-all ${
             isSaving
-              ? 'bg-wine/70 cursor-not-allowed'
-              : 'bg-wine hover:bg-wine/90 active:scale-95'
+              ? "bg-wine/70 cursor-not-allowed"
+              : "bg-wine hover:bg-wine/90 active:scale-95"
           }`}
         >
           <span className="text-white text-lg font-bold">
-            {isSaving ? 'Saving...' : 'Save to Sanctuary'}
+            {isSaving ? "Saving..." : "Save to Sanctuary"}
           </span>
         </button>
 
@@ -112,9 +112,9 @@ export default function JournalWeb() {
         {saveMessage && (
           <div
             className={`mt-4 p-4 rounded-[16px] text-center ${
-              saveMessage.includes('✓')
-                ? 'bg-green-100 text-green-800'
-                : 'bg-red-100 text-red-800'
+              saveMessage.includes("✓")
+                ? "bg-green-100 text-green-800"
+                : "bg-red-100 text-red-800"
             }`}
           >
             {saveMessage}

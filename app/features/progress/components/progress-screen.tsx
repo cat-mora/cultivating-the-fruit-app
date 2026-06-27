@@ -1,8 +1,8 @@
-import React from 'react';
-import { View, Text, ScrollView } from 'react-native';
-import { StreakCounter } from './streak-counter';
-import { FruitMap } from './fruit-map';
-import { PartnerProgressCard } from './partner-progress-card';
+import React from "react";
+import { View, Text, ScrollView } from "react-native";
+import { StreakCounter } from "./streak-counter";
+import { FruitMap } from "./fruit-map";
+import { PartnerProgressCard } from "./partner-progress-card";
 
 /**
  * Main progress screen showing spiritual milestones
@@ -14,9 +14,7 @@ export function ProgressScreen() {
       <View className="p-6">
         {/* Header */}
         <View className="mb-8 mt-14">
-          <Text className="text-3xl font-serif text-wine mb-2">
-            Milestones
-          </Text>
+          <Text className="text-3xl font-serif text-wine mb-2">Milestones</Text>
           <Text className="text-charcoal/60">
             Track your spiritual growth and daily consistency
           </Text>
@@ -52,15 +50,14 @@ export function ProgressScreen() {
 
         {/* Tips Section */}
         <View className="bg-parchment border border-cream-dark p-6 rounded-[24px] mb-12">
-          <Text className="text-wine font-serif text-lg mb-4">
-            ✨ Pro Tips
-          </Text>
+          <Text className="text-wine font-serif text-lg mb-4">✨ Pro Tips</Text>
           <View className="gap-3">
             <View className="flex-row gap-3">
               <Text className="text-gold text-xl">•</Text>
               <View className="flex-1">
                 <Text className="text-charcoal/60 text-sm">
-                  Complete your daily activity before midnight to keep your streak alive
+                  Complete your daily activity before midnight to keep your
+                  streak alive
                 </Text>
               </View>
             </View>
@@ -69,7 +66,8 @@ export function ProgressScreen() {
               <Text className="text-gold text-xl">•</Text>
               <View className="flex-1">
                 <Text className="text-charcoal/60 text-sm">
-                  Each fruit represents a spiritual theme cultivated over 90 days
+                  Each fruit represents a spiritual theme cultivated over 90
+                  days
                 </Text>
               </View>
             </View>
@@ -87,7 +85,8 @@ export function ProgressScreen() {
               <Text className="text-gold text-xl">•</Text>
               <View className="flex-1">
                 <Text className="text-charcoal/60 text-sm">
-                  Share your progress with your partner to stay mutually accountable
+                  Share your progress with your partner to stay mutually
+                  accountable
                 </Text>
               </View>
             </View>

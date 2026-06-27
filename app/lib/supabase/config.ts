@@ -1,5 +1,5 @@
-import { createClient } from '@supabase/supabase-js';
-import { SUPABASE_URL, SUPABASE_ANON_KEY, ENABLE_SUPABASE } from '../env';
+import { createClient } from "@supabase/supabase-js";
+import { SUPABASE_URL, SUPABASE_ANON_KEY, ENABLE_SUPABASE } from "../env";
 
 // Use environment variables from centralized env module
 const supabaseUrl = SUPABASE_URL;
@@ -10,10 +10,10 @@ export const isSupabaseEnabled = enableSupabase && hasSupabaseCredentials;
 
 const clientUrl = isSupabaseEnabled
   ? supabaseUrl
-  : 'https://placeholder.supabase.co';
+  : "https://placeholder.supabase.co";
 const clientAnonKey = isSupabaseEnabled
   ? supabaseAnonKey
-  : 'placeholder-anon-key';
+  : "placeholder-anon-key";
 
 /**
  * Supabase client instance
@@ -41,13 +41,19 @@ export async function getCurrentUser() {
   }
 
   try {
-    const { data: { user }, error } = await supabase.auth.getUser();
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser();
 
     // No session is a normal state (user not logged in), not an error
     if (error) {
       // Only log unexpected errors, not "no session" errors
-      if (!error.message?.includes('session') && !error.message?.includes('JWT')) {
-        console.error('Error getting current user:', error);
+      if (
+        !error.message?.includes("session") &&
+        !error.message?.includes("JWT")
+      ) {
+        console.error("Error getting current user:", error);
       }
       return null;
     }
@@ -69,13 +75,19 @@ export async function getCurrentSession() {
   }
 
   try {
-    const { data: { session }, error } = await supabase.auth.getSession();
+    const {
+      data: { session },
+      error,
+    } = await supabase.auth.getSession();
 
     // No session is a normal state (user not logged in), not an error
     if (error) {
       // Only log unexpected errors, not "no session" errors
-      if (!error.message?.includes('session') && !error.message?.includes('JWT')) {
-        console.error('Error getting current session:', error);
+      if (
+        !error.message?.includes("session") &&
+        !error.message?.includes("JWT")
+      ) {
+        console.error("Error getting current session:", error);
       }
       return null;
     }
@@ -106,7 +118,7 @@ export async function signOut() {
   const { error } = await supabase.auth.signOut();
 
   if (error) {
-    console.error('Error signing out:', error);
+    console.error("Error signing out:", error);
     throw error;
   }
 }
@@ -120,8 +132,8 @@ export type Database = {
       profiles: {
         Row: {
           id: string;
-          stream: 'strengthen' | 'repair' | 'family';
-          translation: 'NIV' | 'ESV' | 'KJV' | 'NLT' | 'NKJV';
+          stream: "strengthen" | "repair" | "family";
+          translation: "NIV" | "ESV" | "KJV" | "NLT" | "NKJV";
           onboarding_date: string;
           current_day: number;
           device_id: string | null;
@@ -132,8 +144,8 @@ export type Database = {
         };
         Insert: {
           id: string;
-          stream: 'strengthen' | 'repair' | 'family';
-          translation: 'NIV' | 'ESV' | 'KJV' | 'NLT' | 'NKJV';
+          stream: "strengthen" | "repair" | "family";
+          translation: "NIV" | "ESV" | "KJV" | "NLT" | "NKJV";
           onboarding_date: string;
           current_day?: number;
           device_id?: string | null;
@@ -144,8 +156,8 @@ export type Database = {
         };
         Update: {
           id?: string;
-          stream?: 'strengthen' | 'repair' | 'family';
-          translation?: 'NIV' | 'ESV' | 'KJV' | 'NLT' | 'NKJV';
+          stream?: "strengthen" | "repair" | "family";
+          translation?: "NIV" | "ESV" | "KJV" | "NLT" | "NKJV";
           onboarding_date?: string;
           current_day?: number;
           device_id?: string | null;
@@ -191,7 +203,16 @@ export type Database = {
         Row: {
           id: string;
           user_id: string;
-          fruit_type: 'love' | 'joy' | 'peace' | 'patience' | 'kindness' | 'goodness' | 'faithfulness' | 'gentleness' | 'self-control';
+          fruit_type:
+            | "love"
+            | "joy"
+            | "peace"
+            | "patience"
+            | "kindness"
+            | "goodness"
+            | "faithfulness"
+            | "gentleness"
+            | "self-control";
           entry_date: string;
           day_number: number;
           completed: boolean;
@@ -202,7 +223,16 @@ export type Database = {
         Insert: {
           id?: string;
           user_id: string;
-          fruit_type: 'love' | 'joy' | 'peace' | 'patience' | 'kindness' | 'goodness' | 'faithfulness' | 'gentleness' | 'self-control';
+          fruit_type:
+            | "love"
+            | "joy"
+            | "peace"
+            | "patience"
+            | "kindness"
+            | "goodness"
+            | "faithfulness"
+            | "gentleness"
+            | "self-control";
           entry_date: string;
           day_number: number;
           completed?: boolean;
@@ -213,7 +243,16 @@ export type Database = {
         Update: {
           id?: string;
           user_id?: string;
-          fruit_type?: 'love' | 'joy' | 'peace' | 'patience' | 'kindness' | 'goodness' | 'faithfulness' | 'gentleness' | 'self-control';
+          fruit_type?:
+            | "love"
+            | "joy"
+            | "peace"
+            | "patience"
+            | "kindness"
+            | "goodness"
+            | "faithfulness"
+            | "gentleness"
+            | "self-control";
           entry_date?: string;
           day_number?: number;
           completed?: boolean;
@@ -260,7 +299,7 @@ export type Database = {
           invite_code: string;
           creator_id: string;
           partner_id: string | null;
-          status: 'pending' | 'accepted' | 'expired' | 'revoked';
+          status: "pending" | "accepted" | "expired" | "revoked";
           expires_at: string;
           accepted_at: string | null;
           created_at: string;
@@ -271,7 +310,7 @@ export type Database = {
           invite_code: string;
           creator_id: string;
           partner_id?: string | null;
-          status?: 'pending' | 'accepted' | 'expired' | 'revoked';
+          status?: "pending" | "accepted" | "expired" | "revoked";
           expires_at: string;
           accepted_at?: string | null;
           created_at?: string;
@@ -282,7 +321,7 @@ export type Database = {
           invite_code?: string;
           creator_id?: string;
           partner_id?: string | null;
-          status?: 'pending' | 'accepted' | 'expired' | 'revoked';
+          status?: "pending" | "accepted" | "expired" | "revoked";
           expires_at?: string | null;
           accepted_at?: string | null;
           created_at?: string;
@@ -295,7 +334,7 @@ export type Database = {
           invite_code: string;
           created_by: string;
           used_by: string | null;
-          status: 'pending' | 'used' | 'expired' | 'revoked';
+          status: "pending" | "used" | "expired" | "revoked";
           expires_at: string | null;
           created_at: string;
           used_at: string | null;
@@ -305,7 +344,7 @@ export type Database = {
           invite_code: string;
           created_by: string;
           used_by?: string | null;
-          status?: 'pending' | 'used' | 'expired' | 'revoked';
+          status?: "pending" | "used" | "expired" | "revoked";
           expires_at?: string | null;
           created_at?: string;
           used_at?: string | null;
@@ -315,7 +354,7 @@ export type Database = {
           invite_code?: string;
           created_by?: string;
           used_by?: string | null;
-          status?: 'pending' | 'used' | 'expired' | 'revoked';
+          status?: "pending" | "used" | "expired" | "revoked";
           expires_at?: string | null;
           created_at?: string;
           used_at?: string | null;
@@ -330,7 +369,7 @@ export type Database = {
           kjv_text: string;
           nlt_text: string;
           nkjv_text: string;
-          stream: 'strengthen' | 'repair' | 'family' | null;
+          stream: "strengthen" | "repair" | "family" | null;
           created_by: string;
           created_at: string;
           updated_at: string;
@@ -343,7 +382,7 @@ export type Database = {
           kjv_text: string;
           nlt_text: string;
           nkjv_text: string;
-          stream?: 'strengthen' | 'repair' | 'family' | null;
+          stream?: "strengthen" | "repair" | "family" | null;
           created_by: string;
           created_at?: string;
           updated_at?: string;
@@ -356,7 +395,7 @@ export type Database = {
           kjv_text?: string;
           nlt_text?: string;
           nkjv_text?: string;
-          stream?: 'strengthen' | 'repair' | 'family' | null;
+          stream?: "strengthen" | "repair" | "family" | null;
           created_by?: string;
           created_at?: string;
           updated_at?: string;
@@ -368,8 +407,14 @@ export type Database = {
           title: string;
           description: string;
           time_tier: 5 | 15 | 30 | 60 | 120;
-          category: 'reflection' | 'prayer' | 'action' | 'journaling' | 'scripture' | 'meditation';
-          stream: 'strengthen' | 'repair' | 'family' | null;
+          category:
+            | "reflection"
+            | "prayer"
+            | "action"
+            | "journaling"
+            | "scripture"
+            | "meditation";
+          stream: "strengthen" | "repair" | "family" | null;
           created_by: string;
           created_at: string;
           updated_at: string;
@@ -379,8 +424,14 @@ export type Database = {
           title: string;
           description: string;
           time_tier: 5 | 15 | 30 | 60 | 120;
-          category: 'reflection' | 'prayer' | 'action' | 'journaling' | 'scripture' | 'meditation';
-          stream?: 'strengthen' | 'repair' | 'family' | null;
+          category:
+            | "reflection"
+            | "prayer"
+            | "action"
+            | "journaling"
+            | "scripture"
+            | "meditation";
+          stream?: "strengthen" | "repair" | "family" | null;
           created_by: string;
           created_at?: string;
           updated_at?: string;
@@ -390,8 +441,14 @@ export type Database = {
           title?: string;
           description?: string;
           time_tier?: 5 | 15 | 30 | 60 | 120;
-          category?: 'reflection' | 'prayer' | 'action' | 'journaling' | 'scripture' | 'meditation';
-          stream?: 'strengthen' | 'repair' | 'family' | null;
+          category?:
+            | "reflection"
+            | "prayer"
+            | "action"
+            | "journaling"
+            | "scripture"
+            | "meditation";
+          stream?: "strengthen" | "repair" | "family" | null;
           created_by?: string;
           created_at?: string;
           updated_at?: string;

@@ -1,6 +1,6 @@
-import React from 'react';
-import { View, Text, Pressable, Modal, Platform } from 'react-native';
-import { usePWAInstall } from '../hooks/use-pwa-install';
+import React from "react";
+import { View, Text, Pressable, Modal, Platform } from "react-native";
+import { usePWAInstall } from "../hooks/use-pwa-install";
 
 /**
  * PWA Install Prompt
@@ -13,10 +13,11 @@ import { usePWAInstall } from '../hooks/use-pwa-install';
  * User can dismiss and won't see it again
  */
 export function PWAInstallPrompt() {
-  const { isInstallable, isIOS, showPrompt, promptInstall, dismissPrompt } = usePWAInstall();
+  const { isInstallable, isIOS, showPrompt, promptInstall, dismissPrompt } =
+    usePWAInstall();
 
   // Don't render on native platforms
-  if (Platform.OS !== 'web' || !isInstallable || !showPrompt) {
+  if (Platform.OS !== "web" || !isInstallable || !showPrompt) {
     return null;
   }
 
@@ -47,8 +48,8 @@ export function PWAInstallPrompt() {
               <View className="flex-row items-start gap-3 mb-3">
                 <Text className="text-lg">1️⃣</Text>
                 <Text className="flex-1 text-charcoal/70">
-                  Tap the <Text className="font-bold">Share button</Text> in Safari{' '}
-                  <Text className="text-2xl">⬆️</Text>
+                  Tap the <Text className="font-bold">Share button</Text> in
+                  Safari <Text className="text-2xl">⬆️</Text>
                 </Text>
               </View>
               <View className="flex-row items-start gap-3">
@@ -64,9 +65,7 @@ export function PWAInstallPrompt() {
               onPress={dismissPrompt}
               className="bg-cream-dark p-4 rounded-full items-center"
             >
-              <Text className="text-charcoal/60 font-bold">
-                Maybe Later
-              </Text>
+              <Text className="text-charcoal/60 font-bold">Maybe Later</Text>
             </Pressable>
           </View>
         </View>
@@ -122,9 +121,7 @@ export function PWAInstallPrompt() {
             onPress={promptInstall}
             className="bg-wine p-4 rounded-full items-center shadow-md mb-3"
           >
-            <Text className="text-white text-lg font-bold">
-              Install Now
-            </Text>
+            <Text className="text-white text-lg font-bold">Install Now</Text>
           </Pressable>
 
           {/* Dismiss Button */}

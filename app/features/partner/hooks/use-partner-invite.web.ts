@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { useCreatePartnerInvite } from '../../../lib/data/queries/use-partner';
-import { getWebUrl } from '../../../lib/feature-flags';
+import { useState } from "react";
+import { useCreatePartnerInvite } from "../../../lib/data/queries/use-partner";
+import { getWebUrl } from "../../../lib/feature-flags";
 
 /**
  * Web-Specific Partner Invite Hook
@@ -37,7 +37,9 @@ export function useWebPartnerInvite() {
         expiresAt: invite.expires_at,
       };
     } catch (error) {
-      throw new Error(error instanceof Error ? error.message : 'Failed to generate invite');
+      throw new Error(
+        error instanceof Error ? error.message : "Failed to generate invite",
+      );
     }
   };
 
@@ -52,8 +54,8 @@ export function useWebPartnerInvite() {
       // Check if Web Share API is available (mobile browsers)
       if (navigator.share) {
         await navigator.share({
-          title: 'Join me on Cultivating the Fruits',
-          text: 'Let\'s be accountability partners on our spiritual journey!',
+          title: "Join me on Cultivating the Fruits",
+          text: "Let's be accountability partners on our spiritual journey!",
           url: inviteUrl,
         });
 
@@ -69,19 +71,20 @@ export function useWebPartnerInvite() {
       }
 
       // Fallback for older browsers: Create temp input
-      const tempInput = document.createElement('input');
+      const tempInput = document.createElement("input");
       tempInput.value = inviteUrl;
-      tempInput.style.position = 'absolute';
-      tempInput.style.left = '-9999px';
+      tempInput.style.position = "absolute";
+      tempInput.style.left = "-9999px";
       document.body.appendChild(tempInput);
       tempInput.select();
-      document.execCommand('copy');
+      document.execCommand("copy");
       document.body.removeChild(tempInput);
 
       setIsSharing(false);
       return true;
     } catch (error) {
-      const errorMsg = error instanceof Error ? error.message : 'Failed to share';
+      const errorMsg =
+        error instanceof Error ? error.message : "Failed to share";
       setShareError(errorMsg);
       setIsSharing(false);
       return false;
@@ -96,7 +99,9 @@ export function useWebPartnerInvite() {
       const result = await generateInvite();
       return await shareInvite(result.inviteUrl);
     } catch (error) {
-      setShareError(error instanceof Error ? error.message : 'Failed to generate invite');
+      setShareError(
+        error instanceof Error ? error.message : "Failed to generate invite",
+      );
       return false;
     }
   };
@@ -105,7 +110,7 @@ export function useWebPartnerInvite() {
    * Check if Web Share API is supported
    */
   const canUseWebShare = (): boolean => {
-    return typeof navigator !== 'undefined' && 'share' in navigator;
+    return typeof navigator !== "undefined" && "share" in navigator;
   };
 
   return {
@@ -130,18 +135,18 @@ export async function copyToClipboard(text: string): Promise<boolean> {
     }
 
     // Fallback for older browsers
-    const tempInput = document.createElement('input');
+    const tempInput = document.createElement("input");
     tempInput.value = text;
-    tempInput.style.position = 'absolute';
-    tempInput.style.left = '-9999px';
+    tempInput.style.position = "absolute";
+    tempInput.style.left = "-9999px";
     document.body.appendChild(tempInput);
     tempInput.select();
-    const success = document.execCommand('copy');
+    const success = document.execCommand("copy");
     document.body.removeChild(tempInput);
 
     return success;
   } catch (error) {
-    console.error('Failed to copy to clipboard:', error);
+    console.error("Failed to copy to clipboard:", error);
     return false;
   }
 }

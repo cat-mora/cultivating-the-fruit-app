@@ -1,67 +1,72 @@
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { QueryClientProvider } from '@tanstack/react-query';
-import { DarkTheme, DefaultTheme, ThemeProvider, Theme } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack, usePathname, useRouter } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { useEffect, useRef, useState } from 'react';
-import { Platform } from 'react-native';
-import 'react-native-reanimated';
+import FontAwesome from "@expo/vector-icons/FontAwesome";
+import { QueryClientProvider } from "@tanstack/react-query";
+import {
+  DarkTheme,
+  DefaultTheme,
+  ThemeProvider,
+  Theme,
+} from "@react-navigation/native";
+import { useFonts } from "expo-font";
+import { Stack, usePathname, useRouter } from "expo-router";
+import * as SplashScreen from "expo-splash-screen";
+import { useEffect, useRef, useState } from "react";
+import { Platform } from "react-native";
+import "react-native-reanimated";
 
 // Load platform-specific styles using the actual Expo platform, not window presence.
-if (Platform.OS === 'web') {
-  require('../global.web.generated.css');
-  require('../global.web.css');
+if (Platform.OS === "web") {
+  require("../global.web.generated.css");
+  require("../global.web.css");
 } else {
-  require('../global.css');
+  require("../global.css");
 }
 
-import { useUserStore } from '../store/user-store';
-import { initializeAuth, useAuthStore } from '../store/auth-store';
-import { queryClient } from '../lib/data/query-client';
-import { logFeatureFlags } from '../lib/feature-flags';
-import { startBackgroundSync } from '../lib/data/sync-service';
-import { promptMigrationIfNeeded } from '../lib/migration/migrate-to-supabase';
-import { PWAInstallPrompt } from '../components/pwa-install-prompt';
-import { supabase, isSupabaseEnabled } from '../lib/supabase/config';
+import { useUserStore } from "../store/user-store";
+import { initializeAuth, useAuthStore } from "../store/auth-store";
+import { queryClient } from "../lib/data/query-client";
+import { logFeatureFlags } from "../lib/feature-flags";
+import { startBackgroundSync } from "../lib/data/sync-service";
+import { promptMigrationIfNeeded } from "../lib/migration/migrate-to-supabase";
+import { PWAInstallPrompt } from "../components/pwa-install-prompt";
+import { supabase, isSupabaseEnabled } from "../lib/supabase/config";
 
-import { useColorScheme } from '@/components/useColorScheme';
+import { useColorScheme } from "@/components/useColorScheme";
 
 const LogoTheme: Theme = {
   ...DefaultTheme,
   colors: {
     ...DefaultTheme.colors,
-    primary: '#3D7A9A',      // Logo blue
-    background: '#FFF9F0',    // Cream
-    card: '#FFF9F0',          // Cream
-    text: '#2F2F2F',          // Charcoal
-    border: '#A8C5D9',        // Light blue
-    notification: '#D99BA6',   // Rose
+    primary: "#3D7A9A", // Logo blue
+    background: "#FFF9F0", // Cream
+    card: "#FFF9F0", // Cream
+    text: "#2F2F2F", // Charcoal
+    border: "#A8C5D9", // Light blue
+    notification: "#D99BA6", // Rose
   },
 };
 
-const logoImage = require('../assets/images/logo-full.png');
+const logoImage = require("../assets/images/logo-full.png");
 
 function getWebAssetUri(asset: unknown): string | undefined {
-  if (typeof asset === 'string') {
+  if (typeof asset === "string") {
     return asset;
   }
 
-  if (asset && typeof asset === 'object') {
+  if (asset && typeof asset === "object") {
     const assetRecord = asset as { uri?: unknown; default?: unknown };
 
-    if (typeof assetRecord.uri === 'string') {
+    if (typeof assetRecord.uri === "string") {
       return assetRecord.uri;
     }
 
-    if (typeof assetRecord.default === 'string') {
+    if (typeof assetRecord.default === "string") {
       return assetRecord.default;
     }
 
-    if (assetRecord.default && typeof assetRecord.default === 'object') {
+    if (assetRecord.default && typeof assetRecord.default === "object") {
       const defaultAsset = assetRecord.default as { uri?: unknown };
 
-      if (typeof defaultAsset.uri === 'string') {
+      if (typeof defaultAsset.uri === "string") {
         return defaultAsset.uri;
       }
     }
@@ -73,11 +78,11 @@ function getWebAssetUri(asset: unknown): string | undefined {
 export {
   // Catch any errors thrown by the Layout component.
   ErrorBoundary,
-} from 'expo-router';
+} from "expo-router";
 
 export const unstable_settings = {
   // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: '(tabs)',
+  initialRouteName: "(tabs)",
 };
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -85,7 +90,7 @@ SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const [loaded, error] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
+    SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
     ...FontAwesome.font,
   });
 
@@ -111,7 +116,7 @@ export default function RootLayout() {
     logFeatureFlags();
 
     // Start background sync for native platform
-    if (Platform.OS !== 'web') {
+    if (Platform.OS !== "web") {
       startBackgroundSync();
     }
 
@@ -119,7 +124,7 @@ export default function RootLayout() {
     promptMigrationIfNeeded();
   }, []);
 
-  if (!loaded && Platform.OS !== 'web') {
+  if (!loaded && Platform.OS !== "web") {
     return null;
   }
 
@@ -142,10 +147,14 @@ function RootLayoutNav() {
   const hydratedProfileUserId = useRef<string | null>(null);
 
   // Check if user is on an auth page (sign-in, sign-up, etc.)
-  const isAuthPage = pathname?.includes('/auth/') || pathname?.includes('sign-in') || pathname?.includes('sign-up');
+  const isAuthPage =
+    pathname?.includes("/auth/") ||
+    pathname?.includes("sign-in") ||
+    pathname?.includes("sign-up");
 
   // Determine if we should redirect to auth
-  const shouldRedirectToAuth = !isLoading && !session && !isAuthPage && pathname !== null;
+  const shouldRedirectToAuth =
+    !isLoading && !session && !isAuthPage && pathname !== null;
 
   useEffect(() => {
     if (!hasHydrated) {
@@ -169,9 +178,9 @@ function RootLayoutNav() {
     void (async () => {
       try {
         const { data, error } = await supabase
-          .from('profiles')
-          .select('stream, translation, onboarding_date, current_day')
-          .eq('id', user.id)
+          .from("profiles")
+          .select("stream, translation, onboarding_date, current_day")
+          .eq("id", user.id)
           .maybeSingle();
 
         if (cancelled) {
@@ -179,7 +188,7 @@ function RootLayoutNav() {
         }
 
         if (error) {
-          console.error('Failed to hydrate profile:', error);
+          console.error("Failed to hydrate profile:", error);
           return;
         }
 
@@ -187,7 +196,7 @@ function RootLayoutNav() {
           hydrateFromProfile(data);
         }
       } catch (error) {
-        console.error('Unexpected profile hydration error:', error);
+        console.error("Unexpected profile hydration error:", error);
       } finally {
         if (!cancelled) {
           hydratedProfileUserId.current = user.id;
@@ -202,20 +211,42 @@ function RootLayoutNav() {
   }, [hasHydrated, session, user, hydrateFromProfile]);
 
   useEffect(() => {
-    if (isLoading || !hasHydrated || isHydratingProfile || hasRedirected.current) return;
+    if (
+      isLoading ||
+      !hasHydrated ||
+      isHydratingProfile ||
+      hasRedirected.current
+    )
+      return;
     if (shouldRedirectToAuth) {
       hasRedirected.current = true;
-      router.replace('/auth/sign-in');
-    } else if (session && (!hasOnboarded || !selectedStream) && !isAuthPage && pathname !== '/onboarding') {
+      router.replace("/auth/sign-in");
+    } else if (
+      session &&
+      (!hasOnboarded || !selectedStream) &&
+      !isAuthPage &&
+      pathname !== "/onboarding"
+    ) {
       hasRedirected.current = true;
-      router.replace('/onboarding');
+      router.replace("/onboarding");
     }
-  }, [isLoading, hasHydrated, isHydratingProfile, session, hasOnboarded, selectedStream, shouldRedirectToAuth, isAuthPage, pathname, router]);
+  }, [
+    isLoading,
+    hasHydrated,
+    isHydratingProfile,
+    session,
+    hasOnboarded,
+    selectedStream,
+    shouldRedirectToAuth,
+    isAuthPage,
+    pathname,
+    router,
+  ]);
 
   const showWebLogoBanner =
-    Platform.OS === 'web' &&
-    pathname !== '/onboarding' &&
-    !(pathname === '/' && (!hasOnboarded || !selectedStream)) &&
+    Platform.OS === "web" &&
+    pathname !== "/onboarding" &&
+    !(pathname === "/" && (!hasOnboarded || !selectedStream)) &&
     !isAuthPage;
 
   return (
@@ -229,17 +260,17 @@ function RootLayoutNav() {
             />
           </div>
         )}
-        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : LogoTheme}>
+        <ThemeProvider value={colorScheme === "dark" ? DarkTheme : LogoTheme}>
           <Stack>
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen name="onboarding" options={{ headerShown: false }} />
-            <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+            <Stack.Screen name="modal" options={{ presentation: "modal" }} />
             <Stack.Screen name="(web)" options={{ headerShown: false }} />
             <Stack.Screen
               name="partner-linking"
               options={{
-                title: 'Relational Handshake',
-                headerBackTitle: 'Settings',
+                title: "Relational Handshake",
+                headerBackTitle: "Settings",
               }}
             />
           </Stack>

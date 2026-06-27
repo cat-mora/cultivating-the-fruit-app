@@ -1,7 +1,11 @@
-import { Platform } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { supabase, isSupabaseEnabled } from '../supabase/config';
-import { isSupabaseSyncEnabled, getSyncIntervalMs, isDebugMode } from '../feature-flags';
+import { Platform } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { supabase, isSupabaseEnabled } from "../supabase/config";
+import {
+  isSupabaseSyncEnabled,
+  getSyncIntervalMs,
+  isDebugMode,
+} from "../feature-flags";
 
 /**
  * Sync Service
@@ -31,44 +35,52 @@ export function isSyncEnabled(): boolean {
 /**
  * Sync user profile to Supabase
  */
-export async function syncUserProfile(userId: string, profileData: {
-  stream: 'strengthen' | 'repair' | 'family';
-  translation: 'NIV' | 'ESV' | 'KJV' | 'NLT' | 'NKJV';
-  onboarding_date: string;
-  current_day?: number; // Current day in the journey (activity-based progression)
-  device_id?: string | null;
-  email?: string | null;
-}) {
+export async function syncUserProfile(
+  userId: string,
+  profileData: {
+    stream: "strengthen" | "repair" | "family";
+    translation: "NIV" | "ESV" | "KJV" | "NLT" | "NKJV";
+    onboarding_date: string;
+    current_day?: number; // Current day in the journey (activity-based progression)
+    device_id?: string | null;
+    email?: string | null;
+  },
+) {
   if (!isSyncEnabled()) {
-    if (isDebugMode()) console.log('[Sync] Sync disabled, skipping user profile sync');
+    if (isDebugMode())
+      console.log("[Sync] Sync disabled, skipping user profile sync");
     return;
   }
 
   try {
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) {
-      if (isDebugMode()) console.log('[Sync] No authenticated user, skipping sync');
+      if (isDebugMode())
+        console.log("[Sync] No authenticated user, skipping sync");
       return;
     }
 
     // Upsert profile (insert or update)
-    const { error } = await supabase
-      .from('profiles')
-      .upsert({
+    const { error } = await supabase.from("profiles").upsert(
+      {
         id: user.id,
         ...profileData,
-      }, {
-        onConflict: 'id',
-      });
+      },
+      {
+        onConflict: "id",
+      },
+    );
 
     if (error) {
-      console.error('[Sync] Error syncing user profile:', error);
+      console.error("[Sync] Error syncing user profile:", error);
       throw error;
     }
 
-    if (isDebugMode()) console.log('[Sync] User profile synced successfully');
+    if (isDebugMode()) console.log("[Sync] User profile synced successfully");
   } catch (error) {
-    console.error('[Sync] Failed to sync user profile:', error);
+    console.error("[Sync] Failed to sync user profile:", error);
     // Don't throw - allow local-only operation
   }
 }
@@ -83,35 +95,40 @@ export async function syncProgress(progressData: {
   completed_dates: string[];
 }) {
   if (!isSyncEnabled()) {
-    if (isDebugMode()) console.log('[Sync] Sync disabled, skipping progress sync');
+    if (isDebugMode())
+      console.log("[Sync] Sync disabled, skipping progress sync");
     return;
   }
 
   try {
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) {
-      if (isDebugMode()) console.log('[Sync] No authenticated user, skipping sync');
+      if (isDebugMode())
+        console.log("[Sync] No authenticated user, skipping sync");
       return;
     }
 
     // Upsert progress
-    const { error } = await supabase
-      .from('progress')
-      .upsert({
+    const { error } = await supabase.from("progress").upsert(
+      {
         user_id: user.id,
         ...progressData,
-      }, {
-        onConflict: 'user_id',
-      });
+      },
+      {
+        onConflict: "user_id",
+      },
+    );
 
     if (error) {
-      console.error('[Sync] Error syncing progress:', error);
+      console.error("[Sync] Error syncing progress:", error);
       throw error;
     }
 
-    if (isDebugMode()) console.log('[Sync] Progress synced successfully');
+    if (isDebugMode()) console.log("[Sync] Progress synced successfully");
   } catch (error) {
-    console.error('[Sync] Failed to sync progress:', error);
+    console.error("[Sync] Failed to sync progress:", error);
     // Don't throw - allow local-only operation
   }
 }
@@ -119,45 +136,59 @@ export async function syncProgress(progressData: {
 /**
  * Sync fruit progress to Supabase
  */
-export async function syncFruitProgress(fruitProgressData: Array<{
-  fruit_type: 'love' | 'joy' | 'peace' | 'patience' | 'kindness' | 'goodness' | 'faithfulness' | 'gentleness' | 'self-control';
-  entry_date: string;
-  day_number: number;
-  completed: boolean;
-  completed_at: string | null;
-}>) {
+export async function syncFruitProgress(
+  fruitProgressData: Array<{
+    fruit_type:
+      | "love"
+      | "joy"
+      | "peace"
+      | "patience"
+      | "kindness"
+      | "goodness"
+      | "faithfulness"
+      | "gentleness"
+      | "self-control";
+    entry_date: string;
+    day_number: number;
+    completed: boolean;
+    completed_at: string | null;
+  }>,
+) {
   if (!isSyncEnabled()) {
-    if (isDebugMode()) console.log('[Sync] Sync disabled, skipping fruit progress sync');
+    if (isDebugMode())
+      console.log("[Sync] Sync disabled, skipping fruit progress sync");
     return;
   }
 
   try {
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) {
-      if (isDebugMode()) console.log('[Sync] No authenticated user, skipping sync');
+      if (isDebugMode())
+        console.log("[Sync] No authenticated user, skipping sync");
       return;
     }
 
     // Batch upsert all fruit progress entries
-    const records = fruitProgressData.map(item => ({
+    const records = fruitProgressData.map((item) => ({
       user_id: user.id,
       ...item,
     }));
 
-    const { error } = await supabase
-      .from('fruit_progress')
-      .upsert(records, {
-        onConflict: 'user_id,fruit_type,day_number',
-      });
+    const { error } = await supabase.from("fruit_progress").upsert(records, {
+      onConflict: "user_id,fruit_type,day_number",
+    });
 
     if (error) {
-      console.error('[Sync] Error syncing fruit progress:', error);
+      console.error("[Sync] Error syncing fruit progress:", error);
       throw error;
     }
 
-    if (isDebugMode()) console.log(`[Sync] Synced ${records.length} fruit progress entries`);
+    if (isDebugMode())
+      console.log(`[Sync] Synced ${records.length} fruit progress entries`);
   } catch (error) {
-    console.error('[Sync] Failed to sync fruit progress:', error);
+    console.error("[Sync] Failed to sync fruit progress:", error);
     // Don't throw - allow local-only operation
   }
 }
@@ -172,35 +203,40 @@ export async function syncJournalEntry(entryData: {
   is_locked: boolean;
 }) {
   if (!isSyncEnabled()) {
-    if (isDebugMode()) console.log('[Sync] Sync disabled, skipping journal sync');
+    if (isDebugMode())
+      console.log("[Sync] Sync disabled, skipping journal sync");
     return;
   }
 
   try {
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) {
-      if (isDebugMode()) console.log('[Sync] No authenticated user, skipping sync');
+      if (isDebugMode())
+        console.log("[Sync] No authenticated user, skipping sync");
       return;
     }
 
     // Upsert journal entry
-    const { error } = await supabase
-      .from('journal_entries')
-      .upsert({
+    const { error } = await supabase.from("journal_entries").upsert(
+      {
         user_id: user.id,
         ...entryData,
-      }, {
-        onConflict: 'user_id,entry_date',
-      });
+      },
+      {
+        onConflict: "user_id,entry_date",
+      },
+    );
 
     if (error) {
-      console.error('[Sync] Error syncing journal entry:', error);
+      console.error("[Sync] Error syncing journal entry:", error);
       throw error;
     }
 
-    if (isDebugMode()) console.log('[Sync] Journal entry synced successfully');
+    if (isDebugMode()) console.log("[Sync] Journal entry synced successfully");
   } catch (error) {
-    console.error('[Sync] Failed to sync journal entry:', error);
+    console.error("[Sync] Failed to sync journal entry:", error);
     // Don't throw - allow local-only operation
   }
 }
@@ -212,39 +248,44 @@ export async function syncPartnerLink(linkData: {
   invite_code: string;
   creator_id: string;
   partner_id: string | null;
-  status: 'pending' | 'accepted' | 'expired' | 'revoked';
+  status: "pending" | "accepted" | "expired" | "revoked";
   expires_at: string;
   accepted_at: string | null;
 }) {
   if (!isSyncEnabled()) {
-    if (isDebugMode()) console.log('[Sync] Sync disabled, skipping partner link sync');
+    if (isDebugMode())
+      console.log("[Sync] Sync disabled, skipping partner link sync");
     return;
   }
 
   try {
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) {
-      if (isDebugMode()) console.log('[Sync] No authenticated user, skipping sync');
+      if (isDebugMode())
+        console.log("[Sync] No authenticated user, skipping sync");
       return;
     }
 
     // Insert or update partner link
-    const { error } = await supabase
-      .from('partner_links')
-      .upsert({
+    const { error } = await supabase.from("partner_links").upsert(
+      {
         ...linkData,
-      }, {
-        onConflict: 'invite_code',
-      });
+      },
+      {
+        onConflict: "invite_code",
+      },
+    );
 
     if (error) {
-      console.error('[Sync] Error syncing partner link:', error);
+      console.error("[Sync] Error syncing partner link:", error);
       throw error;
     }
 
-    if (isDebugMode()) console.log('[Sync] Partner link synced successfully');
+    if (isDebugMode()) console.log("[Sync] Partner link synced successfully");
   } catch (error) {
-    console.error('[Sync] Failed to sync partner link:', error);
+    console.error("[Sync] Failed to sync partner link:", error);
     // Don't throw - allow local-only operation
   }
 }
@@ -255,25 +296,36 @@ export async function syncPartnerLink(linkData: {
  */
 export async function pullUserDataFromSupabase() {
   if (!isSyncEnabled()) {
-    if (isDebugMode()) console.log('[Sync] Sync disabled, skipping pull');
+    if (isDebugMode()) console.log("[Sync] Sync disabled, skipping pull");
     return null;
   }
 
   try {
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) {
-      if (isDebugMode()) console.log('[Sync] No authenticated user, skipping pull');
+      if (isDebugMode())
+        console.log("[Sync] No authenticated user, skipping pull");
       return null;
     }
 
     // Fetch all user data in parallel
-    const [profileRes, progressRes, fruitProgressRes, journalRes, partnerRes] = await Promise.all([
-      supabase.from('profiles').select('*').eq('id', user.id).single(),
-      supabase.from('progress').select('*').eq('user_id', user.id).single(),
-      supabase.from('fruit_progress').select('*').eq('user_id', user.id),
-      supabase.from('journal_entries').select('*').eq('user_id', user.id).order('entry_date', { ascending: false }),
-      supabase.from('partner_links').select('*').or(`creator_id.eq.${user.id},partner_id.eq.${user.id}`),
-    ]);
+    const [profileRes, progressRes, fruitProgressRes, journalRes, partnerRes] =
+      await Promise.all([
+        supabase.from("profiles").select("*").eq("id", user.id).single(),
+        supabase.from("progress").select("*").eq("user_id", user.id).single(),
+        supabase.from("fruit_progress").select("*").eq("user_id", user.id),
+        supabase
+          .from("journal_entries")
+          .select("*")
+          .eq("user_id", user.id)
+          .order("entry_date", { ascending: false }),
+        supabase
+          .from("partner_links")
+          .select("*")
+          .or(`creator_id.eq.${user.id},partner_id.eq.${user.id}`),
+      ]);
 
     const userData = {
       profile: profileRes.data,
@@ -284,7 +336,7 @@ export async function pullUserDataFromSupabase() {
     };
 
     if (isDebugMode()) {
-      console.log('[Sync] Pulled user data from Supabase:', {
+      console.log("[Sync] Pulled user data from Supabase:", {
         hasProfile: !!userData.profile,
         hasProgress: !!userData.progress,
         fruitProgressCount: userData.fruitProgress.length,
@@ -295,7 +347,7 @@ export async function pullUserDataFromSupabase() {
 
     return userData;
   } catch (error) {
-    console.error('[Sync] Failed to pull user data:', error);
+    console.error("[Sync] Failed to pull user data:", error);
     return null;
   }
 }
@@ -305,35 +357,44 @@ export async function pullUserDataFromSupabase() {
  * Syncs AsyncStorage → Supabase every N minutes
  */
 export function startBackgroundSync() {
-  if (Platform.OS === 'web') {
-    if (isDebugMode()) console.log('[Sync] Web platform - background sync not needed (immediate sync)');
+  if (Platform.OS === "web") {
+    if (isDebugMode())
+      console.log(
+        "[Sync] Web platform - background sync not needed (immediate sync)",
+      );
     return;
   }
 
   if (!isSyncEnabled()) {
-    if (isDebugMode()) console.log('[Sync] Sync disabled, not starting background sync');
+    if (isDebugMode())
+      console.log("[Sync] Sync disabled, not starting background sync");
     return;
   }
 
   if (syncInterval) {
-    if (isDebugMode()) console.log('[Sync] Background sync already running');
+    if (isDebugMode()) console.log("[Sync] Background sync already running");
     return;
   }
 
   const intervalMs = getSyncIntervalMs();
 
   if (isDebugMode()) {
-    console.log(`[Sync] Starting background sync (interval: ${intervalMs}ms = ${intervalMs / 60000} minutes)`);
+    console.log(
+      `[Sync] Starting background sync (interval: ${intervalMs}ms = ${intervalMs / 60000} minutes)`,
+    );
   }
 
   syncInterval = setInterval(async () => {
     if (isSyncing) {
-      if (isDebugMode()) console.log('[Sync] Previous sync still running, skipping this interval');
+      if (isDebugMode())
+        console.log(
+          "[Sync] Previous sync still running, skipping this interval",
+        );
       return;
     }
 
     isSyncing = true;
-    if (isDebugMode()) console.log('[Sync] Running background sync...');
+    if (isDebugMode()) console.log("[Sync] Running background sync...");
 
     try {
       // Pull latest data from Supabase
@@ -342,9 +403,9 @@ export function startBackgroundSync() {
       // Note: Pushing to Supabase happens automatically via store mutations
       // This background job is mainly for pulling updates from other devices
 
-      if (isDebugMode()) console.log('[Sync] Background sync completed');
+      if (isDebugMode()) console.log("[Sync] Background sync completed");
     } catch (error) {
-      console.error('[Sync] Background sync error:', error);
+      console.error("[Sync] Background sync error:", error);
     } finally {
       isSyncing = false;
     }
@@ -358,7 +419,7 @@ export function stopBackgroundSync() {
   if (syncInterval) {
     clearInterval(syncInterval);
     syncInterval = null;
-    if (isDebugMode()) console.log('[Sync] Background sync stopped');
+    if (isDebugMode()) console.log("[Sync] Background sync stopped");
   }
 }
 
@@ -367,15 +428,15 @@ export function stopBackgroundSync() {
  */
 export async function forceSyncNow() {
   if (!isSyncEnabled()) {
-    throw new Error('Sync is disabled');
+    throw new Error("Sync is disabled");
   }
 
-  if (isDebugMode()) console.log('[Sync] Force sync triggered');
+  if (isDebugMode()) console.log("[Sync] Force sync triggered");
 
   // Pull latest data
   const data = await pullUserDataFromSupabase();
 
-  if (isDebugMode()) console.log('[Sync] Force sync completed');
+  if (isDebugMode()) console.log("[Sync] Force sync completed");
 
   return data;
 }

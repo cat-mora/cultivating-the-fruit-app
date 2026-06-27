@@ -11,7 +11,7 @@ import {
   WEB_URL,
   DEBUG_MODE,
   SYNC_INTERVAL_MS,
-} from './env';
+} from "./env";
 
 /**
  * Check if Supabase cloud sync is enabled
@@ -72,6 +72,6 @@ export const FeatureFlags = {
  */
 export function logFeatureFlags() {
   if (isDebugMode()) {
-    console.log('🎯 Feature Flags:', FeatureFlags);
+    console.log("🎯 Feature Flags:", FeatureFlags);
   }
 }

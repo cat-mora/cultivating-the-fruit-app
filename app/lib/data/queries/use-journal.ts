@@ -1,6 +1,6 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '../../supabase/config';
-import { useAuthStore } from '../../../store/auth-store';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "../../supabase/config";
+import { useAuthStore } from "../../../store/auth-store";
 
 /**
  * React Query Hooks for Journal Entries
@@ -14,10 +14,12 @@ import { useAuthStore } from '../../../store/auth-store';
 // ============================================================================
 
 export const journalKeys = {
-  all: ['journal'] as const,
+  all: ["journal"] as const,
   user: (userId: string) => [...journalKeys.all, userId] as const,
-  entries: (userId: string) => [...journalKeys.user(userId), 'entries'] as const,
-  entry: (userId: string, date: string) => [...journalKeys.entries(userId), date] as const,
+  entries: (userId: string) =>
+    [...journalKeys.user(userId), "entries"] as const,
+  entry: (userId: string, date: string) =>
+    [...journalKeys.entries(userId), date] as const,
 };
 
 // ============================================================================
@@ -46,15 +48,15 @@ export function useJournalEntries() {
   const user = useAuthStore((state) => state.user);
 
   return useQuery({
-    queryKey: journalKeys.entries(user?.id || ''),
+    queryKey: journalKeys.entries(user?.id || ""),
     queryFn: async () => {
-      if (!user) throw new Error('Not authenticated');
+      if (!user) throw new Error("Not authenticated");
 
       const { data, error } = await supabase
-        .from('journal_entries')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('entry_date', { ascending: false });
+        .from("journal_entries")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("entry_date", { ascending: false });
 
       if (error) throw error;
 
@@ -72,18 +74,18 @@ export function useJournalEntry(date: string) {
   const user = useAuthStore((state) => state.user);
 
   return useQuery({
-    queryKey: journalKeys.entry(user?.id || '', date),
+    queryKey: journalKeys.entry(user?.id || "", date),
     queryFn: async () => {
-      if (!user) throw new Error('Not authenticated');
+      if (!user) throw new Error("Not authenticated");
 
       const { data, error } = await supabase
-        .from('journal_entries')
-        .select('*')
-        .eq('user_id', user.id)
-        .eq('entry_date', date)
+        .from("journal_entries")
+        .select("*")
+        .eq("user_id", user.id)
+        .eq("entry_date", date)
         .single();
 
-      if (error && error.code !== 'PGRST116') {
+      if (error && error.code !== "PGRST116") {
         // PGRST116 = no rows returned (expected for dates without entries)
         throw error;
       }
@@ -113,16 +115,19 @@ export function useSaveJournalEntry() {
       initialization_vector: string;
       is_locked: boolean;
     }) => {
-      if (!user) throw new Error('Not authenticated');
+      if (!user) throw new Error("Not authenticated");
 
       const { data, error } = await supabase
-        .from('journal_entries')
-        .upsert({
-          user_id: user.id,
-          ...entryData,
-        }, {
-          onConflict: 'user_id,entry_date',
-        })
+        .from("journal_entries")
+        .upsert(
+          {
+            user_id: user.id,
+            ...entryData,
+          },
+          {
+            onConflict: "user_id,entry_date",
+          },
+        )
         .select()
         .single();
 
@@ -132,8 +137,12 @@ export function useSaveJournalEntry() {
     },
     onSuccess: (data) => {
       // Invalidate queries
-      queryClient.invalidateQueries({ queryKey: journalKeys.entries(user?.id || '') });
-      queryClient.invalidateQueries({ queryKey: journalKeys.entry(user?.id || '', data.entry_date) });
+      queryClient.invalidateQueries({
+        queryKey: journalKeys.entries(user?.id || ""),
+      });
+      queryClient.invalidateQueries({
+        queryKey: journalKeys.entry(user?.id || "", data.entry_date),
+      });
     },
   });
 }
@@ -147,13 +156,13 @@ export function useDeleteJournalEntry() {
 
   return useMutation({
     mutationFn: async (entryDate: string) => {
-      if (!user) throw new Error('Not authenticated');
+      if (!user) throw new Error("Not authenticated");
 
       const { error } = await supabase
-        .from('journal_entries')
+        .from("journal_entries")
         .delete()
-        .eq('user_id', user.id)
-        .eq('entry_date', entryDate);
+        .eq("user_id", user.id)
+        .eq("entry_date", entryDate);
 
       if (error) throw error;
 
@@ -161,8 +170,12 @@ export function useDeleteJournalEntry() {
     },
     onSuccess: (deletedDate) => {
       // Invalidate queries
-      queryClient.invalidateQueries({ queryKey: journalKeys.entries(user?.id || '') });
-      queryClient.invalidateQueries({ queryKey: journalKeys.entry(user?.id || '', deletedDate) });
+      queryClient.invalidateQueries({
+        queryKey: journalKeys.entries(user?.id || ""),
+      });
+      queryClient.invalidateQueries({
+        queryKey: journalKeys.entry(user?.id || "", deletedDate),
+      });
     },
   });
 }
@@ -175,14 +188,20 @@ export function useToggleJournalLock() {
   const user = useAuthStore((state) => state.user);
 
   return useMutation({
-    mutationFn: async ({ entryDate, isLocked }: { entryDate: string; isLocked: boolean }) => {
-      if (!user) throw new Error('Not authenticated');
+    mutationFn: async ({
+      entryDate,
+      isLocked,
+    }: {
+      entryDate: string;
+      isLocked: boolean;
+    }) => {
+      if (!user) throw new Error("Not authenticated");
 
       const { data, error } = await supabase
-        .from('journal_entries')
+        .from("journal_entries")
         .update({ is_locked: isLocked })
-        .eq('user_id', user.id)
-        .eq('entry_date', entryDate)
+        .eq("user_id", user.id)
+        .eq("entry_date", entryDate)
         .select()
         .single();
 
@@ -192,8 +211,12 @@ export function useToggleJournalLock() {
     },
     onSuccess: (data) => {
       // Invalidate queries
-      queryClient.invalidateQueries({ queryKey: journalKeys.entries(user?.id || '') });
-      queryClient.invalidateQueries({ queryKey: journalKeys.entry(user?.id || '', data.entry_date) });
+      queryClient.invalidateQueries({
+        queryKey: journalKeys.entries(user?.id || ""),
+      });
+      queryClient.invalidateQueries({
+        queryKey: journalKeys.entry(user?.id || "", data.entry_date),
+      });
     },
   });
 }

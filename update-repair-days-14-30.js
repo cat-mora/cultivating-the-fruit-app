@@ -4,16 +4,23 @@
  * Run with: node update-repair-days-14-30.js
  */
 
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
-const contentFilePath = path.join(__dirname, 'app', 'features', 'content', 'data', 'journey-content.ts');
+const contentFilePath = path.join(
+  __dirname,
+  "app",
+  "features",
+  "content",
+  "data",
+  "journey-content.ts",
+);
 
-console.log('🔄 Starting repair stream update (Days 14-30)...');
-console.log('📁 Target file:', contentFilePath);
+console.log("🔄 Starting repair stream update (Days 14-30)...");
+console.log("📁 Target file:", contentFilePath);
 
 // Read current content
-let content = fs.readFileSync(contentFilePath, 'utf8');
+let content = fs.readFileSync(contentFilePath, "utf8");
 
 // Client's Days 14-30 content (exact format from client)
 const updates = [
@@ -60,22 +67,22 @@ const updates = [
         { id: 'r14-60', duration_minutes: 60, title: 'What helps you feel open', description: 'Ask: "What helps you feel comfortable being honest with me?" Listen without explaining your side.', category: 'action-with-partner' },
         { id: 'r14-120', duration_minutes: 120, title: 'An evening stroll somewhere new', description: 'Walk somewhere slightly different and take your time. A fresh shared experience with no pressure attached.', category: 'action-with-partner' },
       ]
-    },`
-  }
+    },`,
+  },
 ];
 
 // Apply Day 14 update
-console.log('📝 Updating Day 14...');
+console.log("📝 Updating Day 14...");
 if (content.includes(updates[0].find)) {
   content = content.replace(updates[0].find, updates[0].replace);
-  console.log('✅ Day 14 updated');
+  console.log("✅ Day 14 updated");
 } else {
-  console.log('⚠️  Day 14 pattern not found - may already be updated');
+  console.log("⚠️  Day 14 pattern not found - may already be updated");
 }
 
 // Save updated content
-fs.writeFileSync(contentFilePath, content, 'utf8');
+fs.writeFileSync(contentFilePath, content, "utf8");
 
-console.log('✅ Day 14 update complete!');
-console.log('\n📊 Next: Run the complete Days 15-30 update script...');
-console.log('💡 Or run: node update-all-remaining-days.js');
+console.log("✅ Day 14 update complete!");
+console.log("\n📊 Next: Run the complete Days 15-30 update script...");
+console.log("💡 Or run: node update-all-remaining-days.js");

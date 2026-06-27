@@ -1,12 +1,12 @@
-import { useCallback, useState } from 'react';
-import { useProgressStore } from '../../../store/progress-store';
-import { useUserStore } from '../../../store/user-store';
+import { useCallback, useState } from "react";
+import { useProgressStore } from "../../../store/progress-store";
+import { useUserStore } from "../../../store/user-store";
 import {
   CANONICAL_FRUITS,
   getFruitOccurrencesForStream,
   getMaxJourneyDay,
   normalizeFruitTheme,
-} from '../../content/utils/journey-metrics';
+} from "../../content/utils/journey-metrics";
 
 export interface FruitProgressOverviewItem {
   fruitTheme: (typeof CANONICAL_FRUITS)[number];
@@ -25,8 +25,12 @@ export interface FruitProgressOverviewItem {
  * Handles incrementing streaks, tracking daily completions, and fruit progress
  */
 export function useStreak() {
-  const { incrementStreak, updateFruitProgress, getStreakStatus, getAllFruitProgress } =
-    useProgressStore();
+  const {
+    incrementStreak,
+    updateFruitProgress,
+    getStreakStatus,
+    getAllFruitProgress,
+  } = useProgressStore();
   const selectedStream = useUserStore((state) => state.selectedStream);
   const [isAnimating, setIsAnimating] = useState(false);
 
@@ -34,25 +38,28 @@ export function useStreak() {
    * Complete today's activity and increment streak
    * Triggers celebration animation
    */
-  const completeActivityToday = useCallback(async (fruitTheme: string, dayNumber: number) => {
-    const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
-    const normalizedFruit = normalizeFruitTheme(fruitTheme);
+  const completeActivityToday = useCallback(
+    async (fruitTheme: string, dayNumber: number) => {
+      const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD format
+      const normalizedFruit = normalizeFruitTheme(fruitTheme);
 
-    // Trigger animations
-    setIsAnimating(true);
+      // Trigger animations
+      setIsAnimating(true);
 
-    // Update stores
-    incrementStreak(today);
-    if (normalizedFruit) {
-      updateFruitProgress(normalizedFruit, dayNumber, today, selectedStream);
-    }
+      // Update stores
+      incrementStreak(today);
+      if (normalizedFruit) {
+        updateFruitProgress(normalizedFruit, dayNumber, today, selectedStream);
+      }
 
-    // Animation plays for 2 seconds
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    setIsAnimating(false);
+      // Animation plays for 2 seconds
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      setIsAnimating(false);
 
-    return { success: true, timestamp: today };
-  }, [incrementStreak, selectedStream, updateFruitProgress]);
+      return { success: true, timestamp: today };
+    },
+    [incrementStreak, selectedStream, updateFruitProgress],
+  );
 
   /**
    * Get current streak info
@@ -66,7 +73,7 @@ export function useStreak() {
    */
   const hasCompletedToday = useCallback(() => {
     const streak = getStreakStatus();
-    const today = new Date().toISOString().split('T')[0];
+    const today = new Date().toISOString().split("T")[0];
     return streak.lastCompletedDate === today;
   }, [getStreakStatus]);
 
@@ -82,10 +89,12 @@ export function useStreak() {
     const overviewFruits: FruitProgressOverviewItem[] = fruits.map((fruit) => {
       const totalOccurrences = occurrenceMap.get(fruit.fruitTheme) || 0;
       const completedCount = fruit.completedDays.length;
-      const isCompleted = totalOccurrences > 0 && completedCount >= totalOccurrences;
-      const progressPercentage = totalOccurrences > 0
-        ? Math.min(100, Math.round((completedCount / totalOccurrences) * 100))
-        : 0;
+      const isCompleted =
+        totalOccurrences > 0 && completedCount >= totalOccurrences;
+      const progressPercentage =
+        totalOccurrences > 0
+          ? Math.min(100, Math.round((completedCount / totalOccurrences) * 100))
+          : 0;
 
       return {
         ...fruit,
@@ -96,12 +105,18 @@ export function useStreak() {
       };
     });
 
-    const completed = overviewFruits.filter((fruit) => fruit.isCompleted).length;
+    const completed = overviewFruits.filter(
+      (fruit) => fruit.isCompleted,
+    ).length;
     const total = overviewFruits.length;
-    const journeyCompleted = Math.min(streak.totalDaysCompleted, totalJourneyDays);
-    const journeyPercentage = totalJourneyDays > 0
-      ? Math.round((journeyCompleted / totalJourneyDays) * 100)
-      : 0;
+    const journeyCompleted = Math.min(
+      streak.totalDaysCompleted,
+      totalJourneyDays,
+    );
+    const journeyPercentage =
+      totalJourneyDays > 0
+        ? Math.round((journeyCompleted / totalJourneyDays) * 100)
+        : 0;
 
     return {
       completed,
@@ -126,7 +141,10 @@ export function useStreak() {
     tomorrow.setDate(tomorrow.getDate() + 1);
 
     const now = new Date();
-    const hoursRemaining = Math.max(0, (tomorrow.getTime() - now.getTime()) / (1000 * 60 * 60));
+    const hoursRemaining = Math.max(
+      0,
+      (tomorrow.getTime() - now.getTime()) / (1000 * 60 * 60),
+    );
 
     return {
       hoursRemaining: Math.ceil(hoursRemaining),

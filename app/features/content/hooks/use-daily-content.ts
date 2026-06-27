@@ -1,5 +1,5 @@
-import { useUserStore } from '../../../store/user-store';
-import { getJourneyContentForDay } from '../utils/journey-metrics';
+import { useUserStore } from "../../../store/user-store";
+import { getJourneyContentForDay } from "../utils/journey-metrics";
 
 /**
  * Get daily content based on activity completion, not calendar dates
@@ -7,7 +7,9 @@ import { getJourneyContentForDay } from '../utils/journey-metrics';
  */
 export const useDailyContent = () => {
   const selectedStream = useUserStore((state) => state.selectedStream);
-  const selectedTranslation = useUserStore((state) => state.selectedTranslation);
+  const selectedTranslation = useUserStore(
+    (state) => state.selectedTranslation,
+  );
   const currentDay = useUserStore((state) => state.currentDay);
 
   const todayContent = getJourneyContentForDay(selectedStream, currentDay);
@@ -15,7 +17,9 @@ export const useDailyContent = () => {
   if (!todayContent) return null;
 
   // Extract the specific translation text
-  const scriptureText = todayContent.bible_text[selectedTranslation] || todayContent.bible_text['NIV'];
+  const scriptureText =
+    todayContent.bible_text[selectedTranslation] ||
+    todayContent.bible_text["NIV"];
 
   return {
     ...todayContent,

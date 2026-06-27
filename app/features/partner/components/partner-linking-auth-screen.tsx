@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   ActivityIndicator,
   Platform,
@@ -7,20 +7,23 @@ import {
   Text,
   TextInput,
   View,
-} from 'react-native';
-import { signInWithEmail, signUpWithEmail } from '../../../lib/auth/auth-service';
-import { runMigration } from '../../../lib/migration/migrate-to-supabase';
+} from "react-native";
+import {
+  signInWithEmail,
+  signUpWithEmail,
+} from "../../../lib/auth/auth-service";
+import { runMigration } from "../../../lib/migration/migrate-to-supabase";
 
-type AuthMode = 'sign-in' | 'sign-up';
+type AuthMode = "sign-in" | "sign-up";
 
 export function PartnerLinkingAuthScreen() {
-  const [mode, setMode] = useState<AuthMode>('sign-up');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [mode, setMode] = useState<AuthMode>("sign-up");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const isSignUp = mode === 'sign-up';
+  const isSignUp = mode === "sign-up";
 
   const resetError = () => {
     if (error) {
@@ -32,17 +35,17 @@ export function PartnerLinkingAuthScreen() {
     resetError();
 
     if (!email.trim()) {
-      setError('Enter your email to continue.');
+      setError("Enter your email to continue.");
       return;
     }
 
     if (password.length < 8) {
-      setError('Use a password with at least 8 characters.');
+      setError("Use a password with at least 8 characters.");
       return;
     }
 
     if (isSignUp && password !== confirmPassword) {
-      setError('Passwords do not match.');
+      setError("Passwords do not match.");
       return;
     }
 
@@ -55,45 +58,57 @@ export function PartnerLinkingAuthScreen() {
         await signInWithEmail(email.trim(), password);
       }
 
-      if (Platform.OS !== 'web') {
+      if (Platform.OS !== "web") {
         await runMigration();
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unable to continue right now.');
+      setError(
+        err instanceof Error ? err.message : "Unable to continue right now.",
+      );
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <ScrollView className="flex-1 bg-cream" contentContainerStyle={{ padding: 24, paddingTop: 56, paddingBottom: 32 }}>
+    <ScrollView
+      className="flex-1 bg-cream"
+      contentContainerStyle={{ padding: 24, paddingTop: 56, paddingBottom: 32 }}
+    >
       <View className="bg-parchment border border-cream-dark rounded-[24px] p-6 mb-6">
-        <Text className="text-3xl font-serif text-wine mb-3">Relational Handshake</Text>
+        <Text className="text-3xl font-serif text-wine mb-3">
+          Relational Handshake
+        </Text>
         <Text className="text-charcoal/70 text-sm leading-6">
-          Create or sign in to a synced account here first. This is what lets two real devices share partner progress securely.
+          Create or sign in to a synced account here first. This is what lets
+          two real devices share partner progress securely.
         </Text>
       </View>
 
       <View className="flex-row bg-cream-dark rounded-full p-1 mb-6">
         <Pressable
           onPress={() => {
-            setMode('sign-up');
+            setMode("sign-up");
             resetError();
           }}
-          className={`flex-1 rounded-full py-3 ${isSignUp ? 'bg-wine' : 'bg-transparent'}`}
+          className={`flex-1 rounded-full py-3 ${isSignUp ? "bg-wine" : "bg-transparent"}`}
         >
-          <Text className={`text-center font-semibold ${isSignUp ? 'text-white' : 'text-charcoal/60'}`}>
+          <Text
+            className={`text-center font-semibold ${isSignUp ? "text-white" : "text-charcoal/60"}`}
+          >
             Create Account
           </Text>
         </Pressable>
         <Pressable
           onPress={() => {
-            setMode('sign-in');
+            setMode("sign-in");
             resetError();
           }}
-          className={`flex-1 rounded-full py-3 ${!isSignUp ? 'bg-wine' : 'bg-transparent'}`}
+          className={`flex-1 rounded-full py-3 ${!isSignUp ? "bg-wine" : "bg-transparent"}`}
         >
-          <Text className={`text-center font-semibold ${!isSignUp ? 'text-white' : 'text-charcoal/60'}`}>
+          <Text
+            className={`text-center font-semibold ${!isSignUp ? "text-white" : "text-charcoal/60"}`}
+          >
             Sign In
           </Text>
         </Pressable>
@@ -132,7 +147,9 @@ export function PartnerLinkingAuthScreen() {
 
         {isSignUp && (
           <>
-            <Text className="text-charcoal font-semibold mb-2">Confirm Password</Text>
+            <Text className="text-charcoal font-semibold mb-2">
+              Confirm Password
+            </Text>
             <TextInput
               value={confirmPassword}
               onChangeText={(value) => {
@@ -159,19 +176,22 @@ export function PartnerLinkingAuthScreen() {
             void handleSubmit();
           }}
           disabled={isSubmitting}
-          className={`rounded-full py-4 items-center ${isSubmitting ? 'bg-cream-dark' : 'bg-wine'}`}
+          className={`rounded-full py-4 items-center ${isSubmitting ? "bg-cream-dark" : "bg-wine"}`}
         >
           {isSubmitting ? (
-            <ActivityIndicator color={Platform.OS === 'web' ? '#6B3B5E' : '#FFFFFF'} />
+            <ActivityIndicator
+              color={Platform.OS === "web" ? "#6B3B5E" : "#FFFFFF"}
+            />
           ) : (
             <Text className="text-white font-bold">
-              {isSignUp ? 'Create and Continue' : 'Sign In and Continue'}
+              {isSignUp ? "Create and Continue" : "Sign In and Continue"}
             </Text>
           )}
         </Pressable>
 
         <Text className="text-charcoal/50 text-xs text-center mt-4 leading-5">
-          After this one-time setup, this same screen becomes the place where you generate a code or join your partner.
+          After this one-time setup, this same screen becomes the place where
+          you generate a code or join your partner.
         </Text>
       </View>
     </ScrollView>

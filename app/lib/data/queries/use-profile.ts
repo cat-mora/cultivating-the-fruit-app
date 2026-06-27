@@ -1,6 +1,6 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '../../supabase/config';
-import { useAuthStore } from '../../../store/auth-store';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "../../supabase/config";
+import { useAuthStore } from "../../../store/auth-store";
 
 /**
  * React Query Hooks for User Profile
@@ -14,7 +14,7 @@ import { useAuthStore } from '../../../store/auth-store';
 // ============================================================================
 
 export const profileKeys = {
-  all: ['profile'] as const,
+  all: ["profile"] as const,
   user: (userId: string) => [...profileKeys.all, userId] as const,
 };
 
@@ -24,8 +24,8 @@ export const profileKeys = {
 
 export type ProfileData = {
   id: string;
-  stream: 'strengthen' | 'repair' | 'family';
-  translation: 'NIV' | 'ESV' | 'KJV' | 'NLT' | 'NKJV';
+  stream: "strengthen" | "repair" | "family";
+  translation: "NIV" | "ESV" | "KJV" | "NLT" | "NKJV";
   onboarding_date: string;
   current_day: number;
   device_id: string | null;
@@ -45,17 +45,17 @@ export function useProfile() {
   const user = useAuthStore((state) => state.user);
 
   return useQuery({
-    queryKey: profileKeys.user(user?.id || ''),
+    queryKey: profileKeys.user(user?.id || ""),
     queryFn: async () => {
-      if (!user) throw new Error('Not authenticated');
+      if (!user) throw new Error("Not authenticated");
 
       const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
+        .from("profiles")
+        .select("*")
+        .eq("id", user.id)
         .single();
 
-      if (error && error.code !== 'PGRST116') {
+      if (error && error.code !== "PGRST116") {
         // PGRST116 = no rows returned (expected for new users)
         throw error;
       }
@@ -75,17 +75,17 @@ export function useProfileByUserId(userId: string | null | undefined) {
   const user = useAuthStore((state) => state.user);
 
   return useQuery({
-    queryKey: profileKeys.user(userId || ''),
+    queryKey: profileKeys.user(userId || ""),
     queryFn: async () => {
-      if (!userId) throw new Error('Missing user id');
+      if (!userId) throw new Error("Missing user id");
 
       const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', userId)
+        .from("profiles")
+        .select("*")
+        .eq("id", userId)
         .single();
 
-      if (error && error.code !== 'PGRST116') {
+      if (error && error.code !== "PGRST116") {
         throw error;
       }
 
@@ -109,23 +109,26 @@ export function useUpdateProfile() {
 
   return useMutation({
     mutationFn: async (profileData: {
-      stream: ProfileData['stream'];
-      translation: ProfileData['translation'];
+      stream: ProfileData["stream"];
+      translation: ProfileData["translation"];
       onboarding_date: string;
       current_day?: number;
       device_id?: string | null;
       email?: string | null;
     }) => {
-      if (!user) throw new Error('Not authenticated');
+      if (!user) throw new Error("Not authenticated");
 
       const { data, error } = await supabase
-        .from('profiles')
-        .upsert({
-          id: user.id,
-          ...profileData,
-        }, {
-          onConflict: 'id',
-        })
+        .from("profiles")
+        .upsert(
+          {
+            id: user.id,
+            ...profileData,
+          },
+          {
+            onConflict: "id",
+          },
+        )
         .select()
         .single();
 
@@ -134,7 +137,9 @@ export function useUpdateProfile() {
       return data as ProfileData;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: profileKeys.user(user?.id || '') });
+      queryClient.invalidateQueries({
+        queryKey: profileKeys.user(user?.id || ""),
+      });
     },
   });
 }
@@ -147,13 +152,13 @@ export function useUpdateStream() {
   const user = useAuthStore((state) => state.user);
 
   return useMutation({
-    mutationFn: async (stream: ProfileData['stream']) => {
-      if (!user) throw new Error('Not authenticated');
+    mutationFn: async (stream: ProfileData["stream"]) => {
+      if (!user) throw new Error("Not authenticated");
 
       const { data, error } = await supabase
-        .from('profiles')
+        .from("profiles")
         .update({ stream })
-        .eq('id', user.id)
+        .eq("id", user.id)
         .select()
         .single();
 
@@ -162,7 +167,9 @@ export function useUpdateStream() {
       return data as ProfileData;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: profileKeys.user(user?.id || '') });
+      queryClient.invalidateQueries({
+        queryKey: profileKeys.user(user?.id || ""),
+      });
     },
   });
 }
@@ -175,13 +182,13 @@ export function useUpdateTranslation() {
   const user = useAuthStore((state) => state.user);
 
   return useMutation({
-    mutationFn: async (translation: ProfileData['translation']) => {
-      if (!user) throw new Error('Not authenticated');
+    mutationFn: async (translation: ProfileData["translation"]) => {
+      if (!user) throw new Error("Not authenticated");
 
       const { data, error } = await supabase
-        .from('profiles')
+        .from("profiles")
         .update({ translation })
-        .eq('id', user.id)
+        .eq("id", user.id)
         .select()
         .single();
 
@@ -190,7 +197,9 @@ export function useUpdateTranslation() {
       return data as ProfileData;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: profileKeys.user(user?.id || '') });
+      queryClient.invalidateQueries({
+        queryKey: profileKeys.user(user?.id || ""),
+      });
     },
   });
 }

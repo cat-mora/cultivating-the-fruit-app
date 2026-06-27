@@ -1,6 +1,6 @@
-import { supabase, isSupabaseEnabled } from '../supabase/config';
-import { useAuthStore } from '../../store/auth-store';
-import { WEB_URL } from '../env';
+import { supabase, isSupabaseEnabled } from "../supabase/config";
+import { useAuthStore } from "../../store/auth-store";
+import { WEB_URL } from "../env";
 
 /**
  * Auth Service
@@ -16,18 +16,25 @@ import { WEB_URL } from '../env';
  * Sign up with email and password
  * Requires a valid invite code
  */
-export async function signUpWithEmail(email: string, password: string, inviteCode?: string) {
+export async function signUpWithEmail(
+  email: string,
+  password: string,
+  inviteCode?: string,
+) {
   if (!isSupabaseEnabled) {
-    throw new Error('Supabase is not enabled. Check your .env configuration.');
+    throw new Error("Supabase is not enabled. Check your .env configuration.");
   }
 
   // Validate invite code if provided
   if (inviteCode) {
-    const { validateSignupInvite, markInviteAsUsed } = await import('../admin/admin-service');
+    const { validateSignupInvite, markInviteAsUsed } =
+      await import("../admin/admin-service");
 
     const validInvite = await validateSignupInvite(inviteCode);
     if (!validInvite) {
-      throw new Error('Invalid or expired invite code. Please check your code and try again.');
+      throw new Error(
+        "Invalid or expired invite code. Please check your code and try again.",
+      );
     }
 
     // Proceed with signup
@@ -41,14 +48,14 @@ export async function signUpWithEmail(email: string, password: string, inviteCod
     }
 
     if (!data.user) {
-      throw new Error('Sign up failed - no user returned');
+      throw new Error("Sign up failed - no user returned");
     }
 
     // Mark invite code as used
     try {
       await markInviteAsUsed(inviteCode, data.user.id);
     } catch (markError) {
-      console.error('Failed to mark invite code as used:', markError);
+      console.error("Failed to mark invite code as used:", markError);
       // Don't fail signup if marking fails
     }
 
@@ -59,7 +66,9 @@ export async function signUpWithEmail(email: string, password: string, inviteCod
     return data;
   } else {
     // No invite code provided - require it
-    throw new Error('An invite code is required to sign up. Please contact an administrator for access.');
+    throw new Error(
+      "An invite code is required to sign up. Please contact an administrator for access.",
+    );
   }
 }
 
@@ -68,7 +77,7 @@ export async function signUpWithEmail(email: string, password: string, inviteCod
  */
 export async function signInWithEmail(email: string, password: string) {
   if (!isSupabaseEnabled) {
-    throw new Error('Supabase is not enabled. Check your .env configuration.');
+    throw new Error("Supabase is not enabled. Check your .env configuration.");
   }
 
   const { data, error } = await supabase.auth.signInWithPassword({
@@ -81,7 +90,7 @@ export async function signInWithEmail(email: string, password: string) {
   }
 
   if (!data.user) {
-    throw new Error('Sign in failed - no user returned');
+    throw new Error("Sign in failed - no user returned");
   }
 
   // Update auth store
@@ -96,7 +105,7 @@ export async function signInWithEmail(email: string, password: string) {
  */
 export async function resetPassword(email: string) {
   if (!isSupabaseEnabled) {
-    throw new Error('Supabase is not enabled. Check your .env configuration.');
+    throw new Error("Supabase is not enabled. Check your .env configuration.");
   }
 
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
@@ -134,6 +143,6 @@ export async function isAuthenticated(): Promise<boolean> {
 /**
  * Get authentication method
  */
-export function getAuthMethod(): 'email' | 'none' {
-  return isSupabaseEnabled ? 'email' : 'none';
+export function getAuthMethod(): "email" | "none" {
+  return isSupabaseEnabled ? "email" : "none";
 }

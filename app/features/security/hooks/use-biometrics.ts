@@ -1,7 +1,7 @@
 // This file provides TypeScript type resolution for platform-specific implementations
 // Actual implementation is in use-biometrics.native.ts and use-biometrics.web.ts
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback } from "react";
 
 export const useBiometrics = () => {
   const [isAuthenticating, setIsAuthenticating] = useState(false);

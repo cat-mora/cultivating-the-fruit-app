@@ -1,28 +1,28 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-import { useJournalStore } from '../store/journal-store';
-import { FruitType, useProgressStore } from '../store/progress-store';
-import { usePartnerStore } from '../store/partner-store';
-import { useUserStore } from '../store/user-store';
-import { supabase, isSupabaseEnabled } from './supabase/config';
+import { useJournalStore } from "../store/journal-store";
+import { FruitType, useProgressStore } from "../store/progress-store";
+import { usePartnerStore } from "../store/partner-store";
+import { useUserStore } from "../store/user-store";
+import { supabase, isSupabaseEnabled } from "./supabase/config";
 
 export const APP_STORAGE_KEYS = [
-  'user-storage',
-  'progress-storage',
-  'journal-storage',
-  'partner-storage',
+  "user-storage",
+  "progress-storage",
+  "journal-storage",
+  "partner-storage",
 ] as const;
 
 const defaultFruits: FruitType[] = [
-  'love',
-  'joy',
-  'peace',
-  'patience',
-  'kindness',
-  'goodness',
-  'faithfulness',
-  'gentleness',
-  'self-control',
+  "love",
+  "joy",
+  "peace",
+  "patience",
+  "kindness",
+  "goodness",
+  "faithfulness",
+  "gentleness",
+  "self-control",
 ];
 
 const createDefaultStreakData = () => ({
@@ -42,10 +42,10 @@ const createDefaultFruitProgress = () =>
         completedDays: [],
         completedDayDates: {},
         isCompleted: false,
-        firstCompletedDate: '',
-        lastCompletedDate: '',
+        firstCompletedDate: "",
+        lastCompletedDate: "",
       },
-    ])
+    ]),
   );
 
 async function signOutSafely() {
@@ -57,10 +57,10 @@ async function signOutSafely() {
     const { error } = await supabase.auth.signOut();
 
     if (error) {
-      console.warn('Failed to sign out during reset:', error.message);
+      console.warn("Failed to sign out during reset:", error.message);
     }
   } catch (error) {
-    console.warn('Failed to sign out during reset:', error);
+    console.warn("Failed to sign out during reset:", error);
   }
 }
 
@@ -71,7 +71,7 @@ export async function resetAppState() {
   useUserStore.setState({
     hasOnboarded: false,
     selectedStream: null,
-    selectedTranslation: 'NIV',
+    selectedTranslation: "NIV",
     onboardingDate: null,
     currentDay: 1,
   });

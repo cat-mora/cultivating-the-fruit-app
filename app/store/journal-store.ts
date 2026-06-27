@@ -1,9 +1,12 @@
-import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { encryptData, decryptData } from '../features/security/utils/encryption';
-import { syncJournalEntry } from '../lib/data/sync-service';
-import { Platform } from 'react-native';
+import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import {
+  encryptData,
+  decryptData,
+} from "../features/security/utils/encryption";
+import { syncJournalEntry } from "../lib/data/sync-service";
+import { Platform } from "react-native";
 
 export interface JournalEntry {
   id: string;
@@ -31,20 +34,23 @@ export const useJournalStore = create<JournalState>()(
           content: encryptedContent,
           created_at: new Date().toISOString(),
         };
-        
+
         set((state) => ({
-          entries: [...state.entries.filter(e => e.day_number !== day_number), newEntry]
+          entries: [
+            ...state.entries.filter((e) => e.day_number !== day_number),
+            newEntry,
+          ],
         }));
 
         // Sync to Supabase after state update
-        if (Platform.OS === 'web') {
+        if (Platform.OS === "web") {
           // Web: immediate sync
           get().syncToSupabase();
         }
         // Native: background sync will handle it
       },
       getDecryptedEntry: (day_number) => {
-        const entry = get().entries.find(e => e.day_number === day_number);
+        const entry = get().entries.find((e) => e.day_number === day_number);
         if (!entry) return null;
         try {
           return decryptData(entry.content);
@@ -61,21 +67,23 @@ export const useJournalStore = create<JournalState>()(
           for (const entry of state.entries) {
             // Entry is already encrypted, so we sync the encrypted content
             await syncJournalEntry({
-              entry_date: new Date(entry.created_at).toISOString().split('T')[0],
+              entry_date: new Date(entry.created_at)
+                .toISOString()
+                .split("T")[0],
               encrypted_content: entry.content,
-              initialization_vector: '', // TODO: Extract IV from encrypted content
+              initialization_vector: "", // TODO: Extract IV from encrypted content
               is_locked: true,
             });
           }
         } catch (error) {
-          console.error('[JournalStore] Sync failed:', error);
+          console.error("[JournalStore] Sync failed:", error);
           // Don't throw - allow local-only operation
         }
       },
     }),
     {
-      name: 'journal-storage',
+      name: "journal-storage",
       storage: createJSONStorage(() => AsyncStorage),
-    }
-  )
+    },
+  ),
 );

@@ -2,17 +2,18 @@
  * Admin Service - Utilities for admin users to manage signup invite codes
  */
 
-import { supabase, isSupabaseEnabled } from '../supabase/config';
-import type { Database } from '../supabase/config';
+import { supabase, isSupabaseEnabled } from "../supabase/config";
+import type { Database } from "../supabase/config";
 
-type SignupInvite = Database['public']['Tables']['signup_invites']['Row'];
-type SignupInviteInsert = Database['public']['Tables']['signup_invites']['Insert'];
+type SignupInvite = Database["public"]["Tables"]["signup_invites"]["Row"];
+type SignupInviteInsert =
+  Database["public"]["Tables"]["signup_invites"]["Insert"];
 
 /**
  * Characters used for invite code generation
  * Excludes confusing characters: I, O, 0, 1
  */
-const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+const CODE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 const CODE_LENGTH = 6;
 
 /**
@@ -25,19 +26,19 @@ export async function isAdmin(userId: string): Promise<boolean> {
 
   try {
     const { data, error } = await supabase
-      .from('profiles')
-      .select('is_admin')
-      .eq('id', userId)
+      .from("profiles")
+      .select("is_admin")
+      .eq("id", userId)
       .single();
 
     if (error) {
-      console.error('Error checking admin status:', error);
+      console.error("Error checking admin status:", error);
       return false;
     }
 
     return data?.is_admin ?? false;
   } catch (error) {
-    console.error('Error checking admin status:', error);
+    console.error("Error checking admin status:", error);
     return false;
   }
 }
@@ -48,11 +49,11 @@ export async function isAdmin(userId: string): Promise<boolean> {
  * Excludes confusing characters (I, O, 0, 1)
  */
 export function generateInviteCode(): string {
-  let code = '';
+  let code = "";
 
   // Use crypto.getRandomValues for secure random generation
   const randomValues = new Uint8Array(CODE_LENGTH);
-  if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+  if (typeof crypto !== "undefined" && crypto.getRandomValues) {
     crypto.getRandomValues(randomValues);
     for (let i = 0; i < CODE_LENGTH; i++) {
       code += CODE_CHARS[randomValues[i] % CODE_CHARS.length];
@@ -75,17 +76,17 @@ export function generateInviteCode(): string {
  */
 export async function createSignupInvite(
   adminUserId: string,
-  expiresInDays: number = 7
+  expiresInDays: number = 7,
 ): Promise<SignupInvite | null> {
   if (!isSupabaseEnabled) {
-    console.error('Supabase is not enabled');
+    console.error("Supabase is not enabled");
     return null;
   }
 
   // Verify admin status
   const adminStatus = await isAdmin(adminUserId);
   if (!adminStatus) {
-    console.error('User is not an admin');
+    console.error("User is not an admin");
     return null;
   }
 
@@ -104,11 +105,11 @@ export async function createSignupInvite(
         invite_code: code,
         created_by: adminUserId,
         expires_at: expiresAt.toISOString(),
-        status: 'pending',
+        status: "pending",
       };
 
       const { data, error } = await supabase
-        .from('signup_invites')
+        .from("signup_invites")
         .insert(inviteData)
         .select()
         .single();
@@ -118,21 +119,24 @@ export async function createSignupInvite(
       }
 
       // If code collision, generate new code and retry
-      if (error.code === '23505') { // Unique violation
+      if (error.code === "23505") {
+        // Unique violation
         code = generateInviteCode();
         attempts++;
         continue;
       }
 
       // Other error - fail
-      console.error('Error creating signup invite:', error);
+      console.error("Error creating signup invite:", error);
       return null;
     }
 
-    console.error('Failed to generate unique invite code after maximum attempts');
+    console.error(
+      "Failed to generate unique invite code after maximum attempts",
+    );
     return null;
   } catch (error) {
-    console.error('Error creating signup invite:', error);
+    console.error("Error creating signup invite:", error);
     return null;
   }
 }
@@ -143,9 +147,11 @@ export async function createSignupInvite(
  * @param code - The invite code to validate
  * @returns The invite if valid, null otherwise
  */
-export async function validateSignupInvite(code: string): Promise<SignupInvite | null> {
+export async function validateSignupInvite(
+  code: string,
+): Promise<SignupInvite | null> {
   if (!isSupabaseEnabled) {
-    console.error('Supabase is not enabled');
+    console.error("Supabase is not enabled");
     return null;
   }
 
@@ -155,10 +161,10 @@ export async function validateSignupInvite(code: string): Promise<SignupInvite |
 
   try {
     const { data, error } = await supabase
-      .from('signup_invites')
-      .select('*')
-      .eq('invite_code', code.toUpperCase())
-      .eq('status', 'pending')
+      .from("signup_invites")
+      .select("*")
+      .eq("invite_code", code.toUpperCase())
+      .eq("status", "pending")
       .single();
 
     if (error || !data) {
@@ -171,16 +177,16 @@ export async function validateSignupInvite(code: string): Promise<SignupInvite |
       if (expiryDate < new Date()) {
         // Mark as expired
         await supabase
-          .from('signup_invites')
-          .update({ status: 'expired' })
-          .eq('id', data.id);
+          .from("signup_invites")
+          .update({ status: "expired" })
+          .eq("id", data.id);
         return null;
       }
     }
 
     return data;
   } catch (error) {
-    console.error('Error validating signup invite:', error);
+    console.error("Error validating signup invite:", error);
     return null;
   }
 }
@@ -191,30 +197,33 @@ export async function validateSignupInvite(code: string): Promise<SignupInvite |
  * @param userId - The ID of the user who used the code
  * @returns true if successfully marked as used
  */
-export async function markInviteAsUsed(code: string, userId: string): Promise<boolean> {
+export async function markInviteAsUsed(
+  code: string,
+  userId: string,
+): Promise<boolean> {
   if (!isSupabaseEnabled) {
     return false;
   }
 
   try {
     const { error } = await supabase
-      .from('signup_invites')
+      .from("signup_invites")
       .update({
-        status: 'used',
+        status: "used",
         used_by: userId,
         used_at: new Date().toISOString(),
       })
-      .eq('invite_code', code.toUpperCase())
-      .eq('status', 'pending');
+      .eq("invite_code", code.toUpperCase())
+      .eq("status", "pending");
 
     if (error) {
-      console.error('Error marking invite as used:', error);
+      console.error("Error marking invite as used:", error);
       return false;
     }
 
     return true;
   } catch (error) {
-    console.error('Error marking invite as used:', error);
+    console.error("Error marking invite as used:", error);
     return false;
   }
 }
@@ -224,26 +233,28 @@ export async function markInviteAsUsed(code: string, userId: string): Promise<bo
  * @param adminUserId - The ID of the admin user
  * @returns Array of invite codes created by the admin
  */
-export async function getAdminInvites(adminUserId: string): Promise<SignupInvite[]> {
+export async function getAdminInvites(
+  adminUserId: string,
+): Promise<SignupInvite[]> {
   if (!isSupabaseEnabled) {
     return [];
   }
 
   try {
     const { data, error } = await supabase
-      .from('signup_invites')
-      .select('*')
-      .eq('created_by', adminUserId)
-      .order('created_at', { ascending: false });
+      .from("signup_invites")
+      .select("*")
+      .eq("created_by", adminUserId)
+      .order("created_at", { ascending: false });
 
     if (error) {
-      console.error('Error fetching admin invites:', error);
+      console.error("Error fetching admin invites:", error);
       return [];
     }
 
     return data || [];
   } catch (error) {
-    console.error('Error fetching admin invites:', error);
+    console.error("Error fetching admin invites:", error);
     return [];
   }
 }
@@ -260,18 +271,18 @@ export async function getAllInvites(): Promise<SignupInvite[]> {
 
   try {
     const { data, error } = await supabase
-      .from('signup_invites')
-      .select('*')
-      .order('created_at', { ascending: false });
+      .from("signup_invites")
+      .select("*")
+      .order("created_at", { ascending: false });
 
     if (error) {
-      console.error('Error fetching all invites:', error);
+      console.error("Error fetching all invites:", error);
       return [];
     }
 
     return data || [];
   } catch (error) {
-    console.error('Error fetching all invites:', error);
+    console.error("Error fetching all invites:", error);
     return [];
   }
 }
@@ -282,27 +293,30 @@ export async function getAllInvites(): Promise<SignupInvite[]> {
  * @param adminUserId - The ID of the admin revoking the invite
  * @returns true if successfully revoked
  */
-export async function revokeInvite(inviteId: string, adminUserId: string): Promise<boolean> {
+export async function revokeInvite(
+  inviteId: string,
+  adminUserId: string,
+): Promise<boolean> {
   if (!isSupabaseEnabled) {
     return false;
   }
 
   try {
     const { error } = await supabase
-      .from('signup_invites')
-      .update({ status: 'revoked' })
-      .eq('id', inviteId)
-      .eq('created_by', adminUserId)
-      .eq('status', 'pending');
+      .from("signup_invites")
+      .update({ status: "revoked" })
+      .eq("id", inviteId)
+      .eq("created_by", adminUserId)
+      .eq("status", "pending");
 
     if (error) {
-      console.error('Error revoking invite:', error);
+      console.error("Error revoking invite:", error);
       return false;
     }
 
     return true;
   } catch (error) {
-    console.error('Error revoking invite:', error);
+    console.error("Error revoking invite:", error);
     return false;
   }
 }
@@ -322,10 +336,12 @@ export interface AdminUserData {
 /**
  * Type definitions for custom content
  */
-type CustomVerse = Database['public']['Tables']['custom_verses']['Row'];
-type CustomVerseInsert = Database['public']['Tables']['custom_verses']['Insert'];
-type CustomActivity = Database['public']['Tables']['custom_activities']['Row'];
-type CustomActivityInsert = Database['public']['Tables']['custom_activities']['Insert'];
+type CustomVerse = Database["public"]["Tables"]["custom_verses"]["Row"];
+type CustomVerseInsert =
+  Database["public"]["Tables"]["custom_verses"]["Insert"];
+type CustomActivity = Database["public"]["Tables"]["custom_activities"]["Row"];
+type CustomActivityInsert =
+  Database["public"]["Tables"]["custom_activities"]["Insert"];
 
 /**
  * Get all users with their signup and partner information (admin only)
@@ -339,12 +355,12 @@ export async function getAllUsers(): Promise<AdminUserData[]> {
   try {
     // Get all profiles
     const { data: profiles, error: profilesError } = await supabase
-      .from('profiles')
-      .select('id, email, created_at')
-      .order('created_at', { ascending: false });
+      .from("profiles")
+      .select("id, email, created_at")
+      .order("created_at", { ascending: false });
 
     if (profilesError) {
-      console.error('Error fetching profiles:', profilesError);
+      console.error("Error fetching profiles:", profilesError);
       return [];
     }
 
@@ -354,13 +370,13 @@ export async function getAllUsers(): Promise<AdminUserData[]> {
 
     // Get all signup invites that were used
     const { data: usedInvites, error: invitesError } = await supabase
-      .from('signup_invites')
-      .select('used_by, invite_code')
-      .eq('status', 'used')
-      .not('used_by', 'is', null);
+      .from("signup_invites")
+      .select("used_by, invite_code")
+      .eq("status", "used")
+      .not("used_by", "is", null);
 
     if (invitesError) {
-      console.error('Error fetching used invites:', invitesError);
+      console.error("Error fetching used invites:", invitesError);
     }
 
     // Create a map of user_id -> invite_code
@@ -375,11 +391,11 @@ export async function getAllUsers(): Promise<AdminUserData[]> {
 
     // Get all partner links
     const { data: partnerLinks, error: partnerError } = await supabase
-      .from('partner_links')
-      .select('creator_id, partner_id, status');
+      .from("partner_links")
+      .select("creator_id, partner_id, status");
 
     if (partnerError) {
-      console.error('Error fetching partner links:', partnerError);
+      console.error("Error fetching partner links:", partnerError);
     }
 
     // Create a map of user_id -> partner count
@@ -387,10 +403,16 @@ export async function getAllUsers(): Promise<AdminUserData[]> {
     if (partnerLinks) {
       partnerLinks.forEach((link) => {
         // Count for creator
-        if (link.status === 'accepted') {
-          partnerMap.set(link.creator_id, (partnerMap.get(link.creator_id) || 0) + 1);
+        if (link.status === "accepted") {
+          partnerMap.set(
+            link.creator_id,
+            (partnerMap.get(link.creator_id) || 0) + 1,
+          );
           if (link.partner_id) {
-            partnerMap.set(link.partner_id, (partnerMap.get(link.partner_id) || 0) + 1);
+            partnerMap.set(
+              link.partner_id,
+              (partnerMap.get(link.partner_id) || 0) + 1,
+            );
           }
         }
       });
@@ -408,7 +430,7 @@ export async function getAllUsers(): Promise<AdminUserData[]> {
 
     return userData;
   } catch (error) {
-    console.error('Error fetching all users:', error);
+    console.error("Error fetching all users:", error);
     return [];
   }
 }
@@ -420,8 +442,8 @@ export async function getAllUsers(): Promise<AdminUserData[]> {
  * @returns The created verse or null if failed
  */
 export async function addCustomVerse(
-  verse: Omit<CustomVerseInsert, 'created_by' | 'created_at' | 'updated_at'>,
-  adminUserId: string
+  verse: Omit<CustomVerseInsert, "created_by" | "created_at" | "updated_at">,
+  adminUserId: string,
 ): Promise<CustomVerse | null> {
   if (!isSupabaseEnabled) {
     return null;
@@ -430,13 +452,13 @@ export async function addCustomVerse(
   // Verify admin status
   const adminStatus = await isAdmin(adminUserId);
   if (!adminStatus) {
-    console.error('User is not an admin');
+    console.error("User is not an admin");
     return null;
   }
 
   try {
     const { data, error } = await supabase
-      .from('custom_verses')
+      .from("custom_verses")
       .insert({
         ...verse,
         created_by: adminUserId,
@@ -445,13 +467,13 @@ export async function addCustomVerse(
       .single();
 
     if (error) {
-      console.error('Error adding custom verse:', error);
+      console.error("Error adding custom verse:", error);
       return null;
     }
 
     return data;
   } catch (error) {
-    console.error('Error adding custom verse:', error);
+    console.error("Error adding custom verse:", error);
     return null;
   }
 }
@@ -463,8 +485,11 @@ export async function addCustomVerse(
  * @returns The created activity or null if failed
  */
 export async function addCustomActivity(
-  activity: Omit<CustomActivityInsert, 'created_by' | 'created_at' | 'updated_at'>,
-  adminUserId: string
+  activity: Omit<
+    CustomActivityInsert,
+    "created_by" | "created_at" | "updated_at"
+  >,
+  adminUserId: string,
 ): Promise<CustomActivity | null> {
   if (!isSupabaseEnabled) {
     return null;
@@ -473,13 +498,13 @@ export async function addCustomActivity(
   // Verify admin status
   const adminStatus = await isAdmin(adminUserId);
   if (!adminStatus) {
-    console.error('User is not an admin');
+    console.error("User is not an admin");
     return null;
   }
 
   try {
     const { data, error } = await supabase
-      .from('custom_activities')
+      .from("custom_activities")
       .insert({
         ...activity,
         created_by: adminUserId,
@@ -488,13 +513,13 @@ export async function addCustomActivity(
       .single();
 
     if (error) {
-      console.error('Error adding custom activity:', error);
+      console.error("Error adding custom activity:", error);
       return null;
     }
 
     return data;
   } catch (error) {
-    console.error('Error adding custom activity:', error);
+    console.error("Error adding custom activity:", error);
     return null;
   }
 }
@@ -511,9 +536,9 @@ export async function getCustomVerses(stream?: string): Promise<CustomVerse[]> {
 
   try {
     let query = supabase
-      .from('custom_verses')
-      .select('*')
-      .order('created_at', { ascending: false });
+      .from("custom_verses")
+      .select("*")
+      .order("created_at", { ascending: false });
 
     if (stream) {
       query = query.or(`stream.eq.${stream},stream.is.null`);
@@ -522,13 +547,13 @@ export async function getCustomVerses(stream?: string): Promise<CustomVerse[]> {
     const { data, error } = await query;
 
     if (error) {
-      console.error('Error fetching custom verses:', error);
+      console.error("Error fetching custom verses:", error);
       return [];
     }
 
     return data || [];
   } catch (error) {
-    console.error('Error fetching custom verses:', error);
+    console.error("Error fetching custom verses:", error);
     return [];
   }
 }
@@ -541,7 +566,7 @@ export async function getCustomVerses(stream?: string): Promise<CustomVerse[]> {
  */
 export async function getCustomActivities(
   stream?: string,
-  timeTier?: number
+  timeTier?: number,
 ): Promise<CustomActivity[]> {
   if (!isSupabaseEnabled) {
     return [];
@@ -549,28 +574,28 @@ export async function getCustomActivities(
 
   try {
     let query = supabase
-      .from('custom_activities')
-      .select('*')
-      .order('created_at', { ascending: false });
+      .from("custom_activities")
+      .select("*")
+      .order("created_at", { ascending: false });
 
     if (stream) {
       query = query.or(`stream.eq.${stream},stream.is.null`);
     }
 
     if (timeTier) {
-      query = query.eq('time_tier', timeTier);
+      query = query.eq("time_tier", timeTier);
     }
 
     const { data, error } = await query;
 
     if (error) {
-      console.error('Error fetching custom activities:', error);
+      console.error("Error fetching custom activities:", error);
       return [];
     }
 
     return data || [];
   } catch (error) {
-    console.error('Error fetching custom activities:', error);
+    console.error("Error fetching custom activities:", error);
     return [];
   }
 }
@@ -581,7 +606,10 @@ export async function getCustomActivities(
  * @param adminUserId - The ID of the admin deleting the verse
  * @returns true if successfully deleted
  */
-export async function deleteCustomVerse(verseId: string, adminUserId: string): Promise<boolean> {
+export async function deleteCustomVerse(
+  verseId: string,
+  adminUserId: string,
+): Promise<boolean> {
   if (!isSupabaseEnabled) {
     return false;
   }
@@ -589,24 +617,24 @@ export async function deleteCustomVerse(verseId: string, adminUserId: string): P
   // Verify admin status
   const adminStatus = await isAdmin(adminUserId);
   if (!adminStatus) {
-    console.error('User is not an admin');
+    console.error("User is not an admin");
     return false;
   }
 
   try {
     const { error } = await supabase
-      .from('custom_verses')
+      .from("custom_verses")
       .delete()
-      .eq('id', verseId);
+      .eq("id", verseId);
 
     if (error) {
-      console.error('Error deleting custom verse:', error);
+      console.error("Error deleting custom verse:", error);
       return false;
     }
 
     return true;
   } catch (error) {
-    console.error('Error deleting custom verse:', error);
+    console.error("Error deleting custom verse:", error);
     return false;
   }
 }
@@ -617,7 +645,10 @@ export async function deleteCustomVerse(verseId: string, adminUserId: string): P
  * @param adminUserId - The ID of the admin deleting the activity
  * @returns true if successfully deleted
  */
-export async function deleteCustomActivity(activityId: string, adminUserId: string): Promise<boolean> {
+export async function deleteCustomActivity(
+  activityId: string,
+  adminUserId: string,
+): Promise<boolean> {
   if (!isSupabaseEnabled) {
     return false;
   }
@@ -625,24 +656,24 @@ export async function deleteCustomActivity(activityId: string, adminUserId: stri
   // Verify admin status
   const adminStatus = await isAdmin(adminUserId);
   if (!adminStatus) {
-    console.error('User is not an admin');
+    console.error("User is not an admin");
     return false;
   }
 
   try {
     const { error } = await supabase
-      .from('custom_activities')
+      .from("custom_activities")
       .delete()
-      .eq('id', activityId);
+      .eq("id", activityId);
 
     if (error) {
-      console.error('Error deleting custom activity:', error);
+      console.error("Error deleting custom activity:", error);
       return false;
     }
 
     return true;
   } catch (error) {
-    console.error('Error deleting custom activity:', error);
+    console.error("Error deleting custom activity:", error);
     return false;
   }
 }

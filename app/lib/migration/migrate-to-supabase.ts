@@ -1,7 +1,13 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Platform } from 'react-native';
-import { supabase, isSupabaseEnabled } from '../supabase/config';
-import { syncUserProfile, syncProgress, syncFruitProgress, syncJournalEntry, syncPartnerLink } from '../data/sync-service';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Platform } from "react-native";
+import { supabase, isSupabaseEnabled } from "../supabase/config";
+import {
+  syncUserProfile,
+  syncProgress,
+  syncFruitProgress,
+  syncJournalEntry,
+  syncPartnerLink,
+} from "../data/sync-service";
 
 /**
  * Migration Script: AsyncStorage → Supabase
@@ -16,8 +22,8 @@ import { syncUserProfile, syncProgress, syncFruitProgress, syncJournalEntry, syn
  * - Marks migration as complete in AsyncStorage
  */
 
-const MIGRATION_KEY = '@cultivating_fruits:migration_complete';
-const MIGRATION_VERSION = 'v1.0.0';
+const MIGRATION_KEY = "@cultivating_fruits:migration_complete";
+const MIGRATION_VERSION = "v1.0.0";
 
 // ============================================================================
 // MIGRATION STATUS
@@ -31,7 +37,7 @@ export async function isMigrationComplete(): Promise<boolean> {
     const migrationStatus = await AsyncStorage.getItem(MIGRATION_KEY);
     return migrationStatus === MIGRATION_VERSION;
   } catch (error) {
-    console.error('[Migration] Error checking migration status:', error);
+    console.error("[Migration] Error checking migration status:", error);
     return false;
   }
 }
@@ -43,7 +49,7 @@ export async function markMigrationComplete(): Promise<void> {
   try {
     await AsyncStorage.setItem(MIGRATION_KEY, MIGRATION_VERSION);
   } catch (error) {
-    console.error('[Migration] Error marking migration complete:', error);
+    console.error("[Migration] Error marking migration complete:", error);
   }
 }
 
@@ -56,9 +62,9 @@ export async function markMigrationComplete(): Promise<void> {
  */
 async function migrateUserProfile(): Promise<boolean> {
   try {
-    const userDataRaw = await AsyncStorage.getItem('user-storage');
+    const userDataRaw = await AsyncStorage.getItem("user-storage");
     if (!userDataRaw) {
-      console.log('[Migration] No user data to migrate');
+      console.log("[Migration] No user data to migrate");
       return true;
     }
 
@@ -67,29 +73,35 @@ async function migrateUserProfile(): Promise<boolean> {
 
     // Only migrate if user has completed onboarding
     if (!state.hasOnboarded || !state.selectedStream || !state.onboardingDate) {
-      console.log('[Migration] User has not completed onboarding, skipping profile migration');
+      console.log(
+        "[Migration] User has not completed onboarding, skipping profile migration",
+      );
       return true;
     }
 
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) {
-      console.error('[Migration] No authenticated user, cannot migrate profile');
+      console.error(
+        "[Migration] No authenticated user, cannot migrate profile",
+      );
       return false;
     }
 
     await syncUserProfile(user.id, {
       stream: state.selectedStream,
-      translation: state.selectedTranslation || 'NIV',
+      translation: state.selectedTranslation || "NIV",
       onboarding_date: state.onboardingDate,
       current_day: state.currentDay || 1,
-      device_id: Platform.OS !== 'web' ? 'migrated-device' : null,
+      device_id: Platform.OS !== "web" ? "migrated-device" : null,
       email: user.email || null,
     });
 
-    console.log('[Migration] ✅ User profile migrated');
+    console.log("[Migration] ✅ User profile migrated");
     return true;
   } catch (error) {
-    console.error('[Migration] ❌ Failed to migrate user profile:', error);
+    console.error("[Migration] ❌ Failed to migrate user profile:", error);
     return false;
   }
 }
@@ -99,9 +111,9 @@ async function migrateUserProfile(): Promise<boolean> {
  */
 async function migrateProgress(): Promise<boolean> {
   try {
-    const progressDataRaw = await AsyncStorage.getItem('progress-storage');
+    const progressDataRaw = await AsyncStorage.getItem("progress-storage");
     if (!progressDataRaw) {
-      console.log('[Migration] No progress data to migrate');
+      console.log("[Migration] No progress data to migrate");
       return true;
     }
 
@@ -109,7 +121,7 @@ async function migrateProgress(): Promise<boolean> {
     const state = progressData.state || progressData;
 
     if (!state.streakData) {
-      console.log('[Migration] No streak data found');
+      console.log("[Migration] No streak data found");
       return true;
     }
 
@@ -120,10 +132,10 @@ async function migrateProgress(): Promise<boolean> {
       completed_dates: state.streakData.completedDates || [],
     });
 
-    console.log('[Migration] ✅ Progress data migrated');
+    console.log("[Migration] ✅ Progress data migrated");
     return true;
   } catch (error) {
-    console.error('[Migration] ❌ Failed to migrate progress:', error);
+    console.error("[Migration] ❌ Failed to migrate progress:", error);
     return false;
   }
 }
@@ -133,9 +145,9 @@ async function migrateProgress(): Promise<boolean> {
  */
 async function migrateFruitProgress(): Promise<boolean> {
   try {
-    const progressDataRaw = await AsyncStorage.getItem('progress-storage');
+    const progressDataRaw = await AsyncStorage.getItem("progress-storage");
     if (!progressDataRaw) {
-      console.log('[Migration] No fruit progress data to migrate');
+      console.log("[Migration] No fruit progress data to migrate");
       return true;
     }
 
@@ -143,7 +155,7 @@ async function migrateFruitProgress(): Promise<boolean> {
     const state = progressData.state || progressData;
 
     if (!state.fruitProgress) {
-      console.log('[Migration] No fruit progress found');
+      console.log("[Migration] No fruit progress found");
       return true;
     }
 
@@ -155,13 +167,14 @@ async function migrateFruitProgress(): Promise<boolean> {
     const syncData: any[] = [];
 
     for (const [fruitType, fruitData] of fruitProgressArray) {
-      const data = typeof fruitData === 'object' && fruitData !== null ? fruitData : {};
+      const data =
+        typeof fruitData === "object" && fruitData !== null ? fruitData : {};
 
       // Create entries for each completed day
       for (const dayNum of data.completedDays || []) {
         syncData.push({
           fruit_type: fruitType,
-          entry_date: new Date().toISOString().split('T')[0], // Use today's date for migration
+          entry_date: new Date().toISOString().split("T")[0], // Use today's date for migration
           day_number: dayNum,
           completed: true,
           completed_at: data.lastCompletedDate || new Date().toISOString(),
@@ -171,12 +184,14 @@ async function migrateFruitProgress(): Promise<boolean> {
 
     if (syncData.length > 0) {
       await syncFruitProgress(syncData);
-      console.log(`[Migration] ✅ Migrated ${syncData.length} fruit progress entries`);
+      console.log(
+        `[Migration] ✅ Migrated ${syncData.length} fruit progress entries`,
+      );
     }
 
     return true;
   } catch (error) {
-    console.error('[Migration] ❌ Failed to migrate fruit progress:', error);
+    console.error("[Migration] ❌ Failed to migrate fruit progress:", error);
     return false;
   }
 }
@@ -186,33 +201,39 @@ async function migrateFruitProgress(): Promise<boolean> {
  */
 async function migrateJournal(): Promise<boolean> {
   try {
-    const journalDataRaw = await AsyncStorage.getItem('journal-storage');
+    const journalDataRaw = await AsyncStorage.getItem("journal-storage");
     if (!journalDataRaw) {
-      console.log('[Migration] No journal data to migrate');
+      console.log("[Migration] No journal data to migrate");
       return true;
     }
 
     const journalData = JSON.parse(journalDataRaw);
     const state = journalData.state || journalData;
 
-    if (!state.entries || !Array.isArray(state.entries) || state.entries.length === 0) {
-      console.log('[Migration] No journal entries found');
+    if (
+      !state.entries ||
+      !Array.isArray(state.entries) ||
+      state.entries.length === 0
+    ) {
+      console.log("[Migration] No journal entries found");
       return true;
     }
 
     for (const entry of state.entries) {
       await syncJournalEntry({
-        entry_date: new Date(entry.created_at).toISOString().split('T')[0],
+        entry_date: new Date(entry.created_at).toISOString().split("T")[0],
         encrypted_content: entry.content,
-        initialization_vector: '', // TODO: Extract IV from encrypted content
+        initialization_vector: "", // TODO: Extract IV from encrypted content
         is_locked: true,
       });
     }
 
-    console.log(`[Migration] ✅ Migrated ${state.entries.length} journal entries`);
+    console.log(
+      `[Migration] ✅ Migrated ${state.entries.length} journal entries`,
+    );
     return true;
   } catch (error) {
-    console.error('[Migration] ❌ Failed to migrate journal:', error);
+    console.error("[Migration] ❌ Failed to migrate journal:", error);
     return false;
   }
 }
@@ -222,9 +243,9 @@ async function migrateJournal(): Promise<boolean> {
  */
 async function migratePartners(): Promise<boolean> {
   try {
-    const partnerDataRaw = await AsyncStorage.getItem('partner-storage');
+    const partnerDataRaw = await AsyncStorage.getItem("partner-storage");
     if (!partnerDataRaw) {
-      console.log('[Migration] No partner data to migrate');
+      console.log("[Migration] No partner data to migrate");
       return true;
     }
 
@@ -233,17 +254,19 @@ async function migratePartners(): Promise<boolean> {
 
     // Migrate current invite code if exists
     if (state.currentInviteCode && state.inviteCodeExpiry) {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (user) {
         await syncPartnerLink({
           invite_code: state.currentInviteCode,
           creator_id: user.id,
           partner_id: null,
-          status: 'pending',
+          status: "pending",
           expires_at: state.inviteCodeExpiry,
           accepted_at: null,
         });
-        console.log('[Migration] ✅ Migrated invite code');
+        console.log("[Migration] ✅ Migrated invite code");
       }
     }
 
@@ -252,7 +275,7 @@ async function migratePartners(): Promise<boolean> {
 
     return true;
   } catch (error) {
-    console.error('[Migration] ❌ Failed to migrate partners:', error);
+    console.error("[Migration] ❌ Failed to migrate partners:", error);
     return false;
   }
 }
@@ -268,31 +291,36 @@ async function migratePartners(): Promise<boolean> {
  * - { success: true, errors: [] } if all migrations succeeded
  * - { success: false, errors: [...] } if any migrations failed
  */
-export async function runMigration(): Promise<{ success: boolean; errors: string[] }> {
-  console.log('[Migration] 🚀 Starting migration to Supabase...');
+export async function runMigration(): Promise<{
+  success: boolean;
+  errors: string[];
+}> {
+  console.log("[Migration] 🚀 Starting migration to Supabase...");
 
   // Check if Supabase is enabled
   if (!isSupabaseEnabled) {
-    console.error('[Migration] ❌ Supabase is not enabled, cannot migrate');
-    return { success: false, errors: ['Supabase not enabled'] };
+    console.error("[Migration] ❌ Supabase is not enabled, cannot migrate");
+    return { success: false, errors: ["Supabase not enabled"] };
   }
 
   // Check if user is authenticated
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) {
-    console.error('[Migration] ❌ User not authenticated, cannot migrate');
-    return { success: false, errors: ['User not authenticated'] };
+    console.error("[Migration] ❌ User not authenticated, cannot migrate");
+    return { success: false, errors: ["User not authenticated"] };
   }
 
   const errors: string[] = [];
 
   // Run migrations in sequence
   const migrations = [
-    { name: 'User Profile', fn: migrateUserProfile },
-    { name: 'Progress', fn: migrateProgress },
-    { name: 'Fruit Progress', fn: migrateFruitProgress },
-    { name: 'Journal', fn: migrateJournal },
-    { name: 'Partners', fn: migratePartners },
+    { name: "User Profile", fn: migrateUserProfile },
+    { name: "Progress", fn: migrateProgress },
+    { name: "Fruit Progress", fn: migrateFruitProgress },
+    { name: "Journal", fn: migrateJournal },
+    { name: "Partners", fn: migratePartners },
   ];
 
   for (const migration of migrations) {
@@ -304,10 +332,10 @@ export async function runMigration(): Promise<{ success: boolean; errors: string
 
   if (errors.length === 0) {
     await markMigrationComplete();
-    console.log('[Migration] ✅ Migration complete!');
+    console.log("[Migration] ✅ Migration complete!");
     return { success: true, errors: [] };
   } else {
-    console.error('[Migration] ❌ Migration completed with errors:', errors);
+    console.error("[Migration] ❌ Migration completed with errors:", errors);
     return { success: false, errors };
   }
 }
@@ -316,7 +344,7 @@ export async function runMigration(): Promise<{ success: boolean; errors: string
  * Prompt user to run migration (call from app startup)
  */
 export async function promptMigrationIfNeeded(): Promise<void> {
-  if (Platform.OS === 'web') {
+  if (Platform.OS === "web") {
     // Web users don't need migration (they're signing up fresh)
     return;
   }
@@ -336,7 +364,7 @@ export async function promptMigrationIfNeeded(): Promise<void> {
 
   // TODO: Show migration prompt to user
   // For now, auto-run migration
-  console.log('[Migration] Local data detected, running migration...');
+  console.log("[Migration] Local data detected, running migration...");
   await runMigration();
 }
 
@@ -346,15 +374,16 @@ export async function promptMigrationIfNeeded(): Promise<void> {
 async function checkForLocalData(): Promise<boolean> {
   try {
     const keys = await AsyncStorage.getAllKeys();
-    const dataKeys = keys.filter(key =>
-      key.includes('user-storage') ||
-      key.includes('progress-storage') ||
-      key.includes('journal-storage') ||
-      key.includes('partner-storage')
+    const dataKeys = keys.filter(
+      (key) =>
+        key.includes("user-storage") ||
+        key.includes("progress-storage") ||
+        key.includes("journal-storage") ||
+        key.includes("partner-storage"),
     );
     return dataKeys.length > 0;
   } catch (error) {
-    console.error('[Migration] Error checking for local data:', error);
+    console.error("[Migration] Error checking for local data:", error);
     return false;
   }
 }

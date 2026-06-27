@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { supabase, isSupabaseEnabled } from '../lib/supabase/config';
+import { useEffect, useState } from "react";
+import { supabase, isSupabaseEnabled } from "../lib/supabase/config";
 
 interface AuthUser {
   userId: string | null;
@@ -42,7 +42,9 @@ export function useAuth(): AuthUser {
           setEmail(user.email || null);
         }
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to get auth user');
+        setError(
+          err instanceof Error ? err.message : "Failed to get auth user",
+        );
       } finally {
         setIsLoading(false);
       }

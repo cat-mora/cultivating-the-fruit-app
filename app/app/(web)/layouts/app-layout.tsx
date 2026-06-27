@@ -1,6 +1,6 @@
-import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
-import { useAuthStore } from '@/store/auth-store';
-import { signOut } from '@/lib/auth/auth-service';
+import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
+import { useAuthStore } from "@/store/auth-store";
+import { signOut } from "@/lib/auth/auth-service";
 
 /**
  * App Layout
@@ -20,45 +20,46 @@ export default function AppLayout() {
   const handleSignOut = async () => {
     try {
       await signOut();
-      navigate('/auth/sign-in');
+      navigate("/auth/sign-in");
     } catch (error) {
-      console.error('Sign out error:', error);
+      console.error("Sign out error:", error);
     }
   };
 
   const tabs = [
-    { path: '/dashboard', label: 'Dashboard', icon: '🏠' },
-    { path: '/progress', label: 'Progress', icon: '📊' },
-    { path: '/journal', label: 'Journal', icon: '📝' },
-    { path: '/settings', label: 'Settings', icon: '⚙️' },
+    { path: "/dashboard", label: "Dashboard", icon: "🏠" },
+    { path: "/progress", label: "Progress", icon: "📊" },
+    { path: "/journal", label: "Journal", icon: "📝" },
+    { path: "/settings", label: "Settings", icon: "⚙️" },
   ];
 
   return (
     <div
       style={{
-        minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
-        background: '#FFF9F0',
+        minHeight: "100vh",
+        display: "flex",
+        flexDirection: "column",
+        background: "#FFF9F0",
       }}
     >
       {/* Top Navigation Bar */}
       <nav
         style={{
-          background: '#FFFFFF',
-          borderBottom: '1px solid #F5EDE0',
-          padding: '16px 20px',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
+          background: "#FFFFFF",
+          borderBottom: "1px solid #F5EDE0",
+          padding: "16px 20px",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
         }}
       >
         <div
           style={{
-            fontSize: '20px',
-            fontWeight: '700',
-            color: '#6B2D3E',
-            fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
+            fontSize: "20px",
+            fontWeight: "700",
+            color: "#6B2D3E",
+            fontFamily:
+              "system-ui, -apple-system, BlinkMacSystemFont, sans-serif",
           }}
         >
           🍇 Cultivating the Fruits
@@ -67,21 +68,22 @@ export default function AppLayout() {
         <button
           onClick={handleSignOut}
           style={{
-            background: 'transparent',
-            border: '1px solid #DEB9C5',
-            borderRadius: '8px',
-            padding: '8px 16px',
-            color: '#6B2D3E',
-            fontSize: '14px',
-            cursor: 'pointer',
-            fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
-            transition: 'all 0.2s',
+            background: "transparent",
+            border: "1px solid #DEB9C5",
+            borderRadius: "8px",
+            padding: "8px 16px",
+            color: "#6B2D3E",
+            fontSize: "14px",
+            cursor: "pointer",
+            fontFamily:
+              "system-ui, -apple-system, BlinkMacSystemFont, sans-serif",
+            transition: "all 0.2s",
           }}
           onMouseOver={(e) => {
-            e.currentTarget.style.background = '#F8E8ED';
+            e.currentTarget.style.background = "#F8E8ED";
           }}
           onMouseOut={(e) => {
-            e.currentTarget.style.background = 'transparent';
+            e.currentTarget.style.background = "transparent";
           }}
         >
           Sign Out
@@ -92,10 +94,10 @@ export default function AppLayout() {
       <main
         style={{
           flex: 1,
-          padding: '20px',
-          maxWidth: '1200px',
-          width: '100%',
-          margin: '0 auto',
+          padding: "20px",
+          maxWidth: "1200px",
+          width: "100%",
+          margin: "0 auto",
         }}
       >
         <Outlet />
@@ -104,13 +106,13 @@ export default function AppLayout() {
       {/* Bottom Tab Navigation */}
       <nav
         style={{
-          background: '#FFFFFF',
-          borderTop: '1px solid #F5EDE0',
-          padding: '12px 20px',
-          display: 'flex',
-          justifyContent: 'space-around',
-          alignItems: 'center',
-          position: 'sticky',
+          background: "#FFFFFF",
+          borderTop: "1px solid #F5EDE0",
+          padding: "12px 20px",
+          display: "flex",
+          justifyContent: "space-around",
+          alignItems: "center",
+          position: "sticky",
           bottom: 0,
         }}
       >
@@ -122,21 +124,22 @@ export default function AppLayout() {
               key={tab.path}
               to={tab.path}
               style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                textDecoration: 'none',
-                color: isActive ? '#7D8C69' : '#8B6F47',
-                fontSize: '12px',
-                fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
-                transition: 'color 0.2s',
-                minWidth: '60px',
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                textDecoration: "none",
+                color: isActive ? "#7D8C69" : "#8B6F47",
+                fontSize: "12px",
+                fontFamily:
+                  "system-ui, -apple-system, BlinkMacSystemFont, sans-serif",
+                transition: "color 0.2s",
+                minWidth: "60px",
               }}
             >
               <span
                 style={{
-                  fontSize: '24px',
-                  marginBottom: '4px',
+                  fontSize: "24px",
+                  marginBottom: "4px",
                   opacity: isActive ? 1 : 0.6,
                 }}
               >
@@ -144,7 +147,7 @@ export default function AppLayout() {
               </span>
               <span
                 style={{
-                  fontWeight: isActive ? '600' : '400',
+                  fontWeight: isActive ? "600" : "400",
                 }}
               >
                 {tab.label}

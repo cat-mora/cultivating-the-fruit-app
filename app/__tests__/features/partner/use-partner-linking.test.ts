@@ -1,18 +1,18 @@
-import { renderHook, act } from '@testing-library/react-native';
-import { usePartnerLinking } from '../../../features/partner/hooks/use-partner-linking';
-import { supabase } from '../../../lib/supabase/config';
+import { renderHook, act } from "@testing-library/react-native";
+import { usePartnerLinking } from "../../../features/partner/hooks/use-partner-linking";
+import { supabase } from "../../../lib/supabase/config";
 
 const mockSetInviteCode = jest.fn();
 const mockAddPartner = jest.fn();
 const mockSetLinkedPartners = jest.fn();
 
-jest.mock('../../../lib/supabase/config', () => ({
+jest.mock("../../../lib/supabase/config", () => ({
   supabase: {
     from: jest.fn(),
   },
 }));
 
-jest.mock('../../../store/partner-store', () => ({
+jest.mock("../../../store/partner-store", () => ({
   usePartnerStore: jest.fn(() => ({
     setInviteCode: mockSetInviteCode,
     addPartner: mockAddPartner,
@@ -27,7 +27,7 @@ type PartnerLinkRow = {
   creator_id: string;
   partner_id?: string | null;
   invite_code?: string;
-  status?: 'pending' | 'accepted' | 'expired' | 'revoked';
+  status?: "pending" | "accepted" | "expired" | "revoked";
   expires_at: string;
   accepted_at?: string | null;
   created_at?: string;
@@ -69,13 +69,18 @@ function createProfileLookupChain(email: string | null) {
   return {
     select: jest.fn(() => ({
       eq: jest.fn(() => ({
-        single: jest.fn(() => Promise.resolve({ data: { email }, error: null })),
+        single: jest.fn(() =>
+          Promise.resolve({ data: { email }, error: null }),
+        ),
       })),
     })),
   };
 }
 
-function createAcceptedLinksChain(result: { data: PartnerLinkRow[] | null; error: { message: string } | null }) {
+function createAcceptedLinksChain(result: {
+  data: PartnerLinkRow[] | null;
+  error: { message: string } | null;
+}) {
   return {
     select: jest.fn(() => ({
       or: jest.fn(() => ({
@@ -85,18 +90,23 @@ function createAcceptedLinksChain(result: { data: PartnerLinkRow[] | null; error
   };
 }
 
-describe('usePartnerLinking', () => {
-  const MOCK_USER_ID = 'user-123';
-  const MOCK_PARTNER_ID = 'partner-456';
-  const MOCK_EXPIRES_AT = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+describe("usePartnerLinking", () => {
+  const MOCK_USER_ID = "user-123";
+  const MOCK_PARTNER_ID = "partner-456";
+  const MOCK_EXPIRES_AT = new Date(
+    Date.now() + 24 * 60 * 60 * 1000,
+  ).toISOString();
 
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it('generates an invite code and updates the local invite state', async () => {
+  it("generates an invite code and updates the local invite state", async () => {
     (supabase.from as jest.Mock).mockReturnValue(
-      createInsertChain({ data: { invite_code: 'ABC123', expires_at: MOCK_EXPIRES_AT }, error: null })
+      createInsertChain({
+        data: { invite_code: "ABC123", expires_at: MOCK_EXPIRES_AT },
+        error: null,
+      }),
     );
 
     const { result } = renderHook(() => usePartnerLinking());
@@ -113,30 +123,33 @@ describe('usePartnerLinking', () => {
       }),
       error: null,
     });
-    expect(mockSetInviteCode).toHaveBeenCalledWith(expect.any(String), expect.any(String));
+    expect(mockSetInviteCode).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.any(String),
+    );
     expect(result.current.isLoading).toBe(false);
   });
 
-  it('returns a user-facing error when the invite code is invalid', async () => {
+  it("returns a user-facing error when the invite code is invalid", async () => {
     (supabase.from as jest.Mock).mockReturnValue(
-      createInviteLookupChain({ data: null, error: { message: 'not found' } })
+      createInviteLookupChain({ data: null, error: { message: "not found" } }),
     );
 
     const { result } = renderHook(() => usePartnerLinking());
 
     let response;
     await act(async () => {
-      response = await result.current.joinPartnerByCode(MOCK_USER_ID, 'BAD999');
+      response = await result.current.joinPartnerByCode(MOCK_USER_ID, "BAD999");
     });
 
     expect(response).toEqual({
       data: null,
-      error: 'Invalid invitation code',
+      error: "Invalid invitation code",
     });
     expect(mockAddPartner).not.toHaveBeenCalled();
   });
 
-  it('rejects self-invites', async () => {
+  it("rejects self-invites", async () => {
     (supabase.from as jest.Mock).mockReturnValue(
       createInviteLookupChain({
         data: {
@@ -144,25 +157,25 @@ describe('usePartnerLinking', () => {
           expires_at: MOCK_EXPIRES_AT,
         },
         error: null,
-      })
+      }),
     );
 
     const { result } = renderHook(() => usePartnerLinking());
 
     let response;
     await act(async () => {
-      response = await result.current.joinPartnerByCode(MOCK_USER_ID, 'ABC123');
+      response = await result.current.joinPartnerByCode(MOCK_USER_ID, "ABC123");
     });
 
     expect(response).toEqual({
       data: null,
-      error: 'You cannot accept your own invite',
+      error: "You cannot accept your own invite",
     });
   });
 
-  it('accepts a partner invite and hydrates the local partner cache', async () => {
+  it("accepts a partner invite and hydrates the local partner cache", async () => {
     (supabase.from as jest.Mock).mockImplementation((table: string) => {
-      if (table === 'partner_links') {
+      if (table === "partner_links") {
         return {
           ...createInviteLookupChain({
             data: {
@@ -175,8 +188,8 @@ describe('usePartnerLinking', () => {
         };
       }
 
-      if (table === 'profiles') {
-        return createProfileLookupChain('partner@example.com');
+      if (table === "profiles") {
+        return createProfileLookupChain("partner@example.com");
       }
 
       return {};
@@ -186,13 +199,13 @@ describe('usePartnerLinking', () => {
 
     let response;
     await act(async () => {
-      response = await result.current.joinPartnerByCode(MOCK_USER_ID, 'ABC123');
+      response = await result.current.joinPartnerByCode(MOCK_USER_ID, "ABC123");
     });
 
     expect(response).toEqual({
       data: {
         partnerId: MOCK_PARTNER_ID,
-        partnerEmail: 'partner@example.com',
+        partnerEmail: "partner@example.com",
         linkedAt: expect.any(String),
       },
       error: null,
@@ -200,30 +213,30 @@ describe('usePartnerLinking', () => {
     expect(mockAddPartner).toHaveBeenCalledWith(
       expect.objectContaining({
         partnerId: MOCK_PARTNER_ID,
-        partnerEmail: 'partner@example.com',
-      })
+        partnerEmail: "partner@example.com",
+      }),
     );
   });
 
-  it('hydrates accepted partners from Supabase into the local store', async () => {
+  it("hydrates accepted partners from Supabase into the local store", async () => {
     (supabase.from as jest.Mock).mockImplementation((table: string) => {
-      if (table === 'partner_links') {
+      if (table === "partner_links") {
         return createAcceptedLinksChain({
           data: [
             {
               creator_id: MOCK_USER_ID,
               partner_id: MOCK_PARTNER_ID,
               expires_at: MOCK_EXPIRES_AT,
-              accepted_at: '2026-04-25T10:00:00.000Z',
-              created_at: '2026-04-25T09:00:00.000Z',
+              accepted_at: "2026-04-25T10:00:00.000Z",
+              created_at: "2026-04-25T09:00:00.000Z",
             },
           ],
           error: null,
         });
       }
 
-      if (table === 'profiles') {
-        return createProfileLookupChain('partner@example.com');
+      if (table === "profiles") {
+        return createProfileLookupChain("partner@example.com");
       }
 
       return {};
@@ -241,8 +254,8 @@ describe('usePartnerLinking', () => {
         {
           id: MOCK_PARTNER_ID,
           partnerId: MOCK_PARTNER_ID,
-          partnerEmail: 'partner@example.com',
-          linkedAt: '2026-04-25T10:00:00.000Z',
+          partnerEmail: "partner@example.com",
+          linkedAt: "2026-04-25T10:00:00.000Z",
         },
       ],
       error: null,
@@ -251,19 +264,26 @@ describe('usePartnerLinking', () => {
       {
         id: MOCK_PARTNER_ID,
         partnerId: MOCK_PARTNER_ID,
-        partnerEmail: 'partner@example.com',
-        linkedAt: '2026-04-25T10:00:00.000Z',
+        partnerEmail: "partner@example.com",
+        linkedAt: "2026-04-25T10:00:00.000Z",
       },
     ]);
   });
 
-  it('sets isLoading during asynchronous work', async () => {
+  it("sets isLoading during asynchronous work", async () => {
     (supabase.from as jest.Mock).mockReturnValue(
       createInsertChain(
         new Promise((resolve) =>
-          setTimeout(() => resolve({ data: { invite_code: 'ABC123', expires_at: MOCK_EXPIRES_AT }, error: null }), 50)
-        )
-      )
+          setTimeout(
+            () =>
+              resolve({
+                data: { invite_code: "ABC123", expires_at: MOCK_EXPIRES_AT },
+                error: null,
+              }),
+            50,
+          ),
+        ),
+      ),
     );
 
     const { result } = renderHook(() => usePartnerLinking());

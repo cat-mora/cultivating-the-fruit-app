@@ -6,15 +6,22 @@
  * Usage: node complete-repair-update.js
  */
 
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
-const contentFile = path.join(__dirname, 'app', 'features', 'content', 'data', 'journey-content.ts');
+const contentFile = path.join(
+  __dirname,
+  "app",
+  "features",
+  "content",
+  "data",
+  "journey-content.ts",
+);
 
-console.log('🚀 Starting complete repair stream update (Days 14-30)...\n');
+console.log("🚀 Starting complete repair stream update (Days 14-30)...\n");
 
 // Read current content
-let content = fs.readFileSync(contentFile, 'utf8');
+let content = fs.readFileSync(contentFile, "utf8");
 let updateCount = 0;
 
 // All client data for Days 14-30
@@ -377,16 +384,16 @@ const clientDays = `    // Day 14: Goodness
     },`;
 
 // Find the start of Day 14
-const day14Start = content.indexOf('    // Day 14: Goodness');
+const day14Start = content.indexOf("    // Day 14: Goodness");
 if (day14Start === -1) {
-  console.error('❌ Could not find Day 14 start marker');
+  console.error("❌ Could not find Day 14 start marker");
   process.exit(1);
 }
 
 // Find the end of Day 30 (start of Day 31 or family section)
-const day30End = content.indexOf('  ]\n,\n  family: [', day14Start);
+const day30End = content.indexOf("  ]\n,\n  family: [", day14Start);
 if (day30End === -1) {
-  console.error('❌ Could not find Day 30 end marker (family section)');
+  console.error("❌ Could not find Day 30 end marker (family section)");
   process.exit(1);
 }
 
@@ -394,14 +401,14 @@ if (day30End === -1) {
 const beforeDay14 = content.substring(0, day14Start);
 const afterDay30 = content.substring(day30End);
 
-content = beforeDay14 + clientDays + '\n' + afterDay30;
+content = beforeDay14 + clientDays + "\n" + afterDay30;
 
 // Write updated content
-fs.writeFileSync(contentFile, content, 'utf8');
+fs.writeFileSync(contentFile, content, "utf8");
 
-console.log('✅ Complete! All Days 14-30 updated with client content\n');
-console.log('📊 Summary:');
-console.log('  - Days 1-13: Previously updated ✅');
-console.log('  - Days 14-30: Just updated ✅');
-console.log('  - Total: 30/30 days complete! 🎉\n');
-console.log('🚀 Ready to test! Start your app with: cd app && npm start');
+console.log("✅ Complete! All Days 14-30 updated with client content\n");
+console.log("📊 Summary:");
+console.log("  - Days 1-13: Previously updated ✅");
+console.log("  - Days 14-30: Just updated ✅");
+console.log("  - Total: 30/30 days complete! 🎉\n");
+console.log("🚀 Ready to test! Start your app with: cd app && npm start");

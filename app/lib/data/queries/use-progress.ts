@@ -1,9 +1,9 @@
-import { useEffect } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '../../supabase/config';
-import { useAuthStore } from '../../../store/auth-store';
-import { partnerKeys } from './use-partner';
-import { profileKeys } from './use-profile';
+import { useEffect } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "../../supabase/config";
+import { useAuthStore } from "../../../store/auth-store";
+import { partnerKeys } from "./use-partner";
+import { profileKeys } from "./use-profile";
 
 /**
  * React Query Hooks for Progress Data
@@ -17,10 +17,11 @@ import { profileKeys } from './use-profile';
 // ============================================================================
 
 export const progressKeys = {
-  all: ['progress'] as const,
+  all: ["progress"] as const,
   user: (userId: string) => [...progressKeys.all, userId] as const,
-  streak: (userId: string) => [...progressKeys.user(userId), 'streak'] as const,
-  fruitProgress: (userId: string) => [...progressKeys.user(userId), 'fruit'] as const,
+  streak: (userId: string) => [...progressKeys.user(userId), "streak"] as const,
+  fruitProgress: (userId: string) =>
+    [...progressKeys.user(userId), "fruit"] as const,
 };
 
 // ============================================================================
@@ -41,7 +42,16 @@ export type ProgressData = {
 export type FruitProgressData = {
   id: string;
   user_id: string;
-  fruit_type: 'love' | 'joy' | 'peace' | 'patience' | 'kindness' | 'goodness' | 'faithfulness' | 'gentleness' | 'self-control';
+  fruit_type:
+    | "love"
+    | "joy"
+    | "peace"
+    | "patience"
+    | "kindness"
+    | "goodness"
+    | "faithfulness"
+    | "gentleness"
+    | "self-control";
   entry_date: string;
   day_number: number;
   completed: boolean;
@@ -61,17 +71,17 @@ export function useProgress() {
   const user = useAuthStore((state) => state.user);
 
   return useQuery({
-    queryKey: progressKeys.streak(user?.id || ''),
+    queryKey: progressKeys.streak(user?.id || ""),
     queryFn: async () => {
-      if (!user) throw new Error('Not authenticated');
+      if (!user) throw new Error("Not authenticated");
 
       const { data, error } = await supabase
-        .from('progress')
-        .select('*')
-        .eq('user_id', user.id)
+        .from("progress")
+        .select("*")
+        .eq("user_id", user.id)
         .single();
 
-      if (error && error.code !== 'PGRST116') {
+      if (error && error.code !== "PGRST116") {
         // PGRST116 = no rows returned (expected for new users)
         throw error;
       }
@@ -90,15 +100,15 @@ export function useFruitProgress() {
   const user = useAuthStore((state) => state.user);
 
   return useQuery({
-    queryKey: progressKeys.fruitProgress(user?.id || ''),
+    queryKey: progressKeys.fruitProgress(user?.id || ""),
     queryFn: async () => {
-      if (!user) throw new Error('Not authenticated');
+      if (!user) throw new Error("Not authenticated");
 
       const { data, error } = await supabase
-        .from('fruit_progress')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('entry_date', { ascending: false });
+        .from("fruit_progress")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("entry_date", { ascending: false });
 
       if (error) throw error;
 
@@ -116,15 +126,15 @@ export function useFruitProgressByDate(date: string) {
   const user = useAuthStore((state) => state.user);
 
   return useQuery({
-    queryKey: [...progressKeys.fruitProgress(user?.id || ''), date],
+    queryKey: [...progressKeys.fruitProgress(user?.id || ""), date],
     queryFn: async () => {
-      if (!user) throw new Error('Not authenticated');
+      if (!user) throw new Error("Not authenticated");
 
       const { data, error } = await supabase
-        .from('fruit_progress')
-        .select('*')
-        .eq('user_id', user.id)
-        .eq('entry_date', date);
+        .from("fruit_progress")
+        .select("*")
+        .eq("user_id", user.id)
+        .eq("entry_date", date);
 
       if (error) throw error;
 
@@ -143,17 +153,17 @@ export function usePartnerProgress(partnerUserId: string | null | undefined) {
   const user = useAuthStore((state) => state.user);
 
   return useQuery({
-    queryKey: progressKeys.streak(partnerUserId || ''),
+    queryKey: progressKeys.streak(partnerUserId || ""),
     queryFn: async () => {
-      if (!partnerUserId) throw new Error('Missing partner user id');
+      if (!partnerUserId) throw new Error("Missing partner user id");
 
       const { data, error } = await supabase
-        .from('progress')
-        .select('*')
-        .eq('user_id', partnerUserId)
+        .from("progress")
+        .select("*")
+        .eq("user_id", partnerUserId)
         .single();
 
-      if (error && error.code !== 'PGRST116') {
+      if (error && error.code !== "PGRST116") {
         throw error;
       }
 
@@ -168,19 +178,21 @@ export function usePartnerProgress(partnerUserId: string | null | undefined) {
  * Fetch a linked partner's fruit progress rows.
  * Requires an authenticated viewer plus an accepted partner relationship in RLS.
  */
-export function usePartnerFruitProgress(partnerUserId: string | null | undefined) {
+export function usePartnerFruitProgress(
+  partnerUserId: string | null | undefined,
+) {
   const user = useAuthStore((state) => state.user);
 
   return useQuery({
-    queryKey: progressKeys.fruitProgress(partnerUserId || ''),
+    queryKey: progressKeys.fruitProgress(partnerUserId || ""),
     queryFn: async () => {
-      if (!partnerUserId) throw new Error('Missing partner user id');
+      if (!partnerUserId) throw new Error("Missing partner user id");
 
       const { data, error } = await supabase
-        .from('fruit_progress')
-        .select('*')
-        .eq('user_id', partnerUserId)
-        .order('entry_date', { ascending: false });
+        .from("fruit_progress")
+        .select("*")
+        .eq("user_id", partnerUserId)
+        .order("entry_date", { ascending: false });
 
       if (error) throw error;
 
@@ -197,7 +209,7 @@ export function usePartnerFruitProgress(partnerUserId: string | null | undefined
  */
 export function usePartnerProgressRealtimeSync(
   currentUserId: string | null | undefined,
-  partnerUserId: string | null | undefined
+  partnerUserId: string | null | undefined,
 ) {
   const queryClient = useQueryClient();
 
@@ -211,73 +223,83 @@ export function usePartnerProgressRealtimeSync(
       : `partner-progress:${currentUserId}`;
 
     const channel = supabase.channel(
-      `${channelName}:${Math.random().toString(36).slice(2, 10)}`
+      `${channelName}:${Math.random().toString(36).slice(2, 10)}`,
     );
 
     channel.on(
-      'postgres_changes',
+      "postgres_changes",
       {
-        event: '*',
-        schema: 'public',
-        table: 'partner_links',
+        event: "*",
+        schema: "public",
+        table: "partner_links",
         filter: `creator_id=eq.${currentUserId}`,
       },
       () => {
-        queryClient.invalidateQueries({ queryKey: partnerKeys.links(currentUserId) });
-      }
+        queryClient.invalidateQueries({
+          queryKey: partnerKeys.links(currentUserId),
+        });
+      },
     );
 
     channel.on(
-      'postgres_changes',
+      "postgres_changes",
       {
-        event: '*',
-        schema: 'public',
-        table: 'partner_links',
+        event: "*",
+        schema: "public",
+        table: "partner_links",
         filter: `partner_id=eq.${currentUserId}`,
       },
       () => {
-        queryClient.invalidateQueries({ queryKey: partnerKeys.links(currentUserId) });
-      }
+        queryClient.invalidateQueries({
+          queryKey: partnerKeys.links(currentUserId),
+        });
+      },
     );
 
     if (partnerUserId) {
       channel.on(
-        'postgres_changes',
+        "postgres_changes",
         {
-          event: '*',
-          schema: 'public',
-          table: 'progress',
+          event: "*",
+          schema: "public",
+          table: "progress",
           filter: `user_id=eq.${partnerUserId}`,
         },
         () => {
-          queryClient.invalidateQueries({ queryKey: progressKeys.streak(partnerUserId) });
-        }
+          queryClient.invalidateQueries({
+            queryKey: progressKeys.streak(partnerUserId),
+          });
+        },
       );
 
       channel.on(
-        'postgres_changes',
+        "postgres_changes",
         {
-          event: '*',
-          schema: 'public',
-          table: 'fruit_progress',
+          event: "*",
+          schema: "public",
+          table: "fruit_progress",
           filter: `user_id=eq.${partnerUserId}`,
         },
         () => {
-          queryClient.invalidateQueries({ queryKey: progressKeys.fruitProgress(partnerUserId) });
-        }
+          queryClient.invalidateQueries({
+            queryKey: progressKeys.fruitProgress(partnerUserId),
+          });
+        },
       );
 
       channel.on(
-        'postgres_changes',
+        "postgres_changes",
         {
-          event: '*',
-          schema: 'public',
-          table: 'profiles',
+          event: "*",
+          schema: "public",
+          table: "profiles",
           filter: `id=eq.${partnerUserId}`,
         },
         () => {
-          queryClient.invalidateQueries({ queryKey: profileKeys.user(partnerUserId) });
-        }
+          queryClient.invalidateQueries({
+            queryKey: profileKeys.user(partnerUserId),
+          });
+        },
       );
     }
 
@@ -307,16 +329,19 @@ export function useUpdateProgress() {
       last_completed_date: string | null;
       completed_dates: string[];
     }) => {
-      if (!user) throw new Error('Not authenticated');
+      if (!user) throw new Error("Not authenticated");
 
       const { data, error } = await supabase
-        .from('progress')
-        .upsert({
-          user_id: user.id,
-          ...progressData,
-        }, {
-          onConflict: 'user_id',
-        })
+        .from("progress")
+        .upsert(
+          {
+            user_id: user.id,
+            ...progressData,
+          },
+          {
+            onConflict: "user_id",
+          },
+        )
         .select()
         .single();
 
@@ -326,7 +351,9 @@ export function useUpdateProgress() {
     },
     onSuccess: (data) => {
       // Invalidate and refetch progress queries
-      queryClient.invalidateQueries({ queryKey: progressKeys.streak(user?.id || '') });
+      queryClient.invalidateQueries({
+        queryKey: progressKeys.streak(user?.id || ""),
+      });
     },
   });
 }
@@ -340,22 +367,25 @@ export function useCompleteActivity() {
 
   return useMutation({
     mutationFn: async (activityData: {
-      fruit_type: FruitProgressData['fruit_type'];
+      fruit_type: FruitProgressData["fruit_type"];
       entry_date: string;
       day_number: number;
     }) => {
-      if (!user) throw new Error('Not authenticated');
+      if (!user) throw new Error("Not authenticated");
 
       const { data, error } = await supabase
-        .from('fruit_progress')
-        .upsert({
-          user_id: user.id,
-          ...activityData,
-          completed: true,
-          completed_at: new Date().toISOString(),
-        }, {
-          onConflict: 'user_id,fruit_type,day_number',
-        })
+        .from("fruit_progress")
+        .upsert(
+          {
+            user_id: user.id,
+            ...activityData,
+            completed: true,
+            completed_at: new Date().toISOString(),
+          },
+          {
+            onConflict: "user_id,fruit_type,day_number",
+          },
+        )
         .select()
         .single();
 
@@ -365,9 +395,13 @@ export function useCompleteActivity() {
     },
     onSuccess: () => {
       // Invalidate fruit progress queries
-      queryClient.invalidateQueries({ queryKey: progressKeys.fruitProgress(user?.id || '') });
+      queryClient.invalidateQueries({
+        queryKey: progressKeys.fruitProgress(user?.id || ""),
+      });
       // Also invalidate streak data (activity completion affects streaks)
-      queryClient.invalidateQueries({ queryKey: progressKeys.streak(user?.id || '') });
+      queryClient.invalidateQueries({
+        queryKey: progressKeys.streak(user?.id || ""),
+      });
     },
   });
 }
@@ -381,10 +415,10 @@ export function useInitializeProgress() {
 
   return useMutation({
     mutationFn: async () => {
-      if (!user) throw new Error('Not authenticated');
+      if (!user) throw new Error("Not authenticated");
 
       const { data, error } = await supabase
-        .from('progress')
+        .from("progress")
         .insert({
           user_id: user.id,
           current_streak: 0,
@@ -400,7 +434,9 @@ export function useInitializeProgress() {
       return data as ProgressData;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: progressKeys.streak(user?.id || '') });
+      queryClient.invalidateQueries({
+        queryKey: progressKeys.streak(user?.id || ""),
+      });
     },
   });
 }

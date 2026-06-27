@@ -1,13 +1,20 @@
-import { useState, useEffect } from 'react';
-import { Text, View, Pressable, TextInput, ScrollView, Alert } from 'react-native';
-import { useBiometrics } from '../../features/security/hooks/use-biometrics';
-import { useJournalStore } from '../../store/journal-store';
-import { useDailyContent } from '../../features/content/hooks/use-daily-content';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { useState, useEffect } from "react";
+import {
+  Text,
+  View,
+  Pressable,
+  TextInput,
+  ScrollView,
+  Alert,
+} from "react-native";
+import { useBiometrics } from "../../features/security/hooks/use-biometrics";
+import { useJournalStore } from "../../store/journal-store";
+import { useDailyContent } from "../../features/content/hooks/use-daily-content";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
 
 export default function JournalScreen() {
   const [isUnlocked, setIsUnlocked] = useState(false);
-  const [note, setNote] = useState('');
+  const [note, setNote] = useState("");
   const { authenticate, isAuthenticating } = useBiometrics();
   const { addEntry, getDecryptedEntry } = useJournalStore();
   const content = useDailyContent();
@@ -29,7 +36,10 @@ export default function JournalScreen() {
   const handleSave = () => {
     if (content) {
       addEntry(content.day_number, note);
-      Alert.alert('Journal Saved', 'Your reflection has been encrypted and stored safely.');
+      Alert.alert(
+        "Journal Saved",
+        "Your reflection has been encrypted and stored safely.",
+      );
     }
   };
 
@@ -40,8 +50,12 @@ export default function JournalScreen() {
           <View className="bg-wine/10 p-6 rounded-full mb-6">
             <FontAwesome name="lock" size={48} color="#6B2D3E" />
           </View>
-          <Text className="text-2xl font-serif text-wine text-center mb-2">The Sanctuary</Text>
-          <Text className="text-charcoal/60 text-center mb-8">Your reflections are private and encrypted.</Text>
+          <Text className="text-2xl font-serif text-wine text-center mb-2">
+            The Sanctuary
+          </Text>
+          <Text className="text-charcoal/60 text-center mb-8">
+            Your reflections are private and encrypted.
+          </Text>
 
           <Pressable
             onPress={handleUnlock}
@@ -58,8 +72,12 @@ export default function JournalScreen() {
     <ScrollView className="flex-1 bg-cream p-6">
       <View className="mt-14 mb-6 flex-row items-center justify-between">
         <View>
-          <Text className="text-wine font-serif text-lg mb-1">Reflection • Day {content?.day_number}</Text>
-          <Text className="text-charcoal/40 text-xs font-bold uppercase">{content?.fruit_theme}</Text>
+          <Text className="text-wine font-serif text-lg mb-1">
+            Reflection • Day {content?.day_number}
+          </Text>
+          <Text className="text-charcoal/40 text-xs font-bold uppercase">
+            {content?.fruit_theme}
+          </Text>
         </View>
         <Pressable onPress={() => setIsUnlocked(false)} className="p-2">
           <FontAwesome name="lock" size={20} color="#6B2D3E" />

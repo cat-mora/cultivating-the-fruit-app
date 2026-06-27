@@ -1,5 +1,5 @@
-import * as LocalAuthentication from 'expo-local-authentication';
-import { useState, useCallback } from 'react';
+import * as LocalAuthentication from "expo-local-authentication";
+import { useState, useCallback } from "react";
 
 export const useBiometrics = () => {
   const [isAuthenticating, setIsAuthenticating] = useState(false);
@@ -14,21 +14,21 @@ export const useBiometrics = () => {
       const isEnrolled = await LocalAuthentication.isEnrolledAsync();
 
       if (!hasHardware || !isEnrolled) {
-        setError('Biometrics not available or not set up.');
+        setError("Biometrics not available or not set up.");
         setIsAuthenticating(false);
         return false;
       }
 
       const result = await LocalAuthentication.authenticateAsync({
-        promptMessage: 'Unlock your Sanctuary',
-        fallbackLabel: 'Enter PIN',
+        promptMessage: "Unlock your Sanctuary",
+        fallbackLabel: "Enter PIN",
         disableDeviceFallback: false,
       });
 
       setIsAuthenticating(false);
       return result.success;
     } catch (e) {
-      setError('An error occurred during authentication.');
+      setError("An error occurred during authentication.");
       setIsAuthenticating(false);
       return false;
     }

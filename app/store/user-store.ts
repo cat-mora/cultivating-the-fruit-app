@@ -1,12 +1,15 @@
-import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { syncUserProfile } from '../lib/data/sync-service';
-import { Platform } from 'react-native';
-import { clampJourneyDay, getMaxJourneyDay } from '../features/content/utils/journey-metrics';
+import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { syncUserProfile } from "../lib/data/sync-service";
+import { Platform } from "react-native";
+import {
+  clampJourneyDay,
+  getMaxJourneyDay,
+} from "../features/content/utils/journey-metrics";
 
-export type JourneyStream = 'strengthen' | 'repair' | 'family';
-export type BibleTranslation = 'NIV' | 'ESV' | 'KJV' | 'NLT' | 'NKJV';
+export type JourneyStream = "strengthen" | "repair" | "family";
+export type BibleTranslation = "NIV" | "ESV" | "KJV" | "NLT" | "NKJV";
 
 interface UserState {
   hasHydrated: boolean;
@@ -36,7 +39,7 @@ export const useUserStore = create<UserState>()(
       hasHydrated: false,
       hasOnboarded: false,
       selectedStream: null,
-      selectedTranslation: 'NIV',
+      selectedTranslation: "NIV",
       onboardingDate: null,
       currentDay: 1,
 
@@ -49,7 +52,7 @@ export const useUserStore = create<UserState>()(
           currentDay: clampJourneyDay(currentDay, stream),
         });
         // Sync to Supabase after state update
-        if (Platform.OS === 'web') {
+        if (Platform.OS === "web") {
           // Web: immediate sync
           get().syncToSupabase();
         }
@@ -59,7 +62,7 @@ export const useUserStore = create<UserState>()(
       setTranslation: (translation) => {
         set({ selectedTranslation: translation });
         // Sync to Supabase after state update
-        if (Platform.OS === 'web') {
+        if (Platform.OS === "web") {
           // Web: immediate sync
           get().syncToSupabase();
         }
@@ -67,10 +70,10 @@ export const useUserStore = create<UserState>()(
       },
 
       completeOnboarding: () => {
-        const onboardingDate = new Date().toISOString().split('T')[0];
+        const onboardingDate = new Date().toISOString().split("T")[0];
         set({ hasOnboarded: true, onboardingDate, currentDay: 1 });
         // Sync to Supabase after state update
-        if (Platform.OS === 'web') {
+        if (Platform.OS === "web") {
           // Web: immediate sync
           get().syncToSupabase();
         }
@@ -83,7 +86,7 @@ export const useUserStore = create<UserState>()(
         const nextDay = Math.min(currentDay + 1, maxDay);
         set({ currentDay: nextDay });
         // Sync to Supabase after state update
-        if (Platform.OS === 'web') {
+        if (Platform.OS === "web") {
           get().syncToSupabase();
         }
       },
@@ -98,7 +101,7 @@ export const useUserStore = create<UserState>()(
         set({
           hasOnboarded: true,
           selectedStream: profile.stream,
-          selectedTranslation: profile.translation || 'NIV',
+          selectedTranslation: profile.translation || "NIV",
           onboardingDate: profile.onboarding_date,
           currentDay: clampJourneyDay(profile.current_day || 1, profile.stream),
         });
@@ -108,31 +111,35 @@ export const useUserStore = create<UserState>()(
         const state = get();
 
         // Only sync if user has completed onboarding
-        if (!state.hasOnboarded || !state.selectedStream || !state.onboardingDate) {
+        if (
+          !state.hasOnboarded ||
+          !state.selectedStream ||
+          !state.onboardingDate
+        ) {
           return;
         }
 
         try {
-          await syncUserProfile('current-user-id', {
+          await syncUserProfile("current-user-id", {
             stream: state.selectedStream,
             translation: state.selectedTranslation,
             onboarding_date: state.onboardingDate,
             current_day: state.currentDay,
-            device_id: Platform.OS !== 'web' ? 'device-id' : null,
+            device_id: Platform.OS !== "web" ? "device-id" : null,
             email: null, // Will be set from auth if linked
           });
         } catch (error) {
-          console.error('[UserStore] Sync failed:', error);
+          console.error("[UserStore] Sync failed:", error);
           // Don't throw - allow local-only operation
         }
       },
     }),
     {
-      name: 'user-storage',
+      name: "user-storage",
       storage: createJSONStorage(() => AsyncStorage),
       onRehydrateStorage: () => (state) => {
         state?.setHasHydrated(true);
       },
-    }
-  )
+    },
+  ),
 );

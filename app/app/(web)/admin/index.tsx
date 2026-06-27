@@ -3,12 +3,12 @@
  * Dashboard for admin users to manage signup invite codes
  */
 
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
-import { useRouter } from 'expo-router';
-import { getCurrentUser } from '@/lib/supabase/config';
-import { isAdmin } from '@/lib/admin/admin-service';
-import InviteCodeManager from '@/features/admin/components/invite-code-manager';
+import React, { useEffect, useState } from "react";
+import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
+import { useRouter } from "expo-router";
+import { getCurrentUser } from "@/lib/supabase/config";
+import { isAdmin } from "@/lib/admin/admin-service";
+import InviteCodeManager from "@/features/admin/components/invite-code-manager";
 
 export default function AdminPage() {
   const router = useRouter();
@@ -25,7 +25,7 @@ export default function AdminPage() {
 
       if (!user) {
         // Not authenticated, redirect to sign in
-        router.replace('/auth/sign-in');
+        router.replace("/auth/sign-in");
         return;
       }
 
@@ -34,12 +34,12 @@ export default function AdminPage() {
 
       if (!status) {
         // Not an admin, redirect to dashboard
-        router.replace('/');
+        router.replace("/");
         return;
       }
     } catch (error) {
-      console.error('Error checking admin status:', error);
-      router.replace('/');
+      console.error("Error checking admin status:", error);
+      router.replace("/");
     } finally {
       setLoading(false);
     }
@@ -68,17 +68,17 @@ export default function AdminPage() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: "#F5F5F5",
   },
   loadingContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5F5F5',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#F5F5F5",
   },
   loadingText: {
     marginTop: 16,
     fontSize: 16,
-    color: '#666',
+    color: "#666",
   },
 });

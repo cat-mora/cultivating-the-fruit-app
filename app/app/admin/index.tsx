@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react';
-import { View, Text, ActivityIndicator } from 'react-native';
-import { useRouter } from 'expo-router';
-import { useAuthStore } from '../../store/auth-store';
-import { isAdmin } from '../../lib/admin/admin-service';
-import InviteCodeManager from '../../features/admin/components/invite-code-manager';
+import { useEffect, useState } from "react";
+import { View, Text, ActivityIndicator } from "react-native";
+import { useRouter } from "expo-router";
+import { useAuthStore } from "../../store/auth-store";
+import { isAdmin } from "../../lib/admin/admin-service";
+import InviteCodeManager from "../../features/admin/components/invite-code-manager";
 
 export default function AdminPanel() {
   const router = useRouter();
@@ -14,7 +14,7 @@ export default function AdminPanel() {
   useEffect(() => {
     const checkAdminStatus = async () => {
       if (!userId) {
-        router.replace('/');
+        router.replace("/");
         return;
       }
 
@@ -25,11 +25,11 @@ export default function AdminPanel() {
 
         if (!status) {
           // Not an admin, redirect away
-          router.replace('/');
+          router.replace("/");
         }
       } catch (error) {
-        console.error('Error checking admin status:', error);
-        router.replace('/');
+        console.error("Error checking admin status:", error);
+        router.replace("/");
       } finally {
         setIsChecking(false);
       }
@@ -62,7 +62,9 @@ export default function AdminPanel() {
     <View className="flex-1 bg-cream">
       <View className="p-6 pt-14 pb-4 border-b border-cream-dark">
         <Text className="text-3xl font-serif text-wine">Admin Panel</Text>
-        <Text className="text-charcoal/60 mt-1">Manage signup invite codes</Text>
+        <Text className="text-charcoal/60 mt-1">
+          Manage signup invite codes
+        </Text>
       </View>
       <InviteCodeManager platform="native" />
     </View>

@@ -1,9 +1,9 @@
-import React from 'react';
-import { useRouter } from 'expo-router';
-import { useAuth } from '../hooks/use-auth';
-import { PartnerLinkingAuthScreen } from '../features/partner/components/partner-linking-auth-screen';
-import { PartnerLinkingScreen } from '../features/partner/components/partner-linking-screen';
-import { Text, View } from 'react-native';
+import React from "react";
+import { useRouter } from "expo-router";
+import { useAuth } from "../hooks/use-auth";
+import { PartnerLinkingAuthScreen } from "../features/partner/components/partner-linking-auth-screen";
+import { PartnerLinkingScreen } from "../features/partner/components/partner-linking-screen";
+import { Text, View } from "react-native";
 
 export default function PartnerLinkingRoute() {
   const router = useRouter();
@@ -21,5 +21,10 @@ export default function PartnerLinkingRoute() {
     return <PartnerLinkingAuthScreen />;
   }
 
-  return <PartnerLinkingScreen userId={userId} onPartnerLinked={() => router.back()} />;
+  return (
+    <PartnerLinkingScreen
+      userId={userId}
+      onPartnerLinked={() => router.back()}
+    />
+  );
 }

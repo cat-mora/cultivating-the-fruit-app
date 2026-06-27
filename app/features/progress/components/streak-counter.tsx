@@ -1,6 +1,6 @@
-import React from 'react';
-import { View, Text } from 'react-native';
-import { useStreak } from '../hooks/use-streak';
+import React from "react";
+import { View, Text } from "react-native";
+import { useStreak } from "../hooks/use-streak";
 
 /**
  * Displays the current daily streak with visual styling
@@ -11,7 +11,9 @@ export function StreakCounter() {
   const streak = getStreakInfo();
   const streakStatus = getDaysUntilStreakLost();
 
-  const formattedHours = streakStatus ? Math.ceil(streakStatus.hoursRemaining % 24) : 0;
+  const formattedHours = streakStatus
+    ? Math.ceil(streakStatus.hoursRemaining % 24)
+    : 0;
 
   return (
     <View className="gap-4">
@@ -19,7 +21,7 @@ export function StreakCounter() {
       <View className="bg-cream-dark border-2 border-gold/40 p-6 rounded-[24px]">
         <View className="flex-row items-baseline gap-2 mb-2">
           <Text className="text-6xl font-bold text-gold">
-            {isAnimating ? '🔥' : '🌱'}
+            {isAnimating ? "🔥" : "🌱"}
           </Text>
           <Text className="text-4xl font-bold text-gold">
             {streak.currentStreak}
@@ -48,9 +50,7 @@ export function StreakCounter() {
           <Text className="text-2xl font-bold text-wine">
             {streak.longestStreak}
           </Text>
-          <Text className="text-charcoal/60 text-xs mt-1">
-            Longest Streak
-          </Text>
+          <Text className="text-charcoal/60 text-xs mt-1">Longest Streak</Text>
         </View>
 
         {/* Total Days */}
@@ -58,9 +58,7 @@ export function StreakCounter() {
           <Text className="text-2xl font-bold text-wine">
             {streak.totalDaysCompleted}
           </Text>
-          <Text className="text-charcoal/60 text-xs mt-1">
-            Days Completed
-          </Text>
+          <Text className="text-charcoal/60 text-xs mt-1">Days Completed</Text>
         </View>
       </View>
 
@@ -68,12 +66,12 @@ export function StreakCounter() {
       <View className="bg-mint-light p-4 rounded-[16px] border border-mint">
         <Text className="text-charcoal font-semibold text-sm">
           {streak.currentStreak === 0
-            ? 'Begin your journey today 🌿'
+            ? "Begin your journey today 🌿"
             : streak.currentStreak < 7
-            ? `Keep going! ${7 - streak.currentStreak} days until a week 📈`
-            : streak.currentStreak < 30
-            ? `Amazing! You're almost at 30 days 💪`
-            : `You're a spiritual warrior! ${streak.currentStreak} days strong 🏆`}
+              ? `Keep going! ${7 - streak.currentStreak} days until a week 📈`
+              : streak.currentStreak < 30
+                ? `Amazing! You're almost at 30 days 💪`
+                : `You're a spiritual warrior! ${streak.currentStreak} days strong 🏆`}
         </Text>
       </View>
     </View>

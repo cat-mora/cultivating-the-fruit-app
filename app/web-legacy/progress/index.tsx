@@ -1,41 +1,41 @@
-import React from 'react';
-import { useProgress } from '../../../lib/data/queries/use-progress';
-import { FruitType } from '../../../store/progress-store';
+import React from "react";
+import { useProgress } from "../../../lib/data/queries/use-progress";
+import { FruitType } from "../../../store/progress-store";
 
 const fruitEmojis: Record<FruitType, string> = {
-  love: '❤️',
-  joy: '😊',
-  peace: '☮️',
-  patience: '⏳',
-  kindness: '🤝',
-  goodness: '✨',
-  faithfulness: '🙏',
-  gentleness: '🕊️',
-  'self-control': '🧘',
+  love: "❤️",
+  joy: "😊",
+  peace: "☮️",
+  patience: "⏳",
+  kindness: "🤝",
+  goodness: "✨",
+  faithfulness: "🙏",
+  gentleness: "🕊️",
+  "self-control": "🧘",
 };
 
 const fruitColors: Record<FruitType, string> = {
-  love: 'bg-red-100 border-red-300',
-  joy: 'bg-yellow-100 border-yellow-300',
-  peace: 'bg-blue-100 border-blue-300',
-  patience: 'bg-purple-100 border-purple-300',
-  kindness: 'bg-pink-100 border-pink-300',
-  goodness: 'bg-green-100 border-green-300',
-  faithfulness: 'bg-orange-100 border-orange-300',
-  gentleness: 'bg-cyan-100 border-cyan-300',
-  'self-control': 'bg-indigo-100 border-indigo-300',
+  love: "bg-red-100 border-red-300",
+  joy: "bg-yellow-100 border-yellow-300",
+  peace: "bg-blue-100 border-blue-300",
+  patience: "bg-purple-100 border-purple-300",
+  kindness: "bg-pink-100 border-pink-300",
+  goodness: "bg-green-100 border-green-300",
+  faithfulness: "bg-orange-100 border-orange-300",
+  gentleness: "bg-cyan-100 border-cyan-300",
+  "self-control": "bg-indigo-100 border-indigo-300",
 };
 
 const fruitLabels: Record<FruitType, string> = {
-  love: 'Love',
-  joy: 'Joy',
-  peace: 'Peace',
-  patience: 'Patience',
-  kindness: 'Kindness',
-  goodness: 'Goodness',
-  faithfulness: 'Faithfulness',
-  gentleness: 'Gentleness',
-  'self-control': 'Self-Control',
+  love: "Love",
+  joy: "Joy",
+  peace: "Peace",
+  patience: "Patience",
+  kindness: "Kindness",
+  goodness: "Goodness",
+  faithfulness: "Faithfulness",
+  gentleness: "Gentleness",
+  "self-control": "Self-Control",
 };
 
 function StreakCounterWeb({ progress }: { progress: any }) {
@@ -47,7 +47,9 @@ function StreakCounterWeb({ progress }: { progress: any }) {
   const now = new Date();
   const midnight = new Date(now);
   midnight.setHours(24, 0, 0, 0);
-  const hoursRemaining = Math.ceil((midnight.getTime() - now.getTime()) / (1000 * 60 * 60));
+  const hoursRemaining = Math.ceil(
+    (midnight.getTime() - now.getTime()) / (1000 * 60 * 60),
+  );
 
   return (
     <div className="gap-4 flex flex-col">
@@ -92,12 +94,12 @@ function StreakCounterWeb({ progress }: { progress: any }) {
       <div className="bg-mint-light p-4 rounded-[16px] border border-mint">
         <p className="text-charcoal font-semibold text-sm">
           {currentStreak === 0
-            ? 'Begin your journey today 🌿'
+            ? "Begin your journey today 🌿"
             : currentStreak < 7
-            ? `Keep going! ${7 - currentStreak} days until a week 📈`
-            : currentStreak < 30
-            ? `Amazing! You're almost at 30 days 💪`
-            : `You're a spiritual warrior! ${currentStreak} days strong 🏆`}
+              ? `Keep going! ${7 - currentStreak} days until a week 📈`
+              : currentStreak < 30
+                ? `Amazing! You're almost at 30 days 💪`
+                : `You're a spiritual warrior! ${currentStreak} days strong 🏆`}
         </p>
       </div>
     </div>
@@ -106,19 +108,21 @@ function StreakCounterWeb({ progress }: { progress: any }) {
 
 function FruitMapWeb({ progress }: { progress: any }) {
   const fruits: FruitType[] = [
-    'love',
-    'joy',
-    'peace',
-    'patience',
-    'kindness',
-    'goodness',
-    'faithfulness',
-    'gentleness',
-    'self-control',
+    "love",
+    "joy",
+    "peace",
+    "patience",
+    "kindness",
+    "goodness",
+    "faithfulness",
+    "gentleness",
+    "self-control",
   ];
 
   const fruitProgress = progress?.fruit_progress || {};
-  const completed = Object.values(fruitProgress).filter((days: any) => days?.length >= 10).length;
+  const completed = Object.values(fruitProgress).filter(
+    (days: any) => days?.length >= 10,
+  ).length;
   const total = fruits.length;
   const percentage = Math.round((completed / total) * 100);
 
@@ -134,7 +138,10 @@ function FruitMapWeb({ progress }: { progress: any }) {
             </p>
           </div>
           <div className="flex-1 h-3 bg-cream-dark rounded-full ml-4 overflow-hidden">
-            <div className="h-full bg-sage transition-all" style={{ width: `${percentage}%` }} />
+            <div
+              className="h-full bg-sage transition-all"
+              style={{ width: `${percentage}%` }}
+            />
           </div>
           <span className="text-charcoal/60 font-bold ml-3">{percentage}%</span>
         </div>
@@ -153,7 +160,7 @@ function FruitMapWeb({ progress }: { progress: any }) {
             <button
               key={fruit}
               className={`flex-1 min-w-[140px] ${color} border-2 p-4 rounded-[16px] transition-all hover:scale-105 ${
-                isCompleted ? 'shadow-lg opacity-100' : 'opacity-70'
+                isCompleted ? "shadow-lg opacity-100" : "opacity-70"
               }`}
               aria-label={`${label}: ${daysCompleted} days completed`}
             >
@@ -164,7 +171,9 @@ function FruitMapWeb({ progress }: { progress: any }) {
                   {daysCompleted}/{10} days
                 </p>
                 {isCompleted && (
-                  <p className="text-xs font-bold text-green-600 mt-1">✓ Complete</p>
+                  <p className="text-xs font-bold text-green-600 mt-1">
+                    ✓ Complete
+                  </p>
                 )}
               </div>
             </button>
@@ -199,7 +208,9 @@ export default function ProgressWeb() {
 
         {/* Streak Section */}
         <section className="mb-8">
-          <h2 className="text-lg font-serif text-wine mb-4">Daily Consistency</h2>
+          <h2 className="text-lg font-serif text-wine mb-4">
+            Daily Consistency
+          </h2>
           <StreakCounterWeb progress={progress} />
         </section>
 
@@ -210,7 +221,9 @@ export default function ProgressWeb() {
 
         {/* Fruit Map Section */}
         <section className="mb-8">
-          <h2 className="text-lg font-serif text-wine mb-4">Fruits Cultivated</h2>
+          <h2 className="text-lg font-serif text-wine mb-4">
+            Fruits Cultivated
+          </h2>
           <FruitMapWeb progress={progress} />
         </section>
 
@@ -221,7 +234,8 @@ export default function ProgressWeb() {
             <li className="flex gap-3">
               <span className="text-gold text-xl">•</span>
               <p className="flex-1 text-charcoal/60 text-sm">
-                Complete your daily activity before midnight to keep your streak alive
+                Complete your daily activity before midnight to keep your streak
+                alive
               </p>
             </li>
             <li className="flex gap-3">
@@ -239,7 +253,8 @@ export default function ProgressWeb() {
             <li className="flex gap-3">
               <span className="text-gold text-xl">•</span>
               <p className="flex-1 text-charcoal/60 text-sm">
-                Share your progress with your partner to stay mutually accountable
+                Share your progress with your partner to stay mutually
+                accountable
               </p>
             </li>
           </ul>

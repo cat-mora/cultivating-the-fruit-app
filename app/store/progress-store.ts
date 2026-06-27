@@ -1,13 +1,13 @@
-import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { syncProgress, syncFruitProgress } from '../lib/data/sync-service';
-import { Platform } from 'react-native';
+import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { syncProgress, syncFruitProgress } from "../lib/data/sync-service";
+import { Platform } from "react-native";
 import {
   CANONICAL_FRUITS,
   CanonicalFruit,
   getFruitOccurrencesForStream,
-} from '../features/content/utils/journey-metrics';
+} from "../features/content/utils/journey-metrics";
 
 export type FruitType = CanonicalFruit;
 
@@ -38,7 +38,7 @@ interface ProgressState {
     fruit: FruitType,
     dayNumber: number,
     entryDate: string,
-    stream?: string | null
+    stream?: string | null,
   ) => void;
   recordActivityCompletion: (date: string) => void;
   getStreakStatus: () => StreakData;
@@ -66,10 +66,10 @@ const createDefaultFruitProgress = (): Map<FruitType, FruitProgress> =>
         completedDays: [],
         completedDayDates: {},
         isCompleted: false,
-        firstCompletedDate: '',
-        lastCompletedDate: '',
+        firstCompletedDate: "",
+        lastCompletedDate: "",
       },
-    ])
+    ]),
   );
 
 export const useProgressStore = create<ProgressState>()(
@@ -93,7 +93,8 @@ export const useProgressStore = create<ProgressState>()(
           let newStreak = state.streakData.currentStreak;
           if (lastDate) {
             const daysDiff = Math.floor(
-              (todayDate.getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24)
+              (todayDate.getTime() - lastDate.getTime()) /
+                (1000 * 60 * 60 * 24),
             );
 
             if (daysDiff === 1) {
@@ -110,7 +111,7 @@ export const useProgressStore = create<ProgressState>()(
 
           const longestStreak = Math.max(
             state.streakData.longestStreak,
-            newStreak
+            newStreak,
           );
 
           return {
@@ -125,7 +126,7 @@ export const useProgressStore = create<ProgressState>()(
         });
 
         // Sync to Supabase after state update
-        if (Platform.OS === 'web') {
+        if (Platform.OS === "web") {
           // Web: immediate sync
           get().syncToSupabase();
         }
@@ -136,23 +137,27 @@ export const useProgressStore = create<ProgressState>()(
         fruit: FruitType,
         dayNumber: number,
         entryDate: string,
-        stream?: string | null
+        stream?: string | null,
       ) => {
         set((state) => {
           const fruitMap = new Map(state.fruitProgress);
-          const completionTarget = getFruitOccurrencesForStream(stream).get(fruit) || 1;
+          const completionTarget =
+            getFruitOccurrencesForStream(stream).get(fruit) || 1;
           const completedAt = new Date().toISOString();
           const current = fruitMap.get(fruit) || {
             fruitTheme: fruit,
             completedDays: [],
             completedDayDates: {},
             isCompleted: false,
-            firstCompletedDate: '',
-            lastCompletedDate: '',
+            firstCompletedDate: "",
+            lastCompletedDate: "",
           };
 
           if (!current.completedDays.includes(dayNumber)) {
-            const nextCompletedDays = [...current.completedDays, dayNumber].sort((a, b) => a - b);
+            const nextCompletedDays = [
+              ...current.completedDays,
+              dayNumber,
+            ].sort((a, b) => a - b);
 
             if (!current.firstCompletedDate) {
               current.firstCompletedDate = completedAt;
@@ -175,7 +180,7 @@ export const useProgressStore = create<ProgressState>()(
         });
 
         // Sync to Supabase after state update
-        if (Platform.OS === 'web') {
+        if (Platform.OS === "web") {
           // Web: immediate sync
           get().syncToSupabase();
         }
@@ -205,10 +210,15 @@ export const useProgressStore = create<ProgressState>()(
           });
 
           // Sync fruit progress
-          const fruitProgressArray = Array.from(state.fruitProgress.values()).flatMap((fruit) => {
+          const fruitProgressArray = Array.from(
+            state.fruitProgress.values(),
+          ).flatMap((fruit) => {
             return fruit.completedDays.map((day) => ({
               fruit_type: fruit.fruitTheme,
-              entry_date: fruit.completedDayDates[day] || state.streakData.lastCompletedDate || new Date().toISOString().split('T')[0],
+              entry_date:
+                fruit.completedDayDates[day] ||
+                state.streakData.lastCompletedDate ||
+                new Date().toISOString().split("T")[0],
               day_number: day,
               completed: true,
               completed_at: fruit.lastCompletedDate,
@@ -219,13 +229,13 @@ export const useProgressStore = create<ProgressState>()(
             await syncFruitProgress(fruitProgressArray);
           }
         } catch (error) {
-          console.error('[ProgressStore] Sync failed:', error);
+          console.error("[ProgressStore] Sync failed:", error);
           // Don't throw - allow local-only operation
         }
       },
     }),
     {
-      name: 'progress-storage',
+      name: "progress-storage",
       storage: createJSONStorage(() => AsyncStorage),
       partialize: (state) => ({
         streakData: state.streakData,
@@ -234,8 +244,8 @@ export const useProgressStore = create<ProgressState>()(
       merge: (persistedState, currentState) => {
         if (
           persistedState &&
-          typeof persistedState === 'object' &&
-          'fruitProgress' in persistedState
+          typeof persistedState === "object" &&
+          "fruitProgress" in persistedState
         ) {
           const fruitMap = createDefaultFruitProgress();
 
@@ -250,10 +260,14 @@ export const useProgressStore = create<ProgressState>()(
               fruitMap.set(fruitKey, {
                 ...existing,
                 ...fruitData,
-                completedDays: (fruitData.completedDays as number[] | undefined) || [],
-                completedDayDates: (fruitData.completedDayDates as Record<number, string> | undefined) || {},
+                completedDays:
+                  (fruitData.completedDays as number[] | undefined) || [],
+                completedDayDates:
+                  (fruitData.completedDayDates as
+                    | Record<number, string>
+                    | undefined) || {},
               });
-            }
+            },
           );
 
           return {
@@ -264,6 +278,6 @@ export const useProgressStore = create<ProgressState>()(
         }
         return currentState;
       },
-    }
-  )
+    },
+  ),
 );

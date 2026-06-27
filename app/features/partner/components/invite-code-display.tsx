@@ -1,13 +1,16 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Alert, Share } from 'react-native';
-import { usePartnerLinking } from '../hooks/use-partner-linking';
+import React, { useState } from "react";
+import { View, Text, TouchableOpacity, Alert, Share } from "react-native";
+import { usePartnerLinking } from "../hooks/use-partner-linking";
 
 interface InviteCodeDisplayProps {
   userId: string;
   onCodeGenerated?: (code: string) => void;
 }
 
-export function InviteCodeDisplay({ userId, onCodeGenerated }: InviteCodeDisplayProps) {
+export function InviteCodeDisplay({
+  userId,
+  onCodeGenerated,
+}: InviteCodeDisplayProps) {
   const { generateInviteCode, isLoading } = usePartnerLinking();
   const [inviteCode, setInviteCode] = useState<string | null>(null);
   const [expiresAt, setExpiresAt] = useState<string | null>(null);
@@ -15,7 +18,7 @@ export function InviteCodeDisplay({ userId, onCodeGenerated }: InviteCodeDisplay
   const handleGenerateCode = async () => {
     const result = await generateInviteCode(userId);
     if (result.error) {
-      Alert.alert('Error', result.error);
+      Alert.alert("Error", result.error);
       return;
     }
 
@@ -35,7 +38,7 @@ export function InviteCodeDisplay({ userId, onCodeGenerated }: InviteCodeDisplay
         url: inviteCode,
       });
     } catch (err) {
-      Alert.alert('Error', 'Failed to share code');
+      Alert.alert("Error", "Failed to share code");
     }
   };
 
@@ -54,7 +57,7 @@ export function InviteCodeDisplay({ userId, onCodeGenerated }: InviteCodeDisplay
           className="bg-wine px-8 py-3 rounded-full"
         >
           <Text className="text-white font-semibold">
-            {isLoading ? 'Generating...' : 'Generate Code'}
+            {isLoading ? "Generating..." : "Generate Code"}
           </Text>
         </TouchableOpacity>
       </View>
@@ -88,14 +91,18 @@ export function InviteCodeDisplay({ userId, onCodeGenerated }: InviteCodeDisplay
           onPress={handleShareCode}
           className="bg-sage px-6 py-3 rounded-full"
         >
-          <Text className="text-white font-semibold text-center">Share Code</Text>
+          <Text className="text-white font-semibold text-center">
+            Share Code
+          </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           onPress={handleGenerateCode}
           className="bg-cream-dark px-6 py-3 rounded-full"
         >
-          <Text className="text-charcoal font-semibold text-center">Generate New Code</Text>
+          <Text className="text-charcoal font-semibold text-center">
+            Generate New Code
+          </Text>
         </TouchableOpacity>
       </View>
     </View>

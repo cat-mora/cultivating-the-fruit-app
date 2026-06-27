@@ -1,28 +1,28 @@
 // Polyfill for import.meta (required for some ESM packages on Metro web)
-if (typeof (globalThis as any).import === 'undefined') {
+if (typeof (globalThis as any).import === "undefined") {
   (globalThis as any).import = { meta: { env: {} } };
 }
 
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useAuthStore } from '../../store/auth-store';
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useAuthStore } from "../../store/auth-store";
 
 // Layouts
-import AuthLayout from './layouts/auth-layout';
-import AppLayout from './layouts/app-layout';
+import AuthLayout from "./layouts/auth-layout";
+import AppLayout from "./layouts/app-layout";
 
 // Auth Pages
-import SignIn from './auth/sign-in';
-import SignUp from './auth/sign-up';
+import SignIn from "./auth/sign-in";
+import SignUp from "./auth/sign-up";
 
 // App Pages
-import Dashboard from './dashboard';
-import Progress from './progress';
-import Journal from './journal';
-import Settings from './settings';
+import Dashboard from "./dashboard";
+import Progress from "./progress";
+import Journal from "./journal";
+import Settings from "./settings";
 
 // Partner Pages
-import PartnerJoin from './partner/join';
+import PartnerJoin from "./partner/join";
 
 // React Query client
 const queryClient = new QueryClient({
@@ -44,14 +44,16 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
   if (isLoading) {
     return (
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        height: '100vh',
-        fontFamily: 'system-ui, -apple-system, sans-serif',
-        color: '#6B2D3E'
-      }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          height: "100vh",
+          fontFamily: "system-ui, -apple-system, sans-serif",
+          color: "#6B2D3E",
+        }}
+      >
         <div>Loading...</div>
       </div>
     );
@@ -74,14 +76,16 @@ function PublicRoute({ children }: { children: React.ReactNode }) {
 
   if (isLoading) {
     return (
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        height: '100vh',
-        fontFamily: 'system-ui, -apple-system, sans-serif',
-        color: '#6B2D3E'
-      }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          height: "100vh",
+          fontFamily: "system-ui, -apple-system, sans-serif",
+          color: "#6B2D3E",
+        }}
+      >
         <div>Loading...</div>
       </div>
     );

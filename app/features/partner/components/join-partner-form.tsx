@@ -1,20 +1,23 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
-import { usePartnerLinking } from '../hooks/use-partner-linking';
+import React, { useState } from "react";
+import { View, Text, TextInput, TouchableOpacity, Alert } from "react-native";
+import { usePartnerLinking } from "../hooks/use-partner-linking";
 
 interface JoinPartnerFormProps {
   userId: string;
   onPartnerJoined?: (partnerId: string, partnerEmail: string) => void;
 }
 
-export function JoinPartnerForm({ userId, onPartnerJoined }: JoinPartnerFormProps) {
+export function JoinPartnerForm({
+  userId,
+  onPartnerJoined,
+}: JoinPartnerFormProps) {
   const { joinPartnerByCode, isLoading } = usePartnerLinking();
-  const [inviteCode, setInviteCode] = useState('');
+  const [inviteCode, setInviteCode] = useState("");
   const [error, setError] = useState<string | null>(null);
 
   const handleJoinPartner = async () => {
     if (!inviteCode.trim()) {
-      setError('Please enter an invitation code');
+      setError("Please enter an invitation code");
       return;
     }
 
@@ -23,17 +26,26 @@ export function JoinPartnerForm({ userId, onPartnerJoined }: JoinPartnerFormProp
 
     if (result.error) {
       setError(result.error);
-      Alert.alert('Error', result.error);
+      Alert.alert("Error", result.error);
       return;
     }
 
     if (result.data) {
       Alert.alert(
-        'Success!',
+        "Success!",
         `You've linked with ${result.data.partnerEmail}. Your journeys are now connected!`,
-        [{ text: 'OK', onPress: () => onPartnerJoined?.(result.data!.partnerId, result.data!.partnerEmail) }]
+        [
+          {
+            text: "OK",
+            onPress: () =>
+              onPartnerJoined?.(
+                result.data!.partnerId,
+                result.data!.partnerEmail,
+              ),
+          },
+        ],
       );
-      setInviteCode('');
+      setInviteCode("");
     }
   };
 
@@ -49,15 +61,17 @@ export function JoinPartnerForm({ userId, onPartnerJoined }: JoinPartnerFormProp
 
       <View className="gap-4">
         <View>
-          <Text className="text-charcoal font-semibold mb-2">Invitation Code</Text>
+          <Text className="text-charcoal font-semibold mb-2">
+            Invitation Code
+          </Text>
           <TextInput
             value={inviteCode}
             onChangeText={(text) => {
               setInviteCode(
                 text
                   .toUpperCase()
-                  .replace(/[^A-Z0-9]/g, '')
-                  .slice(0, 6)
+                  .replace(/[^A-Z0-9]/g, "")
+                  .slice(0, 6),
               );
               setError(null);
             }}
@@ -65,7 +79,9 @@ export function JoinPartnerForm({ userId, onPartnerJoined }: JoinPartnerFormProp
             maxLength={6}
             placeholderTextColor="#C2B9A7"
             className={`px-4 py-3 border-2 rounded-[12px] font-semibold text-center ${
-              error ? 'border-terracotta bg-terracotta/5' : 'border-cream-dark bg-white'
+              error
+                ? "border-terracotta bg-terracotta/5"
+                : "border-cream-dark bg-white"
             }`}
             editable={!isLoading}
           />
@@ -78,13 +94,11 @@ export function JoinPartnerForm({ userId, onPartnerJoined }: JoinPartnerFormProp
           onPress={handleJoinPartner}
           disabled={isLoading || !inviteCode.trim()}
           className={`px-6 py-3 rounded-full ${
-            isLoading || !inviteCode.trim()
-              ? 'bg-cream-dark'
-              : 'bg-wine'
+            isLoading || !inviteCode.trim() ? "bg-cream-dark" : "bg-wine"
           }`}
         >
           <Text className="text-white font-semibold text-center">
-            {isLoading ? 'Linking...' : 'Link Partner'}
+            {isLoading ? "Linking..." : "Link Partner"}
           </Text>
         </TouchableOpacity>
 

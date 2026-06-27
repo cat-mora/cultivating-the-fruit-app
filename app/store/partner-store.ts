@@ -1,6 +1,6 @@
-import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export interface PartnerLink {
   id: string;
@@ -31,10 +31,13 @@ export const usePartnerStore = create<PartnerState>()(
       addPartner: (partner) => {
         set((state) => ({
           linkedPartners: state.linkedPartners.some(
-            (existingPartner) => existingPartner.partnerId === partner.partnerId
+            (existingPartner) =>
+              existingPartner.partnerId === partner.partnerId,
           )
             ? state.linkedPartners.map((existingPartner) =>
-                existingPartner.partnerId === partner.partnerId ? partner : existingPartner
+                existingPartner.partnerId === partner.partnerId
+                  ? partner
+                  : existingPartner,
               )
             : [...state.linkedPartners, partner],
         }));
@@ -47,7 +50,7 @@ export const usePartnerStore = create<PartnerState>()(
       removePartner: (partnerId) => {
         set((state) => ({
           linkedPartners: state.linkedPartners.filter(
-            (p) => p.partnerId !== partnerId
+            (p) => p.partnerId !== partnerId,
           ),
         }));
       },
@@ -67,14 +70,14 @@ export const usePartnerStore = create<PartnerState>()(
           // using authenticated Supabase requests. The persisted store is only a
           // local cache of those server-backed results.
         } catch (error) {
-          console.error('[PartnerStore] Sync failed:', error);
+          console.error("[PartnerStore] Sync failed:", error);
           // Don't throw - allow local-only operation
         }
       },
     }),
     {
-      name: 'partner-storage',
+      name: "partner-storage",
       storage: createJSONStorage(() => AsyncStorage),
-    }
-  )
+    },
+  ),
 );

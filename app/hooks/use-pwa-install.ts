@@ -1,16 +1,17 @@
-import { useState, useEffect } from 'react';
-import { Platform } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useState, useEffect } from "react";
+import { Platform } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
-  userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
+  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 }
 
-const PWA_INSTALL_DISMISSED_KEY = 'pwa-install-dismissed';
+const PWA_INSTALL_DISMISSED_KEY = "pwa-install-dismissed";
 
 export function usePWAInstall() {
-  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  const [deferredPrompt, setDeferredPrompt] =
+    useState<BeforeInstallPromptEvent | null>(null);
   const [isInstallable, setIsInstallable] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
   const [isStandalone, setIsStandalone] = useState(false);
@@ -18,14 +19,15 @@ export function usePWAInstall() {
 
   useEffect(() => {
     // Only run on web platform
-    if (Platform.OS !== 'web') return;
+    if (Platform.OS !== "web") return;
 
     // Check if running in standalone mode (already installed)
     const checkStandalone = () => {
       const isInStandaloneMode =
-        (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) ||
+        (window.matchMedia &&
+          window.matchMedia("(display-mode: standalone)").matches) ||
         (window.navigator as any).standalone ||
-        document.referrer.includes('android-app://');
+        document.referrer.includes("android-app://");
 
       setIsStandalone(isInStandaloneMode);
       return isInStandaloneMode;
@@ -43,7 +45,7 @@ export function usePWAInstall() {
     const checkDismissed = async () => {
       try {
         const dismissed = await AsyncStorage.getItem(PWA_INSTALL_DISMISSED_KEY);
-        return dismissed === 'true';
+        return dismissed === "true";
       } catch {
         return false;
       }
@@ -89,12 +91,15 @@ export function usePWAInstall() {
       setShowPrompt(false);
     };
 
-    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-    window.addEventListener('appinstalled', handleAppInstalled);
+    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+    window.addEventListener("appinstalled", handleAppInstalled);
 
     return () => {
-      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-      window.removeEventListener('appinstalled', handleAppInstalled);
+      window.removeEventListener(
+        "beforeinstallprompt",
+        handleBeforeInstallPrompt,
+      );
+      window.removeEventListener("appinstalled", handleAppInstalled);
     };
   }, []);
 
@@ -105,25 +110,25 @@ export function usePWAInstall() {
       await deferredPrompt.prompt();
       const choiceResult = await deferredPrompt.userChoice;
 
-      if (choiceResult.outcome === 'accepted') {
+      if (choiceResult.outcome === "accepted") {
         setShowPrompt(false);
         setIsInstallable(false);
       }
 
       setDeferredPrompt(null);
-      return choiceResult.outcome === 'accepted';
+      return choiceResult.outcome === "accepted";
     } catch (error) {
-      console.error('Error prompting install:', error);
+      console.error("Error prompting install:", error);
       return false;
     }
   };
 
   const dismissPrompt = async () => {
     try {
-      await AsyncStorage.setItem(PWA_INSTALL_DISMISSED_KEY, 'true');
+      await AsyncStorage.setItem(PWA_INSTALL_DISMISSED_KEY, "true");
       setShowPrompt(false);
     } catch (error) {
-      console.error('Error saving dismissed state:', error);
+      console.error("Error saving dismissed state:", error);
     }
   };
 

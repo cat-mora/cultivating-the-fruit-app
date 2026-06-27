@@ -2,15 +2,15 @@
  * Web mock for react-native-reanimated
  * Reanimated animations don't work on web, so we provide no-op implementations
  */
-const React = require('react');
+const React = require("react");
 
 // Mock Animated components (just return regular React Native Web components)
 const Animated = {
-  View: 'div',
-  Text: 'span',
-  Image: 'img',
-  ScrollView: 'div',
-  FlatList: 'div',
+  View: "div",
+  Text: "span",
+  Image: "img",
+  ScrollView: "div",
+  FlatList: "div",
   createAnimatedComponent: (component) => component,
 };
 
@@ -40,7 +40,8 @@ const runOnUI = (fn) => fn;
 const runOnJS = (fn) => fn;
 const makeMutable = (value) => ({ value });
 const makeShareableCloneRecursive = (value) => value;
-const isSharedValue = (value) => value && typeof value === 'object' && 'value' in value;
+const isSharedValue = (value) =>
+  value && typeof value === "object" && "value" in value;
 
 // Easing functions (return identity)
 const Easing = {
@@ -71,9 +72,9 @@ const interpolateColor = (value, inputRange, outputRange, colorSpace) => {
 };
 
 const Extrapolate = {
-  EXTEND: 'extend',
-  CLAMP: 'clamp',
-  IDENTITY: 'identity',
+  EXTEND: "extend",
+  CLAMP: "clamp",
+  IDENTITY: "identity",
 };
 
 module.exports = {

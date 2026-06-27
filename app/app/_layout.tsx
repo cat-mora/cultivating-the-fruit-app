@@ -6,4 +6,4 @@
  */
 
 // Export everything from native layout (which supports web too)
-export { default, ErrorBoundary, unstable_settings } from './_layout.native';
+export { default, ErrorBoundary, unstable_settings } from "./_layout.native";

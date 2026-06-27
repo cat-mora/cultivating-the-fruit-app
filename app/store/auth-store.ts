@@ -1,5 +1,5 @@
-import { create } from 'zustand';
-import { User, Session } from '@supabase/supabase-js';
+import { create } from "zustand";
+import { User, Session } from "@supabase/supabase-js";
 
 interface AuthState {
   // Auth state
@@ -43,7 +43,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       set({ isLoading: true, error: null });
 
       // Import supabase client dynamically to avoid circular dependencies
-      const { supabase } = await import('../lib/supabase/config');
+      const { supabase } = await import("../lib/supabase/config");
 
       // Sign out from Supabase
       const { error } = await supabase.auth.signOut();
@@ -55,7 +55,8 @@ export const useAuthStore = create<AuthState>((set) => ({
       // Clear local state
       set({ user: null, session: null, isLoading: false });
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Sign out failed';
+      const errorMessage =
+        error instanceof Error ? error.message : "Sign out failed";
       set({ error: errorMessage, isLoading: false });
       throw error;
     }
@@ -66,7 +67,8 @@ export const useAuthStore = create<AuthState>((set) => ({
       set({ isLoading: true, error: null });
 
       // Import supabase client dynamically
-      const { supabase, isSupabaseEnabled } = await import('../lib/supabase/config');
+      const { supabase, isSupabaseEnabled } =
+        await import("../lib/supabase/config");
 
       if (!isSupabaseEnabled) {
         // Supabase disabled, use local-only mode
@@ -75,7 +77,10 @@ export const useAuthStore = create<AuthState>((set) => ({
       }
 
       // Get current session
-      const { data: { session }, error } = await supabase.auth.getSession();
+      const {
+        data: { session },
+        error,
+      } = await supabase.auth.getSession();
 
       if (error) {
         throw error;
@@ -88,9 +93,10 @@ export const useAuthStore = create<AuthState>((set) => ({
         set({ session, user: session?.user ?? null });
       });
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Auth initialization failed';
+      const errorMessage =
+        error instanceof Error ? error.message : "Auth initialization failed";
       set({ error: errorMessage, isLoading: false });
-      console.error('Auth initialization error:', error);
+      console.error("Auth initialization error:", error);
     }
   },
 }));

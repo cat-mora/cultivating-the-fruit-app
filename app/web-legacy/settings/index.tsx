@@ -1,20 +1,32 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useProfile } from '../../../lib/data/queries/use-profile';
-import { usePartnerLinks } from '../../../lib/data/queries/use-partner';
-import { JourneyStream, BibleTranslation } from '../../../store/user-store';
-import { supabase } from '../../../lib/supabase/config';
-import { ChangePasswordForm } from '../../../features/auth/components/change-password-form';
-import { useAuthStore } from '../../../store/auth-store';
-import { isAdmin } from '../../../lib/admin/admin-service';
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useProfile } from "../../../lib/data/queries/use-profile";
+import { usePartnerLinks } from "../../../lib/data/queries/use-partner";
+import { JourneyStream, BibleTranslation } from "../../../store/user-store";
+import { supabase } from "../../../lib/supabase/config";
+import { ChangePasswordForm } from "../../../features/auth/components/change-password-form";
+import { useAuthStore } from "../../../store/auth-store";
+import { isAdmin } from "../../../lib/admin/admin-service";
 
 const streams: { id: JourneyStream; label: string; description: string }[] = [
-  { id: 'strengthen', label: 'Strengthen', description: 'Deepen and strengthen your marriage bond' },
-  { id: 'repair', label: 'Repair', description: 'Heal and restore your relationship' },
-  { id: 'family', label: 'Family', description: 'Cultivate family unity and connection' },
+  {
+    id: "strengthen",
+    label: "Strengthen",
+    description: "Deepen and strengthen your marriage bond",
+  },
+  {
+    id: "repair",
+    label: "Repair",
+    description: "Heal and restore your relationship",
+  },
+  {
+    id: "family",
+    label: "Family",
+    description: "Cultivate family unity and connection",
+  },
 ];
 
-const translations: BibleTranslation[] = ['NIV', 'NLT', 'ESV', 'KJV', 'NKJV'];
+const translations: BibleTranslation[] = ["NIV", "NLT", "ESV", "KJV", "NKJV"];
 
 export default function SettingsWeb() {
   const navigate = useNavigate();
@@ -22,10 +34,11 @@ export default function SettingsWeb() {
   const { data: partners } = usePartnerLinks();
   const userId = useAuthStore((state) => state.user?.id);
   const [isResetting, setIsResetting] = useState(false);
-  const [selectedStream, setSelectedStream] = useState<JourneyStream>(profile?.stream || 'strengthen');
-  const [selectedTranslation, setSelectedTranslation] = useState<BibleTranslation>(
-    profile?.translation || 'NIV'
+  const [selectedStream, setSelectedStream] = useState<JourneyStream>(
+    profile?.stream || "strengthen",
   );
+  const [selectedTranslation, setSelectedTranslation] =
+    useState<BibleTranslation>(profile?.translation || "NIV");
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
   const [showPasswordChange, setShowPasswordChange] = useState(false);
   const [adminStatus, setAdminStatus] = useState(false);
@@ -38,7 +51,7 @@ export default function SettingsWeb() {
           const status = await isAdmin(userId);
           setAdminStatus(status);
         } catch (error) {
-          console.error('Error checking admin status:', error);
+          console.error("Error checking admin status:", error);
           setAdminStatus(false);
         }
       }
@@ -50,26 +63,26 @@ export default function SettingsWeb() {
   const handleSavePreferences = async () => {
     try {
       // Save preferences to Supabase
-      await new Promise(resolve => setTimeout(resolve, 500)); // Placeholder
+      await new Promise((resolve) => setTimeout(resolve, 500)); // Placeholder
 
-      setSaveMessage('✓ Preferences saved');
+      setSaveMessage("✓ Preferences saved");
       setTimeout(() => setSaveMessage(null), 3000);
     } catch (error) {
-      setSaveMessage('✗ Failed to save preferences');
+      setSaveMessage("✗ Failed to save preferences");
     }
   };
 
   const handleSignOut = async () => {
-    if (window.confirm('Sign out of your account?')) {
+    if (window.confirm("Sign out of your account?")) {
       await supabase.auth.signOut();
-      navigate('/auth/sign-in');
+      navigate("/auth/sign-in");
     }
   };
 
   const handleReset = async () => {
     if (
       !window.confirm(
-        'Start over? This will clear your progress, journal entries, and reset your journey. This cannot be undone.'
+        "Start over? This will clear your progress, journal entries, and reset your journey. This cannot be undone.",
       )
     ) {
       return;
@@ -78,10 +91,10 @@ export default function SettingsWeb() {
     try {
       setIsResetting(true);
       // Reset logic will go here
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Placeholder
-      navigate('/onboarding');
+      await new Promise((resolve) => setTimeout(resolve, 1000)); // Placeholder
+      navigate("/onboarding");
     } catch (error) {
-      alert('Reset failed. Please try again.');
+      alert("Reset failed. Please try again.");
     } finally {
       setIsResetting(false);
     }
@@ -99,7 +112,9 @@ export default function SettingsWeb() {
 
         {/* Journey Stream */}
         <section className="mb-12">
-          <h2 className="text-lg font-bold text-charcoal mb-4">Journey Stream</h2>
+          <h2 className="text-lg font-bold text-charcoal mb-4">
+            Journey Stream
+          </h2>
           <div className="space-y-2">
             {streams.map((stream) => (
               <button
@@ -107,11 +122,13 @@ export default function SettingsWeb() {
                 onClick={() => setSelectedStream(stream.id)}
                 className={`w-full p-4 rounded-[16px] border-2 text-left transition-all ${
                   selectedStream === stream.id
-                    ? 'border-wine bg-wine/10'
-                    : 'border-cream-dark bg-white hover:border-wine/30'
+                    ? "border-wine bg-wine/10"
+                    : "border-cream-dark bg-white hover:border-wine/30"
                 }`}
               >
-                <p className={`font-bold mb-1 ${selectedStream === stream.id ? 'text-wine' : 'text-charcoal'}`}>
+                <p
+                  className={`font-bold mb-1 ${selectedStream === stream.id ? "text-wine" : "text-charcoal"}`}
+                >
                   {stream.label}
                 </p>
                 <p className="text-charcoal/60 text-sm">{stream.description}</p>
@@ -122,7 +139,9 @@ export default function SettingsWeb() {
 
         {/* Bible Translation */}
         <section className="mb-12">
-          <h2 className="text-lg font-bold text-charcoal mb-4">Bible Translation</h2>
+          <h2 className="text-lg font-bold text-charcoal mb-4">
+            Bible Translation
+          </h2>
           <div className="flex flex-wrap gap-2">
             {translations.map((t) => (
               <button
@@ -130,8 +149,8 @@ export default function SettingsWeb() {
                 onClick={() => setSelectedTranslation(t)}
                 className={`px-5 py-2.5 rounded-full border transition-colors ${
                   selectedTranslation === t
-                    ? 'bg-wine border-wine text-white'
-                    : 'bg-white border-cream-dark text-charcoal hover:border-wine/50'
+                    ? "bg-wine border-wine text-white"
+                    : "bg-white border-cream-dark text-charcoal hover:border-wine/50"
                 }`}
               >
                 <span className="font-semibold">{t}</span>
@@ -151,9 +170,9 @@ export default function SettingsWeb() {
         {saveMessage && (
           <div
             className={`mb-8 p-4 rounded-[16px] text-center ${
-              saveMessage.includes('✓')
-                ? 'bg-green-100 text-green-800'
-                : 'bg-red-100 text-red-800'
+              saveMessage.includes("✓")
+                ? "bg-green-100 text-green-800"
+                : "bg-red-100 text-red-800"
             }`}
           >
             {saveMessage}
@@ -162,16 +181,18 @@ export default function SettingsWeb() {
 
         {/* Partner Connection */}
         <section className="mb-12">
-          <h2 className="text-lg font-bold text-charcoal mb-4">Partner Connection</h2>
+          <h2 className="text-lg font-bold text-charcoal mb-4">
+            Partner Connection
+          </h2>
           <button
-            onClick={() => navigate('/partner')}
+            onClick={() => navigate("/partner")}
             className="w-full p-5 rounded-[20px] border-2 border-rose bg-rose-light/30 hover:bg-rose-light/50 transition-colors text-left"
           >
             <p className="text-wine font-bold mb-1">Relational Handshake</p>
             <p className="text-charcoal/60 text-sm">
               {linkedPartners > 0
                 ? `${linkedPartners} partner(s) linked`
-                : 'Link your journey with a partner'}
+                : "Link your journey with a partner"}
             </p>
           </button>
         </section>
@@ -179,9 +200,11 @@ export default function SettingsWeb() {
         {/* Admin Panel */}
         {adminStatus && (
           <section className="mb-12">
-            <h2 className="text-lg font-bold text-charcoal mb-4">Administration</h2>
+            <h2 className="text-lg font-bold text-charcoal mb-4">
+              Administration
+            </h2>
             <button
-              onClick={() => navigate('/admin')}
+              onClick={() => navigate("/admin")}
               className="w-full p-5 rounded-[20px] border-2 border-wine bg-wine/10 hover:bg-wine/20 transition-colors text-left"
             >
               <p className="text-wine font-bold mb-1">Admin Panel</p>
@@ -209,7 +232,7 @@ export default function SettingsWeb() {
 
             {/* Export Data */}
             <button
-              onClick={() => alert('Export feature coming soon!')}
+              onClick={() => alert("Export feature coming soon!")}
               className="w-full p-5 rounded-[20px] border-2 border-cream-dark bg-white hover:border-sage transition-colors text-left"
             >
               <p className="text-charcoal font-bold mb-1">Export Data</p>
@@ -239,15 +262,16 @@ export default function SettingsWeb() {
             disabled={isResetting}
             className={`w-full p-5 rounded-[20px] border-2 text-left transition-all ${
               isResetting
-                ? 'border-rose/30 bg-rose-light/20 cursor-not-allowed'
-                : 'border-rose bg-rose-light/30 hover:bg-rose-light/50'
+                ? "border-rose/30 bg-rose-light/20 cursor-not-allowed"
+                : "border-rose bg-rose-light/30 hover:bg-rose-light/50"
             }`}
           >
             <p className="text-wine font-bold mb-1">
-              {isResetting ? 'Resetting...' : 'Reset Journey'}
+              {isResetting ? "Resetting..." : "Reset Journey"}
             </p>
             <p className="text-charcoal/60 text-sm">
-              Clear all progress, journal entries, and start over. This cannot be undone.
+              Clear all progress, journal entries, and start over. This cannot
+              be undone.
             </p>
           </button>
         </section>
@@ -267,11 +291,13 @@ export default function SettingsWeb() {
       {showPasswordChange && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-[20px] p-6 max-w-md w-full">
-            <h2 className="text-2xl font-bold text-charcoal mb-4">Change Password</h2>
+            <h2 className="text-2xl font-bold text-charcoal mb-4">
+              Change Password
+            </h2>
             <ChangePasswordForm
               onSuccess={() => {
                 setShowPasswordChange(false);
-                setSaveMessage('✓ Password updated successfully');
+                setSaveMessage("✓ Password updated successfully");
                 setTimeout(() => setSaveMessage(null), 3000);
               }}
               onCancel={() => setShowPasswordChange(false)}
